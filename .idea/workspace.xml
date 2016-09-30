@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b4c4ed87-d6ad-4af5-87d9-ff17d5421ec6" name="Default" comment="Added Lycan Bundles">
+    <list default="true" id="b4c4ed87-d6ad-4af5-87d9-ff17d5421ec6" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/symfony" afterPath="$PROJECT_DIR$/symfony" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logs/nginx/symfony_access.log" afterPath="$PROJECT_DIR$/logs/nginx/symfony_access.log" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logs/symfony/dev.log" afterPath="$PROJECT_DIR$/logs/symfony/dev.log" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logs/symfony/prod.log" afterPath="$PROJECT_DIR$/logs/symfony/prod.log" />
     </list>
     <ignored path="lycan.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,7 +29,10 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="162">
               <caret line="9" column="29" selection-start-line="9" selection-start-column="29" selection-end-line="9" selection-end-column="29" />
-              <folding />
+              <folding>
+                <element signature="e#12#56#0#Twig" expanded="false" />
+                <marker date="1475247350494" expanded="true" signature="61:701" ph="{% block stylesheets ...%}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -42,7 +42,14 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="396">
               <caret line="217" column="49" selection-start-line="217" selection-start-column="49" selection-end-line="217" selection-end-column="49" />
-              <folding />
+              <folding>
+                <element signature="e#23119#23165#0#Twig" expanded="false" />
+                <marker date="1475247886290" expanded="true" signature="5641:12321" ph="{% block sonata_header ...%}" />
+                <marker date="1475247886290" expanded="true" signature="6836:12262" ph="{% block sonata_nav ...%}" />
+                <marker date="1475247886290" expanded="true" signature="10262:12191" ph="{% block sonata_top_nav_menu ...%}" />
+                <marker date="1475247886290" expanded="true" signature="10322:12152" ph="{% if app.user and is_granted('ROLE_SONATA_ADMIN') ...%}" />
+                <marker date="1475247886290" expanded="true" signature="11232:12031" ph="{% block sonata_top_nav_menu_user_block ...%}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -72,9 +79,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
               <caret line="0" column="60" selection-start-line="0" selection-start-column="60" selection-end-line="0" selection-end-column="60" />
-              <folding>
-                <element signature="e#12#60#0#Twig" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -84,7 +89,9 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="54">
               <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
-              <folding />
+              <folding>
+                <element signature="e#12#49#0#Twig" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -563,7 +570,7 @@
       <workItem from="1475147555280" duration="5674000" />
       <workItem from="1475155505248" duration="26561000" />
       <workItem from="1475228597853" duration="43000" />
-      <workItem from="1475228648791" duration="15911000" />
+      <workItem from="1475228648791" duration="15929000" />
     </task>
     <task id="LOCAL-00001" summary="Added Lycan Bundles">
       <created>1475140441646</created>
@@ -593,11 +600,18 @@
       <option name="project" value="LOCAL" />
       <updated>1475247614830</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added Lycan Bundles">
+      <created>1475248198104</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1475248198104</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69740000" />
+    <option name="totallyTimeSpent" value="69758000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1985" y="24" width="1855" height="1056" extended-state="6" />
@@ -994,9 +1008,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="60" selection-start-line="0" selection-start-column="60" selection-end-line="0" selection-end-column="60" />
-          <folding>
-            <element signature="e#12#60#0#Twig" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1004,7 +1016,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="396">
           <caret line="217" column="49" selection-start-line="217" selection-start-column="49" selection-end-line="217" selection-end-column="49" />
-          <folding />
+          <folding>
+            <element signature="e#23119#23165#0#Twig" expanded="false" />
+            <marker date="1475247886290" expanded="true" signature="5641:12321" ph="{% block sonata_header ...%}" />
+            <marker date="1475247886290" expanded="true" signature="6836:12262" ph="{% block sonata_nav ...%}" />
+            <marker date="1475247886290" expanded="true" signature="10262:12191" ph="{% block sonata_top_nav_menu ...%}" />
+            <marker date="1475247886290" expanded="true" signature="10322:12152" ph="{% if app.user and is_granted('ROLE_SONATA_ADMIN') ...%}" />
+            <marker date="1475247886290" expanded="true" signature="11232:12031" ph="{% block sonata_top_nav_menu_user_block ...%}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1012,7 +1031,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
           <caret line="9" column="29" selection-start-line="9" selection-start-column="29" selection-end-line="9" selection-end-column="29" />
-          <folding />
+          <folding>
+            <element signature="e#12#56#0#Twig" expanded="false" />
+            <marker date="1475247350494" expanded="true" signature="61:701" ph="{% block stylesheets ...%}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1044,7 +1066,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
           <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
-          <folding />
+          <folding>
+            <element signature="e#12#49#0#Twig" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
