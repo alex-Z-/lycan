@@ -1,0 +1,93 @@
+{% extends 'SonataAdminBundle::standard_layout.html.twig' %}
+{% block stylesheets %}
+
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('cssfilepath.css') }}"/>
+    <style>
+        .logo img {
+            display: inline;
+            padding-bottom: 4px;
+            max-height: 100%;
+            max-width: 150px;
+        }
+        .dropdown-header {
+            font-size:1.0em;
+            color: #777;
+
+        }
+
+        .navbar-nav>.user-menu>.dropdown-menu {
+            width: 450px;
+        }
+
+        .skin-black .navbar .dropdown-menu > li > a:hover {
+            background-color: #f5f5f5;
+            color: #777;
+        }
+
+        .navbar-nav>.user-menu>.dropdown-menu>.user-footer .btn-default {
+            color: #fff;
+        }
+
+        .btn-logout {
+            height: 50px;
+            line-height: 32px;
+        }
+
+    </style>
+{% endblock %}
+{% block side_bar_after_nav %}
+
+    <ul class="sidebar-menu">
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-folder"></i>
+                    <span>Admin Utilities</span>
+                    <i class="fa pull-right fa-angle-left"></i>
+                </a>
+
+                <ul class="treeview-menu">
+                    <li class="first last">
+                        <a target="_blank" href="{{ path('console') }}">
+                            <i class="fa fa-angle-double-right"></i>
+                            View Web Console
+                        </a>
+                    </li>
+                </ul>
+
+            </li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block sonata_top_nav_menu_user_block %}
+   <li class="dropdown user-menu">
+       <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+           <i class="fa fa-user fa-fw" aria-hidden="true"></i> <i class="fa fa-caret-down" aria-hidden="true"></i>
+       </a>
+       <ul class="dropdown-menu dropdown-user">
+           {% include sonata_admin.adminPool.getTemplate('user_block') %}
+       </ul>
+
+   </li>
+
+    {% if app.user %}
+        {% set _bg_class          = "btn-danger" %}
+        {% set _logout_uri        = url('sonata_user_admin_security_logout') %}
+        {% set _logout_text       = 'user_block_logout'|trans({}, 'SonataUserBundle') %}
+        {# Customize this with your profile picture implementation, see below for example #}
+        {#{% set _user_image  = app.user.profilePicture|default(asset(sonata_user.defaultAvatar)) %}#}
+
+        {% if is_granted('ROLE_PREVIOUS_ADMIN') and sonata_user.impersonating %}
+            {% set _bg_class    = "btn-warning" %}
+            {% set _logout_uri  = url(sonata_user.impersonating.route, sonata_user.impersonating.parameters| merge({'_switch_user': '_exit'})) %}
+            {% set _logout_text = 'switch_user_exit'|trans({}, 'SonataUserBundle') %}
+        {% endif %}
+        <li class="dropdown">
+            <div class="pull-right">
+                <a href="{{ _logout_uri }}" class="btn btn-default btn-logout {{ _bg_class }} btn-flat"><i class="fa fa-sign-out fa-fw"></i> {{ _logout_text }}</a>
+            </div>
+        </li>
+    {% endif %}
+{% endblock %}
