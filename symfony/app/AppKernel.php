@@ -5,7 +5,20 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
-    public function registerBundles()
+	
+	public function __construct($environment, $debug)
+	{
+		parent::__construct($environment, $debug);
+		
+		$config = new Doctrine\ORM\Configuration;
+		// Your configs..
+		$config->addFilter('soft-deleteable', 'Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter');
+		
+		
+		
+	}
+	
+	public function registerBundles()
     {
 	
 		
@@ -34,8 +47,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new Sonata\UserBundle\SonataUserBundle('FOSUserBundle'),
 
-            new Application\Sonata\UserBundle\ApplicationSonataUserBundle()
-,
+            new Application\Sonata\UserBundle\ApplicationSonataUserBundle(),
            
             new Lycan\Providers\RentivoBundle\RentivoBundle(),
 			new Lycan\Providers\CoreBundle\CoreBundle(),

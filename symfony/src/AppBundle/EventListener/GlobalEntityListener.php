@@ -2,14 +2,15 @@
 
 namespace AppBundle\EventListener;
 
-
+use AppBundle\AppBundle;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PreFlushEventArgs;
 
-use Application\Sonata\UserBundle\Entity\User;
+use Application\Sonata\UserBundle\Entity\User as User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
-class UserUpdateListener
+class GlobalEntityListener
 {
 	
 	protected $container;
@@ -28,30 +29,24 @@ class UserUpdateListener
 	{
 		$entity = $args->getEntity();
 	
-		// False check is compulsory otherwise duplication occurs
-		if ( ($entity instanceof User) === false) {
-			if ($args->hasChangedField('username')) {
-				$aclProvider = $this->container->get('security.acl.provider');
-				
-				$oldUsername = $args->getOldValue ('username');
-				$user        = $args->getEntity();
-				
-				$aclProvider->updateUserSecurityIdentity(UserSecurityIdentity::fromAccount($user) , $oldUsername);
-			}
-		}
+		
 	}
 
 	public function prePersist(LifecycleEventArgs $args){
+		
 		$entity = $args->getEntity();
-		$em = $args->getEntityManager();
 		
-	
-		// Any new user should get a default Group...
-		if ($entity instanceof User && $group = $em->getRepository("ApplicationSonataUserBundle:Group")->findOneBy(["name" => "LYCAN_OWNER"]) ) {
-			
-			$entity->addGroup($group);
+		if (method_exists($entity, "setOwner") && method_exists($entity, "getOwner")) {
+			$securityContext = $this->container->get('security.authorization_checker');
+			if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+				if ($entity->getOwner() === null) {
+					$user = $this->container->get('security.context')->getToken()->getUser();
+					if ($user) {
+						$entity->setOwner($user);
+					}
+				}
+			}
 		}
-		
 		
 	}
 	

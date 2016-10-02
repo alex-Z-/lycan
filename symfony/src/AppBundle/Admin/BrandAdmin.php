@@ -18,8 +18,10 @@ class BrandAdmin extends BaseAdmin
 		// define group zoning
 		$formMapper
 			->tab('Brand')
-			->with('Details', array('class' => 'col-md-7'))->end()
-			->with('Ownership', array('class' => 'col-md-5'))->end()
+				->with('Details', array('class' => 'col-md-7'))->end()
+				->with('Ownership', array('class' => 'col-md-5'))->end()
+			->end()
+			->tab('Members')
 			->with('Members', array('class' => 'col-md-5'))->end()
 			->end();
 		
@@ -31,9 +33,11 @@ class BrandAdmin extends BaseAdmin
 			->with("Details")
 				->add('descriptiveName', 'text')
 				->add('brandName', 'text')->end()
+			->end()
+			->tab('Members')
 			->with("Members", [
 						'box_class' => 'box box-warning',
-						'description' => "The members field is how you add access to your brand to other users. For example, if you allow other users to push properties to your brand you can add them here."
+						'description' => "The members field allows you to add other users to add their rentals to your brand. For example, if you allow other users to push properties to your brand you can add them here."
 					])
 				->add('users', 'sonata_type_model',
 						array(

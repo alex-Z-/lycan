@@ -13,8 +13,8 @@ class BaseAdmin extends AbstractAdmin
 	
 	public function configure(){
 		
-		
-		
+		$em =  $this->getConfigurationPool()->getContainer()->get('doctrine')->getEntityManager();
+		$em->getFilters()->enable('softdeleteable');
 		$this->setTemplate('button_create', 'AppBundle:Admin/Button:create_button.html.twig');
 	}
 	

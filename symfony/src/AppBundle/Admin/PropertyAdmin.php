@@ -28,6 +28,16 @@ class PropertyAdmin extends BaseAdmin
 			->end();
 		
 		
+		$user = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
+			
+		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
+		$query =  $query = $em->createQueryBuilder("b")
+			->select("b")
+			->from("AppBundle:Brand", "b")
+			->where("b.owner = :owner")
+			->setParameter("owner", $user->getId() );
+		
+		
 		$formMapper
 			->tab('Property')
 				->with('Property Name',
@@ -43,7 +53,12 @@ class PropertyAdmin extends BaseAdmin
 					])
 					->add('brands', 'sonata_type_model',
 						array(
-							'btn_add' => false, 'by_reference' => false, 'expanded' => false, 'multiple' => true, 'label' => 'Brands'
+							'btn_add' => false,
+							'by_reference' => false,
+							'expanded' => false,
+							'multiple' => true,
+							'label' => 'Brands',
+							'query' => $query
 						)
 					)->end();
 		

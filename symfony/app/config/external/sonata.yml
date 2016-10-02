@@ -26,6 +26,13 @@ sonata_admin:
                 EDITOR:   [OPERATOR, EXPORT]
                 ADMIN:    [MASTER]
 
+         # permissions not related to an object instance and also to be available when objects do not exist
+         # the DELETE admin permission means the user is allowed to batch delete objects
+         admin_permissions: [CREATE, LIST, DELETE, UNDELETE, EXPORT, OPERATOR, MASTER]
+
+         # permission related to the objects
+         object_permissions: [VIEW, EDIT, DELETE, UNDELETE, OPERATOR, MASTER, OWNER]
+
     title:      Lycan
     title_logo: /img/logos/lycan.svg
 

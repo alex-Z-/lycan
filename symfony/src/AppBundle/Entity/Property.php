@@ -3,12 +3,13 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * Property
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\PropertyRepository")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Property
 {
@@ -23,6 +24,12 @@ class Property
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
 	 */
 	protected $id;
+	
+	/**
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $deletedAt;
+	
 	
 	/**
 	 * @ORM\Column(type="json")
@@ -41,7 +48,7 @@ class Property
 	private $owner;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Brand", cascade={"persist"}, inversedBy="properties")
+	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Brand", cascade={"persist","remove"}, inversedBy="properties")
 	 * @ORM\JoinTable(name="property_brand_registry")
 	 */
 	private $brands;
@@ -158,4 +165,14 @@ class Property
     {
         return $this->brands;
     }
+	
+	public function getDeletedAt()
+	{
+		return $this->deletedAt;
+	}
+	
+	public function setDeletedAt($deletedAt)
+	{
+		$this->deletedAt = $deletedAt;
+	}
 }

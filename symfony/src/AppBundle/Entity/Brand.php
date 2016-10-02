@@ -3,12 +3,13 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * Property
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Brand
 {
@@ -23,6 +24,12 @@ class Brand
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
 	 */
 	protected $id;
+	
+	/**
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $deletedAt;
+	
 	
 	/**
 	 * @ORM\Column(type="string")
@@ -47,7 +54,7 @@ class Brand
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User",  cascade={"all"})
-	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
 	 */
 	private $owner;
 	
@@ -213,4 +220,15 @@ class Brand
     {
         return $this->properties;
     }
+	
+	
+	public function getDeletedAt()
+	{
+		return $this->deletedAt;
+	}
+	
+	public function setDeletedAt($deletedAt)
+	{
+		$this->deletedAt = $deletedAt;
+	}
 }
