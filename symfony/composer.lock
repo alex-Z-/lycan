@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "211f335b864689eb9cc7bccac87c47a4",
-    "content-hash": "ea7cc0689d72caebf87a424b06a99cc8",
+    "hash": "14635411099866a107f685b2a24dbe8b",
+    "content-hash": "f00b1e143e3ccbb9176cbf3471a6e3a3",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -2336,6 +2336,54 @@
                 "type"
             ],
             "time": "2015-07-25 16:39:46"
+        },
+        {
+            "name": "problematic/acl-manager-bundle",
+            "version": "dev-master",
+            "target-dir": "Problematic/AclManagerBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Problematic/ProblematicAclManagerBundle.git",
+                "reference": "a4382d158bf3d4007c1944aa38765cb04d1f560d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Problematic/ProblematicAclManagerBundle/zipball/a4382d158bf3d4007c1944aa38765cb04d1f560d",
+                "reference": "a4382d158bf3d4007c1944aa38765cb04d1f560d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "symfony/framework-bundle": "2.*",
+                "symfony/security-bundle": "2.*"
+            },
+            "suggest": {
+                "doctrine/couchdb-odm-bundle": "*",
+                "symfony/doctrine-bundle": "*",
+                "symfony/mongodb-odm-bundle": "*"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "Problematic\\AclManagerBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Derek Stobbe",
+                    "email": "djstobbe@gmail.com"
+                }
+            ],
+            "description": "ACL Manager for Symfony2",
+            "homepage": "https://github.com/Problematic/ProblematicAclManagerBundle",
+            "keywords": [
+                "ACL management"
+            ],
+            "time": "2016-03-11 14:33:16"
         },
         {
             "name": "psr/log",
@@ -4722,7 +4770,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "problematic/acl-manager-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

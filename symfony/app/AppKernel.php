@@ -53,6 +53,7 @@ class AppKernel extends Kernel
 			new Lycan\Providers\CoreBundle\CoreBundle(),
 			new Raindrop\SonataThemeBundle\RaindropSonataThemeBundle('SonataAdminBundle'),
 			new Lycan\AclSonataAdminBundle\AclSonataAdminBundle(),
+			new Problematic\AclManagerBundle\ProblematicAclManagerBundle()
         );
 		
 		

@@ -5,55 +5,12 @@ parameters:
     appbundle.db.table_prefix: lycan_
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
-
-services:
-    # ...
-    admin.property:
-        class: AppBundle\Admin\PropertyAdmin
-        arguments: [~, AppBundle\Entity\Property, ~]
-        tags:
-            - { name: sonata.admin, manager_type: orm, group: Rentals, label: Property }
-
 
     appbundle.tblprefix_subscriber:
             class: AppBundle\Subscriber\TablePrefixSubscriber
             arguments: [%appbundle.db.table_prefix%]
             tags:
                 - { name: doctrine.event_subscriber }
-
-    admin.brand:
-            class: AppBundle\Admin\BrandAdmin
-            arguments: [~, AppBundle\Entity\Brand, ~]
-            tags:
-                - { name: sonata.admin, manager_type: orm, group: Rentals, label: Brands }
-
-
-
-    entity.event_listener.user_update:
-        class:  AppBundle\EventListener\UserUpdateListener
-        arguments: [ @service_container ]
-        tags:
-            - { name: doctrine.event_listener, event: preUpdate }
-            - { name: doctrine.event_listener, event: postFlush }
-            - { name: doctrine.event_listener, event: prePersist }
-        calls:
-            -   [ setContainer,["@service_container"] ]
-
-
-    entity.event_listener.global_entity:
-        class:  AppBundle\EventListener\GlobalEntityListener
-        arguments: [ @service_container ]
-        tags:
-            - { name: doctrine.event_listener, event: preUpdate }
-            - { name: doctrine.event_listener, event: postFlush }
-            - { name: doctrine.event_listener, event: prePersist }
-        calls:
-            -   [ setContainer,["@service_container"] ]
-
-
 
     gedmo.listener.softdeleteable:
         class: Gedmo\SoftDeleteable\SoftDeleteableListener

@@ -27,7 +27,6 @@ class BrandAdmin extends BaseAdmin
 		
 		
 		
-		
 		$formMapper
 			->tab('Brand')
 			->with("Details")
