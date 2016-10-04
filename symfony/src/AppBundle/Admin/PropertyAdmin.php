@@ -34,7 +34,8 @@ class PropertyAdmin extends BaseAdmin
 		$query =  $query = $em->createQueryBuilder("b")
 			->select("b")
 			->from("AppBundle:Brand", "b")
-			->where("b.owner = :owner")
+			->join("b.members", "m")
+			->where("b.owner = :owner or m.member = :owner")
 			->setParameter("owner", $user->getId() );
 		
 		

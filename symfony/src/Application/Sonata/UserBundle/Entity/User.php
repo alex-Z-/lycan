@@ -25,7 +25,6 @@ class User extends BaseUser
 {
 	/**
 	 * @var \Ramsey\Uuid\Uuid
-	 *
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid")
 	 * @ORM\GeneratedValue(strategy="CUSTOM")
@@ -34,8 +33,9 @@ class User extends BaseUser
 	protected $id;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Brand", cascade={"persist"}, inversedBy="users")
-	 * @ORM\JoinTable(name="lycan_user_brand_registry")
+	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
+	 *
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserBrandRegistry", mappedBy="member" )
 	 */
 	private $brands;
 	
@@ -44,11 +44,16 @@ class User extends BaseUser
 	 */
 	private $notes;
 	
+	public function addd($what){
+		// dump($what);die();
+	}
+	
 	
 	public function __construct()
 	{
 		parent::__construct();
 		$this->addRole("ROLE_USER");
+		$this->addRole("ROLE_LYCAN_OWNER");
 		$this->brands = new ArrayCollection();
 	}
 	
@@ -121,4 +126,6 @@ class User extends BaseUser
     {
         $this->brands->removeElement($brand);
     }
+    
+   
 }

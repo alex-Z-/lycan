@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\EventListener;
+namespace AppBundle\Entity\EventListener;
 
 use AppBundle\AppBundle;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -10,7 +10,7 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Application\Sonata\UserBundle\Entity\User as User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
-class GlobalEntityListener
+class GlobalListener
 {
 	
 	protected $container;
@@ -53,6 +53,7 @@ class GlobalEntityListener
 	
 	public function postFlush(PostFlushEventArgs $args)
 	{
-		
+		$em = $args->getEntityManager();
+		$uow = $em->getUnitOfWork();
 	}
 }

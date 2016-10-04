@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\EventListener;
+namespace AppBundle\Entity\EventListener;
 
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -9,7 +9,7 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Application\Sonata\UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
-class UserUpdateListener
+class UserListener
 {
 	
 	protected $container;
@@ -58,6 +58,10 @@ class UserUpdateListener
 	
 	public function postFlush(PostFlushEventArgs $args)
 	{
+		
+		$em = $args->getEntityManager();
+		$uow = $em->getUnitOfWork();
+		
 		
 	}
 }

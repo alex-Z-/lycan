@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "14635411099866a107f685b2a24dbe8b",
-    "content-hash": "f00b1e143e3ccbb9176cbf3471a6e3a3",
+    "hash": "ae0948c66cd0e62ab586b574f0c8ed8e",
+    "content-hash": "93fb009e8a6af4054ab2be8517a11712",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -2192,6 +2192,73 @@
             "time": "2015-08-09 04:28:19"
         },
         {
+            "name": "oneup/acl-bundle",
+            "version": "dev-feature/symfony3",
+            "target-dir": "Oneup/AclBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/1up-lab/OneupAclBundle.git",
+                "reference": "ab271758ec943cebee2ae7dfcc29ea0f2093dd1b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/1up-lab/OneupAclBundle/zipball/ab271758ec943cebee2ae7dfcc29ea0f2093dd1b",
+                "reference": "ab271758ec943cebee2ae7dfcc29ea0f2093dd1b",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/common": "~2.2",
+                "doctrine/dbal": "~2.2",
+                "doctrine/doctrine-bundle": "~1.2",
+                "symfony/expression-language": "~2.4",
+                "symfony/framework-bundle": ">=2.2",
+                "symfony/security-bundle": ">=2.2"
+            },
+            "require-dev": {
+                "doctrine/orm": "~2.4",
+                "phpunit/phpunit": "3.7.*",
+                "sensio/framework-extra-bundle": "~2.2|~3.0",
+                "symfony/browser-kit": "2.*",
+                "symfony/finder": ">=2.0.16,<2.4-dev"
+            },
+            "suggest": {
+                "doctrine/orm": "Allows you to remove Acl entries automatically.",
+                "sensio/framework-extra-bundle": "Allows you to use controller annotations."
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "Oneup\\AclBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jim Schmid",
+                    "email": "js@1up.io",
+                    "homepage": "http://1up.io",
+                    "role": "Developer"
+                },
+                {
+                    "name": "David Greminger",
+                    "email": "dg@1up.io",
+                    "homepage": "http://1up.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "The missing link between Symfony`s Acl implementation and your application.",
+            "homepage": "http://1up.io",
+            "keywords": [
+                "Symfony2",
+                "acl",
+                "security"
+            ],
+            "time": "2016-02-24 22:05:53"
+        },
+        {
             "name": "paragonie/random_compat",
             "version": "v2.0.2",
             "source": {
@@ -2336,54 +2403,6 @@
                 "type"
             ],
             "time": "2015-07-25 16:39:46"
-        },
-        {
-            "name": "problematic/acl-manager-bundle",
-            "version": "dev-master",
-            "target-dir": "Problematic/AclManagerBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Problematic/ProblematicAclManagerBundle.git",
-                "reference": "a4382d158bf3d4007c1944aa38765cb04d1f560d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Problematic/ProblematicAclManagerBundle/zipball/a4382d158bf3d4007c1944aa38765cb04d1f560d",
-                "reference": "a4382d158bf3d4007c1944aa38765cb04d1f560d",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "symfony/framework-bundle": "2.*",
-                "symfony/security-bundle": "2.*"
-            },
-            "suggest": {
-                "doctrine/couchdb-odm-bundle": "*",
-                "symfony/doctrine-bundle": "*",
-                "symfony/mongodb-odm-bundle": "*"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "Problematic\\AclManagerBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Derek Stobbe",
-                    "email": "djstobbe@gmail.com"
-                }
-            ],
-            "description": "ACL Manager for Symfony2",
-            "homepage": "https://github.com/Problematic/ProblematicAclManagerBundle",
-            "keywords": [
-                "ACL management"
-            ],
-            "time": "2016-03-11 14:33:16"
         },
         {
             "name": "psr/log",
@@ -4771,7 +4790,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "problematic/acl-manager-bundle": 20
+        "oneup/acl-bundle": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

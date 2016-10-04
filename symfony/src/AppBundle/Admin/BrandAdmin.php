@@ -2,6 +2,7 @@
 
 namespace AppBundle\Admin;
 
+use AppBundle\AppBundle;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -26,6 +27,15 @@ class BrandAdmin extends BaseAdmin
 			->end();
 		
 		
+		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
+		$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
+	
+		$query =  $query = $em->createQueryBuilder("b")
+			->select("u")
+			->from("Application\Sonata\UserBundle\Entity\User", "u")
+			->where("u.id <> :owner and u.username <> 'admin'")
+			->setParameter("owner", $owner->getId() );
+		
 		
 		$formMapper
 			->tab('Brand')
@@ -37,21 +47,41 @@ class BrandAdmin extends BaseAdmin
 			->with("Members", [
 						'box_class' => 'box box-warning',
 						'description' => "The members field allows you to add other users to add their rentals to your brand. For example, if you allow other users to push properties to your brand you can add them here."
-					])
-				->add('users', 'sonata_type_model',
+					]);
+		
+		
+		$formMapper
+				->add('members', 'sonata_type_collection',
 						array(
-							'help' => 'Set the title of a web page',
-							'sonata_help' => "Add Users to this brand",
-							'sonata_field_description' => "Add Users to this brand",
-							'btn_add' => false, 'by_reference' => false, 'expanded' => false, 'multiple' => true, 'label' => 'Users'
+							'help' => 'Add Members to Any Brand',
+							'required' => false,
+							'by_reference' => false,
+							'btn_add' => 'Add Member to Brand',
+							'type_options' => array(
+								// Prevents the "Delete" option from being displayed
+								'delete' => true,
+								
+								
+							)
+							// 'label' => false,
+							// 'sonata_help' => "Add Users to this brand",
+							// 'sonata_field_description' => "Add Users to this brand",
+							// 'query' => $query,
+							// 'btn_add' => false, 'by_reference' => false, 'expanded' => false, 'multiple' => true, 'label' => 'Users'
+						),
+						array(
+							'edit' => 'inline',
+							'inline' => 'table',
+							'allow_delete' => false,
+							"foo" => "bar"
 						)
 				)
-			->end();
+			->end()->end();
 		
 		// We don't want to let properties be transfered until we understand more of the implications.
 		if ($this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD )) {
 			
-			$formMapper->with('Ownership')
+			$formMapper->tab('Brand')->with('Ownership')
 				->add('owner', 'sonata_type_model', array(
 					'required' => false,
 					'expanded' => false,
@@ -81,7 +111,7 @@ class BrandAdmin extends BaseAdmin
 			))
 			->add('descriptiveName')
 			->add('owner')
-			->add('users')
+			->add('members')
 			
 			->add('_action', 'actions', array(
 				'actions' => array(
@@ -106,11 +136,41 @@ class BrandAdmin extends BaseAdmin
 		return $query;
 	}
 	
-	public function prePersist($brand)
+	public function prePersist($entity)
 	{
 		
 		
+		if($entity->getOwner() === null ){
+			$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
+			$entity->setOwner( $owner );
+		}
+		// If we are editing the brand, we ALWAYS ALWYS want to make sure that new brands are for the current brand active...
+		foreach($entity->getMembers() as $member){
+			$member->setBrand( $entity );
+		}
+		
+		
 	}
+	
+	public function preUpdate($brand)
+	{
+		$securityContext = $this->getConfigurationPool()->getContainer()->get('security.context');
+		$manager = $this->getConfigurationPool()->getContainer()->get('oneup_acl.manager');
+		if (false === $this->isGranted('VIEW', $brand)) {
+			throw new AccessDeniedException();
+		}
+		
+		// If we are editing the brand, we ALWAYS ALWYS want to make sure that new brands are for the current brand active...
+		foreach($brand->getMembers() as $member){
+			$member->setBrand( $brand );
+		}
+				
+		
+		// $manager->revokeAllObjectPermissions($brand);
+		// die("pre update");
+		
+	}
+	
 	
 	
 	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)

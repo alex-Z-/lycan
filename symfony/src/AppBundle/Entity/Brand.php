@@ -9,7 +9,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ORM\Table()
  * @ORM\Entity
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Brand
 {
@@ -25,10 +24,6 @@ class Brand
 	 */
 	protected $id;
 	
-	/**
-	 * @ORM\Column(type="datetime", nullable=true)
-	 */
-	private $deletedAt;
 	
 	
 	/**
@@ -41,11 +36,14 @@ class Brand
 	 */
 	private $brandName;
 	
-	/**
-	 * @ORM\ManyToMany(targetEntity="Application\Sonata\UserBundle\Entity\User", cascade={"persist"},  mappedBy="brands")
-	 */
-	private $users;
 	
+	
+	/**
+	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
+	 *
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserBrandRegistry", cascade={"all"},  mappedBy="brand",  orphanRemoval=true)
+	 */
+	private $members;
 	
 	/**
 	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist"},  mappedBy="brands")
@@ -53,7 +51,7 @@ class Brand
 	private $properties;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User",  cascade={"all"})
+	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User",  cascade={"persist"})
 	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
 	 */
 	private $owner;
@@ -109,18 +107,20 @@ class Brand
 	/**
 	 * @return mixed
 	 */
-	public function getUsers()
+	public function getMembers()
 	{
-		return $this->users;
+		return $this->members;
 	}
 	
 	/**
-	 * @param mixed $users
+	 * @param mixed $members
 	 */
-	public function setUsers($users)
+	public function setMembers($members)
 	{
-		$this->users = $users;
+		$this->members = $members;
 	}
+	
+
 	
 	
 	
@@ -130,6 +130,7 @@ class Brand
     public function __construct()
     {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->members = new \Doctrine\Common\Collections\ArrayCollection();
     }
 	
 	function __toString()
@@ -145,10 +146,10 @@ class Brand
      *
      * @return Brand
      */
-    public function addUser(\Application\Sonata\UserBundle\Entity\User $user)
+    public function addMember(\AppBundle\Entity\UserBrandRegistry $user)
     {
-        $this->users[] = $user;
-		$user->addBrand($this);
+        $this->members[] = $user;
+		// $user->addBrand($this);
         return $this;
     }
 
@@ -157,10 +158,10 @@ class Brand
      *
      * @param \Application\Sonata\UserBundle\Entity\User $user
      */
-    public function removeUser(\Application\Sonata\UserBundle\Entity\User $user)
+    public function removeMember(\AppBundle\Entity\UserBrandRegistry $registry)
     {
-		$user->removeBrand($this);
-        $this->users->removeElement($user);
+		// $user->removeBrand($this);
+        $this->members->removeElement($registry);
     }
 
     /**

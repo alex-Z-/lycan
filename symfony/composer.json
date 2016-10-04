@@ -30,7 +30,7 @@
         "ramsey/uuid-doctrine": "^1.2",
         "coresphere/console-bundle": "^0.4.0",
         "stof/doctrine-extensions-bundle": "^1.2",
-        "problematic/acl-manager-bundle": "dev-master"
+        "oneup/acl-bundle": "dev-feature/symfony3"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "~2.7"
