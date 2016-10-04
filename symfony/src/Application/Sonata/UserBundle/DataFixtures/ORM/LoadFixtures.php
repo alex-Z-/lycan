@@ -31,7 +31,7 @@ class LoadFixtures extends AbstractFixture implements FixtureInterface, Containe
     {
 		$this->loadGroups($manager);
 		$this->loadUsers($manager);
-		
+		$this->loadProperties($manager);
 		
     }
 
