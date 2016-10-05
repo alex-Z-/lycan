@@ -1,0 +1,9 @@
+
+services:
+    # ...
+    admin.lycan.provider.supercontrol:
+        class: Lycan\Providers\SupercontrolBundle\Admin\ProviderSupercontrolAdmin
+        arguments: [~, Lycan\Providers\SupercontrolBundle\Entity\ProviderSupercontrolAuth, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Providers, label: Supercontrol }
+

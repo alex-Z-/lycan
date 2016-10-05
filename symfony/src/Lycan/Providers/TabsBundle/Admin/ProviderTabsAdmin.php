@@ -1,6 +1,6 @@
 <?php
 
-namespace Lycan\Providers\RentivoBundle\Admin;
+namespace Lycan\Providers\TabsBundle\Admin;
 
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -10,11 +10,12 @@ use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 
-class ProviderRentivoAdmin extends AbstractAdmin
+class ProviderTabsAdmin extends AbstractAdmin
 {
 	
 	const  ACCESS_ROLE_FOR_USERFIELD ="ROLE_SUPERADMIN";
 
+	
 	protected function configureRoutes(RouteCollection $collection)
 	{
 		
@@ -68,13 +69,11 @@ class ProviderRentivoAdmin extends AbstractAdmin
 		$formMapper
 			->add('nickname', 'text')
 			->end()
-			->with('OAuth Credentials')
-				->add('client', 'text')
+			->with('Tabs Credentials')
+				->add('baseUrl', 'url')
+				->add('client', 'text', array('label' => 'Public Key'))
 				->add('secret', 'text')
 			->end()
-			->with('User Credentials')
-			->add('username', 'text')
-			->add('password', 'text')
 			->end();
 		
 		// We don't want to let properties be transfered until we understand more of the implications.
@@ -95,10 +94,9 @@ class ProviderRentivoAdmin extends AbstractAdmin
 	
 	protected function configureDatagridFilters(DatagridMapper $datagridMapper)
 	{
-		$datagridMapper->add('client')
-			->add('secret')
-			->add('username')
-			->add('password');
+		$datagridMapper->add('baseUrl')
+			->add('client');
+
 	}
 	
 	protected function configureListFields(ListMapper $listMapper)
@@ -108,8 +106,8 @@ class ProviderRentivoAdmin extends AbstractAdmin
 					'name' => 'edit'
 				)
 			))
-			->add('client')
-			->add('owner')
+			->add('baseUrl')
+			->add('client', null, array('label' => 'Public Key'))
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(),

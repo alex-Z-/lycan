@@ -4,11 +4,13 @@ namespace Lycan\Providers\RentivoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Lycan\Providers\CoreBundle\Entity\ProviderAuthBase as ProviderAuthBase;
-/** @ORM\Entity*/
+/**
+ * @ORM\Entity
+ * @Lycan\Providers\CoreBundle\Annotations\DiscriminatorEntry( value = "providerrentivoauth" )
+ */
 class ProviderRentivoAuth extends ProviderAuthBase
 {
-	
-	
+
 	/**
 	 * @ORM\Column(type="string")
 	 */

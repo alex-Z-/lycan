@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use AppBundle\Entity\Base\MappedSuperclassBase as Base;
 /**
  * Property
  *
@@ -11,7 +12,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\PropertyRepository")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Property
+class Property extends Base
 {
  
 	
@@ -40,18 +41,22 @@ class Property
 	 * @ORM\Column(type="string")
 	 */
 	private $descriptiveName;
-	
-	/**
-	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User")
-	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
-	 */
-	private $owner;
-	
+
 	/**
 	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Brand", cascade={"persist","remove"}, inversedBy="properties")
 	 * @ORM\JoinTable(name="property_brand_registry")
 	 */
 	private $brands;
+	
+	
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->brands = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+	
 	
 	
 	/**
@@ -61,23 +66,7 @@ class Property
 	{
 		return $this->id;
 	}
-	
-	/**
-	 * @return mixed
-	 */
-	public function getOwner()
-	{
-		return $this->owner;
-	}
-	
-	/**
-	 * @param mixed $owner
-	 */
-	public function setOwner($owner)
-	{
-		$this->owner = $owner;
-	}
-	
+
 	/**
 	 * @param \Ramsey\Uuid\Uuid $id
 	 */
@@ -119,20 +108,7 @@ class Property
 		$this->descriptiveName = $descriptiveName;
 	}
 	
-	
-
-	
-
-	
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->brands = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
+	/**
      * Add brand
      *
      * @param \AppBundle\Entity\Brand $brand
@@ -175,4 +151,6 @@ class Property
 	{
 		$this->deletedAt = $deletedAt;
 	}
+	
+	
 }

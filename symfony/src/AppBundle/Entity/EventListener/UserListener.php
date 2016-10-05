@@ -29,13 +29,13 @@ class UserListener
 		$entity = $args->getEntity();
 	
 		// False check is compulsory otherwise duplication occurs
-		if ( ($entity instanceof User) === false) {
+		if ( $entity instanceof User) {
 			if ($args->hasChangedField('username')) {
 				$aclProvider = $this->container->get('security.acl.provider');
 				
 				$oldUsername = $args->getOldValue ('username');
 				$user        = $args->getEntity();
-				
+
 				$aclProvider->updateUserSecurityIdentity(UserSecurityIdentity::fromAccount($user) , $oldUsername);
 			}
 		}

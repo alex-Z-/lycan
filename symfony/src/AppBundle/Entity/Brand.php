@@ -4,16 +4,16 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use AppBundle\Entity\Base\MappedSuperclassBase as Base;
 /**
  * Property
  *
  * @ORM\Table()
  * @ORM\Entity
  */
-class Brand
+class Brand extends Base
 {
  
-	
 	/**
 	 * @var \Ramsey\Uuid\Uuid
 	 *
@@ -23,8 +23,6 @@ class Brand
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
 	 */
 	protected $id;
-	
-	
 	
 	/**
 	 * @ORM\Column(type="string")
@@ -46,6 +44,57 @@ class Brand
 	 * @ORM\Column(type="integer", nullable=true)
 	 */
 	private $maxTotalProperties;
+	
+	/**
+	 * @ORM\Column(type="integer", nullable=true)
+	 */
+	private $maxTotalPropertiesPerMember;
+	
+
+	
+	/**
+	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
+	 *
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserBrandRegistry", cascade={"all"},  mappedBy="brand",  orphanRemoval=true)
+	 */
+	private $members;
+	
+	/**
+	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist"},  mappedBy="brands")
+	 */
+	private $properties;
+	
+	
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->users = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->properties = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->members = new \Doctrine\Common\Collections\ArrayCollection();
+	}
+	
+	function __toString()
+	{
+		return $this->getBrandName();
+	}
+	
+	/**
+	 * @return \Ramsey\Uuid\Uuid
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
+	
+	/**
+	 * @param \Ramsey\Uuid\Uuid $id
+	 */
+	public function setId($id)
+	{
+		$this->id = $id;
+	}
 	
 	/**
 	 * @return mixed
@@ -95,94 +144,6 @@ class Brand
 		$this->maxTotalPropertiesPerMember = $maxTotalPropertiesPerMember;
 	}
 	
-	/**
-	 * @return \DateTime
-	 */
-	public function getCreatedAt()
-	{
-		return $this->createdAt;
-	}
-	
-	/**
-	 * @param \DateTime $createdAt
-	 */
-	public function setCreatedAt($createdAt)
-	{
-		$this->createdAt = $createdAt;
-	}
-	
-	/**
-	 * @return \DateTime
-	 */
-	public function getUpdatedAt()
-	{
-		return $this->updatedAt;
-	}
-	
-	/**
-	 * @param \DateTime $updatedAt
-	 */
-	public function setUpdatedAt($updatedAt)
-	{
-		$this->updatedAt = $updatedAt;
-	}
-	
-	/**
-	 * @ORM\Column(type="integer", nullable=true)
-	 */
-	private $maxTotalPropertiesPerMember;
-	
-	/**
-	 * @var \DateTime $created
-	 *
-	 * @Gedmo\Timestampable(on="create")
-	 * @ORM\Column(type="datetime", nullable=true)
-	 */
-	private $createdAt;
-	
-	/**
-	 * @var \DateTime $updated
-	 *
-	 * @Gedmo\Timestampable(on="update")
-	 * @ORM\Column(type="datetime", nullable=true)
-	 */
-	private $updatedAt;
-	
-	/**
-	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
-	 *
-	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserBrandRegistry", cascade={"all"},  mappedBy="brand",  orphanRemoval=true)
-	 */
-	private $members;
-	
-	/**
-	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist"},  mappedBy="brands")
-	 */
-	private $properties;
-	
-	/**
-	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User",  cascade={"persist"})
-	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
-	 */
-	private $owner;
-	
-	
-	
-	/**
-	 * @return \Ramsey\Uuid\Uuid
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
-	
-	/**
-	 * @param \Ramsey\Uuid\Uuid $id
-	 */
-	public function setId($id)
-	{
-		$this->id = $id;
-	}
 	
 	/**
 	 * @return mixed
@@ -236,20 +197,7 @@ class Brand
 	
 	
 	
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->properties = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->members = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-	
-	function __toString()
-	{
-		return $this->getBrandName();
-	}
+    
 	
 	
 	/**
@@ -277,29 +225,6 @@ class Brand
         $this->members->removeElement($registry);
     }
 
-    /**
-     * Set owner
-     *
-     * @param \Application\Sonata\UserBundle\Entity\User $owner
-     *
-     * @return Brand
-     */
-    public function setOwner(\Application\Sonata\UserBundle\Entity\User $owner = null)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get owner
-     *
-     * @return \Application\Sonata\UserBundle\Entity\User
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
 
     /**
      * Add property

@@ -48,8 +48,11 @@ class AppKernel extends Kernel
             new Sonata\UserBundle\SonataUserBundle('FOSUserBundle'),
 
             new Application\Sonata\UserBundle\ApplicationSonataUserBundle(),
-           
+
             new Lycan\Providers\RentivoBundle\RentivoBundle(),
+			new Lycan\Providers\TabsBundle\TabsBundle(),
+			new Lycan\Providers\SupercontrolBundle\SupercontrolBundle(),
+
 			new Lycan\Providers\CoreBundle\CoreBundle(),
 			new Raindrop\SonataThemeBundle\RaindropSonataThemeBundle('ApplicationSonataAdminBundle'),
 			// KEEP THIS REMOVED??

@@ -3,9 +3,12 @@
 namespace Lycan\Providers\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
- 
+
 /**
- * @ORM\MappedSuperclass()
+ * @ORM\Entity
+ * @ORM\InheritanceType( "SINGLE_TABLE" )
+ * @ORM\DiscriminatorColumn( name = "discr", type = "string" )
+ * @Lycan\Providers\CoreBundle\Annotations\DiscriminatorEntry( value = "ProviderAuthBase" )
  */
 class ProviderAuthBase
 {
@@ -79,5 +82,10 @@ class ProviderAuthBase
 	{
 		$this->id = $id;
 	}
-	
+
+	public function __toString()
+	{
+		return $this->getNickname();
+	}
+
 }
