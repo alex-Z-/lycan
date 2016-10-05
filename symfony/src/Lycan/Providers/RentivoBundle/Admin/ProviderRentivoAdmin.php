@@ -80,7 +80,7 @@ class ProviderRentivoAdmin extends AbstractAdmin
 			->end();
 		
 		// We don't want to let properties be transfered until we understand more of the implications.
-		if ($this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) && $this->getSubject()->getId() === null) {
+		if ($this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
 			
 			$formMapper->with('Owner')
 				->add('owner', 'sonata_type_model', array(
@@ -91,17 +91,6 @@ class ProviderRentivoAdmin extends AbstractAdmin
 				))
 				->end();
 			
-		} else {
-			
-			$formMapper->with('Owner')
-				->add('owner', 'sonata_type_model', array(
-					'required' => false,
-					'expanded' => false,
-					'btn_add' => false,
-					'disabled' => true,
-					'multiple' => false,
-				))
-				->end();
 		}
 		
 	}

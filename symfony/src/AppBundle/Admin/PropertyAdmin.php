@@ -34,10 +34,9 @@ class PropertyAdmin extends BaseAdmin
 		$query =  $query = $em->createQueryBuilder("b")
 			->select("b")
 			->from("AppBundle:Brand", "b")
-			->join("b.members", "m")
+			->leftjoin("b.members", "m")
 			->where("b.owner = :owner or m.member = :owner")
 			->setParameter("owner", $user->getId() );
-		
 		
 		$formMapper
 			->tab('Property')
@@ -134,6 +133,7 @@ class PropertyAdmin extends BaseAdmin
 		
 		if ( !$this->isGranted("ROLE_SUPERADMIN") ||  !$this->isGranted('MASTER') ){
 			$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
+			// Is this correct? What about OR property?
 			$query->andWhere('o.owner = :owner')
 			->setParameter('owner', $owner);
 		}

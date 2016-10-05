@@ -51,10 +51,11 @@ class AppKernel extends Kernel
            
             new Lycan\Providers\RentivoBundle\RentivoBundle(),
 			new Lycan\Providers\CoreBundle\CoreBundle(),
-			new Raindrop\SonataThemeBundle\RaindropSonataThemeBundle('SonataAdminBundle'),
+			new Raindrop\SonataThemeBundle\RaindropSonataThemeBundle('ApplicationSonataAdminBundle'),
 			// KEEP THIS REMOVED??
 			new Lycan\AclSonataAdminBundle\AclSonataAdminBundle(),
-			new Oneup\AclBundle\OneupAclBundle()
+			new Oneup\AclBundle\OneupAclBundle(),
+			new Application\Sonata\AdminBundle\ApplicationSonataAdminBundle(),
         );
 		
 		

@@ -26,7 +26,11 @@ class LoadFixtures extends AbstractFixture implements FixtureInterface, Containe
 {
     /** @var ContainerInterface */
     private $container;
-
+	private $users = [
+		"richard",
+		"stewart",
+		"george"
+	];
     public function load(ObjectManager $manager)
     {
 		$this->loadGroups($manager);
@@ -69,12 +73,8 @@ class LoadFixtures extends AbstractFixture implements FixtureInterface, Containe
 		
 		$manager->persist($user);
 		
-		$users = [
-			"richard",
-			"stewart",
-			"george"
-		];
-		foreach($users as $key=>$u){
+		
+		foreach($this->users as $key=>$u){
 			$user = new User();
 			$user->setUsername($u)
 				->setEmail($u . '@example.com')
@@ -88,6 +88,33 @@ class LoadFixtures extends AbstractFixture implements FixtureInterface, Containe
 		$manager->flush();
 	}
 	
+	
+	private function loadProperties(ObjectManager $manager){
+		
+		// How many properties per account.
+		$adjectives = array(
+			'sweet', 'foul', 'quick', 'agile', 'cumbersome', 'uncommon', 'languid',
+			'ravenous', 'small', 'grotesque', 'cute', 'joyous', 'red', 'yellow', 'blue',
+			'beige', 'decorated', 'prized',
+		);
+		
+		$nouns = array(
+			'cottage', 'villa', 'castle', 'fortress', 'apartment', 'town house', 'boat',
+			'mansion', 'iglo', 'cabana', 'yacht'
+		);
+		
+		$propertiesPerUser = 3;
+		foreach($this->users as $key=>$u){
+			foreach(range(0, $propertiesPerUser) as $i){
+				$property = new Property();
+				$name = ucfirst($adjectives[array_rand($adjectives)]) . " " . ucfirst($nouns[array_rand($nouns)]) . " managed by " . $u;
+				$property->setDescriptiveName($name );
+				$property->setOwner( $this->getReference('user-' . $u) );
+				$manager->persist($property);
+			}
+		}
+		$manager->flush();
+	}
 	
 	
 }

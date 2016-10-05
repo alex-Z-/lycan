@@ -37,6 +37,116 @@ class Brand
 	private $brandName;
 	
 	
+	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $moderateNewProperties;
+	
+	/**
+	 * @ORM\Column(type="integer", nullable=true)
+	 */
+	private $maxTotalProperties;
+	
+	/**
+	 * @return mixed
+	 */
+	public function getModerateNewProperties()
+	{
+		return $this->moderateNewProperties;
+	}
+	
+	/**
+	 * @param mixed $moderateNewProperties
+	 */
+	public function setModerateNewProperties($moderateNewProperties)
+	{
+		$this->moderateNewProperties = $moderateNewProperties;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getMaxTotalProperties()
+	{
+		return $this->maxTotalProperties;
+	}
+	
+	/**
+	 * @param mixed $maxTotalProperties
+	 */
+	public function setMaxTotalProperties($maxTotalProperties)
+	{
+		$this->maxTotalProperties = $maxTotalProperties;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getMaxTotalPropertiesPerMember()
+	{
+		return $this->maxTotalPropertiesPerMember;
+	}
+	
+	/**
+	 * @param mixed $maxTotalPropertiesPerMember
+	 */
+	public function setMaxTotalPropertiesPerMember($maxTotalPropertiesPerMember)
+	{
+		$this->maxTotalPropertiesPerMember = $maxTotalPropertiesPerMember;
+	}
+	
+	/**
+	 * @return \DateTime
+	 */
+	public function getCreatedAt()
+	{
+		return $this->createdAt;
+	}
+	
+	/**
+	 * @param \DateTime $createdAt
+	 */
+	public function setCreatedAt($createdAt)
+	{
+		$this->createdAt = $createdAt;
+	}
+	
+	/**
+	 * @return \DateTime
+	 */
+	public function getUpdatedAt()
+	{
+		return $this->updatedAt;
+	}
+	
+	/**
+	 * @param \DateTime $updatedAt
+	 */
+	public function setUpdatedAt($updatedAt)
+	{
+		$this->updatedAt = $updatedAt;
+	}
+	
+	/**
+	 * @ORM\Column(type="integer", nullable=true)
+	 */
+	private $maxTotalPropertiesPerMember;
+	
+	/**
+	 * @var \DateTime $created
+	 *
+	 * @Gedmo\Timestampable(on="create")
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $createdAt;
+	
+	/**
+	 * @var \DateTime $updated
+	 *
+	 * @Gedmo\Timestampable(on="update")
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $updatedAt;
 	
 	/**
 	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
@@ -55,6 +165,8 @@ class Brand
 	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
 	 */
 	private $owner;
+	
+	
 	
 	/**
 	 * @return \Ramsey\Uuid\Uuid
@@ -130,6 +242,7 @@ class Brand
     public function __construct()
     {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->properties = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->members = new \Doctrine\Common\Collections\ArrayCollection();
     }
 	
@@ -222,14 +335,5 @@ class Brand
         return $this->properties;
     }
 	
-	
-	public function getDeletedAt()
-	{
-		return $this->deletedAt;
-	}
-	
-	public function setDeletedAt($deletedAt)
-	{
-		$this->deletedAt = $deletedAt;
-	}
+
 }
