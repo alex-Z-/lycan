@@ -21,8 +21,27 @@ class TabsExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-
+	
+		$this->_addBundleParams($container);
+		
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }
+	
+	private function _addBundleParams( ContainerBuilder $container){
+		
+		if($container->hasParameter('lycan.core.providers')) {
+			$providers = $container->getParameter('lycan.core.providers');
+		} else {
+			$providers = [];
+		}
+		$providers[] = [	'name' => 'Tabs',
+							'adminClass' => 'Lycan\Providers\TabsBundle\Admin\ProviderTabsAdmin',
+							'entityClass' => 'Lycan\Providers\TabsBundle\Entity\ProviderTabsAuth'
+		];
+		$container->setParameter( 'lycan.core.providers',  $providers );
+		
+	}
+	
+	
 }

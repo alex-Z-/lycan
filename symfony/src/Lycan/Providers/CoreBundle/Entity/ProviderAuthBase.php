@@ -25,6 +25,12 @@ class ProviderAuthBase
 	 */
 	private $owner;
 	
+	/**
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\ChannelBrand", mappedBy="provider")
+	 
+	 */
+	private $brandChannels;
+	
 	
 	/**
 	 * @ORM\Column(type="string", nullable=true)

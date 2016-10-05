@@ -13,7 +13,7 @@ class ChannelBrand extends ChannelBridge
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Brand", inversedBy="channels")
-	 * @ORM\JoinColumn(name="brand_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
+	 * @ORM\JoinColumn(name="brand_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 *
 	 */
 	private $brand;

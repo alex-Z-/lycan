@@ -17,10 +17,21 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('lycan_providers_core');
 
-        // Here you should define the parameters that are allowed to
+		$treeBuilder = new TreeBuilder();
+		$rootNode = $treeBuilder->root('core');
+
+		$rootNode
+			->children()
+				->arrayNode('providers')
+					->useAttributeAsKey('name')
+					->prototype('array')
+					->end()
+				->end()
+			->end();
+
+
+		// Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
 

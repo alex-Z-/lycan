@@ -10,6 +10,22 @@ use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 class BaseAdmin extends AbstractAdmin
 {
+	protected $container;
+	public function setContainer($container){
+		$this->container = $container;
+	}
+	
+	public function addBundledSubClasses($configuration = null){
+		
+		$providers = $this->container->getParameter("lycan.core.providers");
+		$classes = [];
+		foreach($providers as $p){
+			$classes[$p['name']] = $p['entityClass'];
+		}
+		
+		$this->setSubClasses($classes);
+
+	}
 	
 	public function configure(){
 		

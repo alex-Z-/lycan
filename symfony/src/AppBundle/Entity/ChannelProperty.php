@@ -12,7 +12,7 @@ class ChannelProperty extends ChannelBridge
 {
 	/**
 	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="channels")
-	 * @ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
+	 * @ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 *
 	 */
 	private $property;

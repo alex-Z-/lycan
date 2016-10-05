@@ -30,9 +30,7 @@ class ChannelBrandAdmin extends BaseAdmin
 				->with('Brand', array('class' => 'col-md-6'))->end()
 				->with('Channel Provider', array('class' => 'col-md-6'))->end()
 			->end()
-			->tab('Members')
-				->with('Members', array('class' => 'col-md-5'))->end()
-			->end();
+			;
 		
 		
 		// We only want to be able to create IF you own the brand....
@@ -55,21 +53,16 @@ class ChannelBrandAdmin extends BaseAdmin
 					)->end()
 			->end();
 
-		$query = $query = $em->createQueryBuilder("b")
-			->select("b")
-			->from("Lycan\Providers\RentivoBundle\Entity\ProviderRentivoAuth", "b");
-
+		
 		// define group zoning
 		$formMapper
 			->tab('Your Channel Bridge')
 				->with('Channel Provider')
-					->add('provider', 'choice',
+					->add('provider', 'sonata_type_model',
 					[
-
+						'btn_add' => false,
 						'required' => true,
-						'choices'	=> [
-							"WOOP"
-						],
+						
 						// 'class' => 'Lycan\Providers\RentivoBundle\Entity\ProviderRentivoAuth',
 
 					]
@@ -91,10 +84,14 @@ class ChannelBrandAdmin extends BaseAdmin
 	protected function configureListFields(ListMapper $listMapper)
 	{
 		
-		
-		
-		
-		
+		$listMapper->addIdentifier('id')
+			->add('brand')
+			->add('provider')->add('_action', 'actions', array(
+				'actions' => array(
+					'edit' => array(),
+					'delete' => array(),
+				)
+			));
 		
 		
 	}

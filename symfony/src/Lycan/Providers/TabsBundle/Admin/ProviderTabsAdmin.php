@@ -76,19 +76,7 @@ class ProviderTabsAdmin extends AbstractAdmin
 			->end()
 			->end();
 		
-		// We don't want to let properties be transfered until we understand more of the implications.
-		if ($this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
-			
-			$formMapper->with('Owner')
-				->add('owner', 'sonata_type_model', array(
-					'required' => false,
-					'expanded' => false,
-					'btn_add' => false,
-					'multiple' => false,
-				))
-				->end();
-			
-		}
+		
 		
 	}
 	
