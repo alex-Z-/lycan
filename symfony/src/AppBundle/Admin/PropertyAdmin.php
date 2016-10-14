@@ -12,12 +12,31 @@ class PropertyAdmin extends BaseAdmin
 {
 	
 	const  ACCESS_ROLE_FOR_USERFIELD ="MASTER";
-	
-	
-
-	
+	protected $parentAssociationMapping = 'brands';
 	protected function configureFormFields(FormMapper $formMapper)
 	{
+		// This is the current logged in.. but I think we actually want the
+		$user = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
+		$accessToUserFields = ( $this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) && $this->getSubject()->getId() === null);
+		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
+		
+		if($this->getSubject()->getId() && $this->getSubject()->getOwner() ){
+			$user =   $this->getSubject()->getOwner();
+		}
+		
+		// WE ABSOLUTELY WANT THE EXISTING BRAND TO ALSO SHOW...
+		$brandsQuery =  $query = $em->createQueryBuilder("b")
+			->select("b")
+			->from("AppBundle:Brand", "b")
+			->leftjoin("b.members", "m")
+			->where("b.owner = :owner or m.member = :owner")
+			->setParameter("owner", $user->getId() );
+		
+		if( $this->getSubject()->getBrands() && $brand = $this->getSubject()->getBrands()->current() ){
+			$brandsQuery->orWhere("b.id = :currentBrand")
+				->setParameter("currentBrand", $brand->getId() );
+		}
+		
 		
 		// define group zoning
 		$formMapper
@@ -27,30 +46,17 @@ class PropertyAdmin extends BaseAdmin
 				->with('Brand', array('class' => 'col-md-5'))->end()
 			->end();
 		
-		
-		$user = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
-			
-		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
-		$query =  $query = $em->createQueryBuilder("b")
-			->select("b")
-			->from("AppBundle:Brand", "b")
-			->leftjoin("b.members", "m")
-			->where("b.owner = :owner or m.member = :owner")
-			->setParameter("owner", $user->getId() );
-		
 		$formMapper
 			->tab('Property')
-				->with('Property Name',
-					array(
+				->with('Property Name',	array(
 						'box_class' => 'box box-warning',
-						'description' => "Create your property and give it a descriptive name. <br />This name is just a useful internal nickname, and does not need to relate to the marketing name for your rental. "
-					))
-					->add('descriptiveName', 'text')->end()
-				->with("Brand" ,[
+						'description' => "Create your property and give it a descriptive name. <br />This name is just a useful internal nickname, and does not need to relate to the marketing name for your rental. "	))
+					->add('descriptiveName', 'text')
+				->end()
+				->with("Brand" , [
 						'box_class' => 'box box-primary',
 						'description' => "Each property on your account can be assigned to a brand. You will most likely only have a single brand, but maintaining brands is an easy way to classify and group similar rentals in a manageable process." .
-										"<br /><p><b>Working with other managers?</b><br />Brands which have been shared with you will also show up here.</p>"
-					])
+										"<br /><p><b>Working with other managers?</b><br />Brands which have been shared with you will also show up here.</p>"])
 					->add('brands', 'sonata_type_model',
 						array(
 							'btn_add' => false,
@@ -58,36 +64,20 @@ class PropertyAdmin extends BaseAdmin
 							'expanded' => false,
 							'multiple' => true,
 							'label' => 'Brands',
-							'query' => $query
+							'query' => $brandsQuery
 						)
 					)->end();
 		
-	
 		// We don't want to let properties be transfered until we understand more of the implications.
-		if ($this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) && $this->getSubject()->getId() === null) {
-			
-			$formMapper->with('Ownership')
-				->add('owner', 'sonata_type_model', array(
-					'required' => false,
-					'expanded' => false,
-					'btn_add' => "Create a new user",
-					'multiple' => false
-				))
-				->end();
 		
-		} else if( $this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) ){
-			$formMapper->with('Ownership')
-				->add('owner', 'sonata_type_model', array(
-					'required' => false,
-					'expanded' => false,
-					"disabled" => true,
-					'btn_add' => false,
-					'multiple' => false
-				))
-				->end();
-		}
-	
-		
+		$formMapper
+			->with('Ownership')
+			->add('owner', 'sonata_type_model', array(
+				'required' => false,
+				'btn_add' => ($accessToUserFields) ? "Create a new user" : false,
+				"disabled" => !$this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ),
+			))
+			->end();
 		
 	}
 	
@@ -109,10 +99,7 @@ class PropertyAdmin extends BaseAdmin
 			))
 			->add('descriptiveName', null, array( 'template'=>'AppBundle') );
 		
-		
-		
 		$listMapper->add('brands');
-		
 		
 		if ($this->isGranted( SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
 			$listMapper->add('owner');
@@ -122,8 +109,7 @@ class PropertyAdmin extends BaseAdmin
 		'actions' => array(
 			'edit' => array(),
 			'delete' => array(),
-		)
-	));
+		)));
 		
 	}
 	

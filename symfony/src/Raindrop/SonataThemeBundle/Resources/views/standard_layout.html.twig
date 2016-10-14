@@ -320,11 +320,7 @@ file that was distributed with this source code.
                                                 {% endblock %}
 
                                                 <div class="navbar-collapse">
-                                                    <div class="navbar-left">
-                                                        {% if _tab_menu is not empty %}
-                                                            {{ _tab_menu|raw }}
-                                                        {% endif %}
-                                                    </div>
+
 
                                                     {% if admin is defined and action is defined and action == 'list' and admin.listModes|length > 1 %}
                                                         <div class="nav navbar-right btn-group">
@@ -350,6 +346,12 @@ file that was distributed with this source code.
                                                             </ul>
                                                         {% endif %}
                                                     {% endblock sonata_admin_content_actions_wrappers %}
+
+                                                    <div class="navbar-left">
+                                                        {% if _tab_menu is not empty %}
+                                                            {{ _tab_menu|raw }}
+                                                        {% endif %}
+                                                    </div>
 
                                                     {% if _list_filters_actions is not empty %}
                                                         {{ _list_filters_actions|raw }}

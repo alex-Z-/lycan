@@ -17,6 +17,8 @@ class ChannelProperty extends ChannelBridge
 	 */
 	private $property;
 	
+	
+	
 	/**
 	 * @return \Ramsey\Uuid\Uuid
 	 */

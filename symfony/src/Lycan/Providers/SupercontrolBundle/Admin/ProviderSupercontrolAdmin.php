@@ -108,6 +108,7 @@ class ProviderSupercontrolAdmin extends AbstractAdmin
 			))
 			->add('baseUrl')
 			->add('client', null, array('label' => 'Site ID'))
+			->add('owner')
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(),

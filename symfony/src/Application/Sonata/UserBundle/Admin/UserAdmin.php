@@ -37,10 +37,11 @@ class UserAdmin extends  BaseAdmin
 			return;
 		}
 		
-		$admin = $this->isChild() ? $this->getParent() : $this;
+		$admin = $this->isChild() ? $this->getaParent() : $this;
 		
 		// $id = $admin->getRequest()->get('id');
 		$router = $this->getConfigurationPool()->getContainer()->get('router');
+		
 		
 		if($admin->getSubject()->getId()) {
 			
@@ -48,8 +49,8 @@ class UserAdmin extends  BaseAdmin
 				$this->trans('View Properties', array(), 'SonataUserBundle'),
 				array('uri' => $router->generate('admin_app_property_list',
 					array(
-						'id' => $admin->getSubject()->getId(),
-						'filter[owner][value]' => $admin->getSubject()->getId()
+						// 'id' => (string) $admin->getSubject()->getId(),
+						'filter[owner][value]' => (string)  $admin->getSubject()->getId()
 					)
 				))
 			);

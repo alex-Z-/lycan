@@ -38,3 +38,7 @@ sonata_user_admin_security:
 sonata_user_impersonating:
     pattern:  /admin
     defaults: { _controller: SonataPageBundle:Page:catchAll }
+
+jmose_command_scheduler:
+    resource: "@JMoseCommandSchedulerBundle/Resources/config/routing.yml"
+    prefix:   /

@@ -1,0 +1,26 @@
+{% block sonata_admin_orm_many_to_one_widget %}
+    {% if sonata_admin.field_description.name  == "provider" %}
+        {% if not sonata_admin.admin.hasNoProviders %}
+            {% include 'SonataDoctrineORMAdminBundle:CRUD:edit_orm_many_to_one.html.twig' %}
+        {% endif %}
+    {% elseif sonata_admin.field_description.name  == "brand" %}
+        {% if not sonata_admin.admin.hasNoBrands %}
+            {% include 'SonataDoctrineORMAdminBundle:CRUD:edit_orm_many_to_one.html.twig' %}
+        {% endif %}
+    {% else %}
+        {% include 'SonataDoctrineORMAdminBundle:CRUD:edit_orm_many_to_one.html.twig' %}
+    {% endif %}
+    {% if  sonata_admin.field_description.name is defined and  sonata_admin.field_description.name  == "provider"  %}
+        <ul class="nav navbar-nav">
+            {{ knp_menu_render('AppBundle:Menu\ProvidersBuilder:createMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
+        </ul>
+    {% endif %}
+
+    {% if  sonata_admin.field_description.name is defined and  sonata_admin.field_description.name  == "brand"  %}
+        <ul class="nav navbar-nav">
+            {{ knp_menu_render('AppBundle:Menu\BrandBuilder:createMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
+        </ul>
+    {% endif %}
+
+
+{% endblock %}

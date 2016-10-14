@@ -17,10 +17,11 @@ class BaseAdmin extends AbstractAdmin
 	
 	public function addBundledSubClasses($configuration = null){
 		
+		
 		$providers = $this->container->getParameter("lycan.core.providers");
 		$classes = [];
 		foreach($providers as $p){
-			$classes[$p['name']] = $p['entityClass'];
+			$classes[$p['name']] = $p['adminClass'];
 		}
 		
 		$this->setSubClasses($classes);

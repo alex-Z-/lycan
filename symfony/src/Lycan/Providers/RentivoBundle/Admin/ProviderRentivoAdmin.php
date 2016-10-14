@@ -3,6 +3,7 @@
 namespace Lycan\Providers\RentivoBundle\Admin;
 
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Lycan\Providers\CoreBundle\Admin\ProviderAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -10,10 +11,10 @@ use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 
-class ProviderRentivoAdmin extends AbstractAdmin
+class ProviderRentivoAdmin extends ProviderAdmin
 {
 	
-	const  ACCESS_ROLE_FOR_USERFIELD ="ROLE_SUPERADMIN";
+	const  ACCESS_ROLE_FOR_USERFIELD ="ROLE_SUPER_ADMIN";
 
 	protected function configureRoutes(RouteCollection $collection)
 	{
@@ -65,30 +66,45 @@ class ProviderRentivoAdmin extends AbstractAdmin
 	
 	protected function configureFormFields(FormMapper $formMapper)
 	{
+		
+		// $formMapper = parent::configureFormFields($formMapper);
+		// dump($formMapper);die();
+		// define group zoning
 		$formMapper
-			->add('nickname', 'text')
-			->end()
-			->with('OAuth Credentials')
-				->add('client', 'text')
-				->add('secret', 'text')
-			->end()
-			->with('User Credentials')
-			->add('username', 'text')
-			->add('password', 'text')
+			->tab('Credentials')
+				->with('Credentials', array('class' => 'col-md-7'))->end()
+				->with('Channel Configuration', array('class' => 'col-md-5'))->end()
 			->end();
+		
+		$formMapper
+			->tab('Credentials')
+				->with('Credentials')
+					->add('nickname', 'text')
+					->add('client', 'text')
+					->add('secret', 'text')
+					->add('username', 'text')
+					->add('password', 'text')
+				->end()
+				->with('Channel Configuration')
+					->add('shouldPull', 'checkbox', ['required' => false, 'label' => 'Shall we pull rentals from this provider?'])
+					->add('allowPush', 'checkbox', [ 'required' => false, 'label' => 'Allow this provider to be used as a downstream push channel'])
+				->end()
+			->end();
+		
 		
 		// We don't want to let properties be transfered until we understand more of the implications.
 		if ($this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
-			
-			$formMapper->with('Owner')
-				->add('owner', 'sonata_type_model', array(
-					'required' => false,
-					'expanded' => false,
-					'btn_add' => false,
-					'multiple' => false,
-				))
+			$formMapper
+				->tab('Credentials')
+					->with('Owner', array('class' => 'col-md-5'))
+						->add('owner', 'sonata_type_model', array(
+							'required' => false,
+							'expanded' => false,
+							'btn_add' => false,
+							'multiple' => false,
+						))
+					->end()
 				->end();
-			
 		}
 		
 	}

@@ -27,15 +27,13 @@ class ProviderAdmin extends BaseAdmin
 		if (!$this->getRequest()) {
 			return array();
 		}
-		
 		return array(
 			'subclass' => $this->getRequest()->get('subclass'),
 		);
 		
 	}
 	
-	
-	
+
 	protected function configureFormFields(FormMapper $formMapper)
 	{
 		
@@ -62,7 +60,7 @@ class ProviderAdmin extends BaseAdmin
 		}
 		
 		
-	
+		return $formMapper;
 		
 	}
 	
@@ -85,6 +83,7 @@ class ProviderAdmin extends BaseAdmin
 					'name' => 'edit'
 				)
 			))
+			->add('providerName')
 			->add('client')
 			->add('owner')
 			->add('_action', 'actions', array(

@@ -6,9 +6,3 @@ services:
         arguments: [~, Lycan\Providers\RentivoBundle\Entity\ProviderRentivoAuth, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Providers, label: Rentivo }
-
-    admin.channel_brand:
-        class: AppBundle\Admin\ChannelBrandAdmin
-        arguments: [~, AppBundle\Entity\ChannelBrand, ~ ]
-        tags:
-            - { name: sonata.admin, manager_type: orm, group: Rentals, label: Brand Channelsaas }

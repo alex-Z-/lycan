@@ -16,19 +16,61 @@ class BrandAdmin extends BaseAdmin
 {
 	
 	const  ACCESS_ROLE_FOR_USERFIELD ="ROLE_SUPERADMIN";
+	public $hasNoProviders = false;
+	// protected $baseRouteName = 'admin_brandz';
 	
-	protected function configureTabMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
+	
+	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
 	{
-		// ...other tab menu stuff
-		/*
-		$menu->addChild('Comments', array('attributes' => array('dropdown' => true)));
-		$menu['Comments']->addChild('list', array('uri' => '/'));
-		*/
+		
+		if (!$childAdmin && !in_array($action, array('edit'))) {
+			return;
+		}
+	
+		$admin = $this->isChild() ? $this->getParent() : $this;
+		$router = $this->getConfigurationPool()->getContainer()->get('router');
+		if($admin->getSubject()->getId()) {
+			
+			$menu->addChild(
+				$this->trans('View Brand Properties', array(), 'SonataUserBundle'),
+				array('uri' => $router->generate('admin_app_brand_property_list',
+					array(
+						'id' => (string) $admin->getSubject()->getId(),
+						// 'filter[brands][value]' => (string)  $admin->getSubject()->getId()
+					)
+				))
+			);
+		
+			$menu->addChild('View Brand Channels', array('uri' => $router->generate('admin_app_brand_channelbrand_list', array( 'id' => (string) $admin->getSubject()->getId() 	))) );
+		}
+		
 	}
 	
 	
 	protected function configureFormFields(FormMapper $formMapper)
 	{
+		
+		
+		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
+		$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
+		// Set up Queries
+		$query = $em->createQueryBuilder("b")
+			->select("u")
+			->from("Application\Sonata\UserBundle\Entity\User", "u")
+			->where("u.id <> :owner and u.username <> 'admin'")
+			->setParameter("owner", $owner->getId() );
+		
+		// Only get your Providers...
+		$providerQuery = $query = $em->createQueryBuilder("b")
+			->select("b")
+			->from("Lycan\Providers\CoreBundle\Entity\ProviderAuthBase", "b")
+			->where("b.owner = :owner")
+			->setParameter("owner", $owner);
+		
+		if ( !$this->isGranted("ROLE_SUPERADMIN") ||  !$this->isGranted('MASTER') ){
+			$this->hasNoProviders = (bool) ($providerQuery->getQuery()->getResult() === []);
+		}
+		
 		// define group zoning
 		$formMapper
 			->tab('Brand')
@@ -38,33 +80,18 @@ class BrandAdmin extends BaseAdmin
 			->tab('Members')
 				->with('Members', array('class' => 'col-md-5'))->end()
 			->end()
-			->tab('Settings')->end();
-		
-		
-		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
-		$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
-	
-		$query =  $query = $em->createQueryBuilder("b")
-			->select("u")
-			->from("Application\Sonata\UserBundle\Entity\User", "u")
-			->where("u.id <> :owner and u.username <> 'admin'")
-			->setParameter("owner", $owner->getId() );
-		
-		
-		$formMapper
+			->tab('Settings')->end()
 			->tab('Brand')
-			->with("Details")
-				->add('descriptiveName', 'text')
-				->add('brandName', 'text')->end()
+				->with("Details")
+					->add('brandName', 'text')
+					->add('descriptiveName', 'text', ['label' => 'Brand Description'])
+				->end()
 			->end()
 			->tab('Members')
-			->with("Members", [
-						'box_class' => 'box box-warning',
-						'description' => "The members field allows you to add other users to add their rentals to your brand. For example, if you allow other users to push properties to your brand you can add them here."
-					]);
-		
-		$formMapper
-				->add('members', 'sonata_type_collection',
+				->with("Members", [
+							'box_class' => 'box box-warning',
+							'description' => "The members field allows you to add other users to add their rentals to your brand. For example, if you allow other users to push properties to your brand you can add them here."])
+					->add('members', 'sonata_type_collection',
 						array(
 							'help' => 'Add Members to Any Brand',
 							'required' => false,
@@ -84,12 +111,11 @@ class BrandAdmin extends BaseAdmin
 						),
 						array(
 							'edit' => 'inline',
-							'inline' => 'table',
-							'allow_delete' => false,
-							"foo" => "bar"
+							'inline' => 'table'
 						)
-				)
-			->end()->end();
+					)
+				->end()
+			->end();
 		
 		// We don't want to let properties be transfered until we understand more of the implications.
 		if ($this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD )) {
@@ -127,20 +153,62 @@ class BrandAdmin extends BaseAdmin
 				->end()
 			->end();
 		
-		
-		// Do Channel Stuff...
-		$formMapper
-			->tab('Channel')
-				->with('Connected Channels')
-					
-				->end()
-			->end();
+	
+		// Do they have providers?
+		if(!$this->hasNoProviders) {
+			//  Great. They have providers, let's show the chanels...
+			$formMapper
+				->tab('Channel')
+					->with('Connected Channels',['description' => "You can push all properties within a brand to any number of connected channels. You will see all channels that you have connected to within the channel dropdown row."])
+						->add('channels', 'sonata_type_collection',
+							[
+								'compound'     => true,
+								'by_reference' => false,
+								'btn_add'      => 'Create a new channel connection',
+								'type_options' => [
+									// Prevents the "Delete" option from being displayed
+									'delete' => false
+								]
+							], ['edit'   => 'inline', 'inline' => 'table']	)
+					->end()
+				->end();
+		} else {
+			
+			$formMapper
+				->tab('Channel')
+					->with('Connected Channels',[
+							'box_class' => 'box box-danger',
+							'description' => "You have not created any channel connections yet."  .
+								"<br><br><b>How to fix this?</b><br />" .
+								"Simply add some credentials for a channel."])
+						->add('channels', 'sonata_type_collection',	[
+								'compound'     => true,
+								'by_reference' => false,
+								'btn_add'      => false,
+								'type_options' => [
+									// Prevents the "Delete" option from being displayed
+									'delete' => false
+								]],	[ 'edit'   => 'inline',	'inline' => 'table' ] )
+						->end()
+				->end();
+		}
 		
 	}
 	
+	public function getFormTheme()
+	{
+		
+		return array_merge(
+			parent::getFormTheme(),
+			array('AppBundle:Admin/BrandAdmin:admin.theme.html.twig')
+		);
+	}
+	
+	
 	protected function configureDatagridFilters(DatagridMapper $datagridMapper)
 	{
-		$datagridMapper->add('descriptiveName')
+		$datagridMapper
+			->add('descriptiveName')
 			->add('brandName');
 	}
 	
@@ -148,7 +216,10 @@ class BrandAdmin extends BaseAdmin
 	
 	protected function configureListFields(ListMapper $listMapper)
 	{
-		$listMapper->addIdentifier('brandName', null, array(
+		
+		
+		$listMapper
+			->addIdentifier('brandName', null, array(
 				'route' => array(
 					'name' => 'edit'
 				)
@@ -156,7 +227,6 @@ class BrandAdmin extends BaseAdmin
 			->add('descriptiveName')
 			->add('owner')
 			->add('members')
-			
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(),
@@ -164,13 +234,9 @@ class BrandAdmin extends BaseAdmin
 				)
 			));
 		
-		
-		
-		
-		
-		
-		
 	}
+	
+	
 	
 	public function createQuery($context = 'list')
 	{
@@ -182,7 +248,6 @@ class BrandAdmin extends BaseAdmin
 	
 	public function prePersist($entity)
 	{
-		
 		
 		if($entity->getOwner() === null ){
 			$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
@@ -207,8 +272,6 @@ class BrandAdmin extends BaseAdmin
 	
 	public function preUpdate($brand)
 	{
-		$securityContext = $this->getConfigurationPool()->getContainer()->get('security.context');
-		$manager = $this->getConfigurationPool()->getContainer()->get('oneup_acl.manager');
 		if (false === $this->isGranted('VIEW', $brand)) {
 			throw new AccessDeniedException();
 		}
@@ -217,23 +280,12 @@ class BrandAdmin extends BaseAdmin
 		foreach($brand->getMembers() as $member){
 			$member->setBrand( $brand );
 		}
-				
-		
-		// $manager->revokeAllObjectPermissions($brand);
-		// die("pre update");
 		
 	}
 	
 	
 	
-	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-	{
-		
 	
-		
-		
-		
-	}
 	
 	
 }

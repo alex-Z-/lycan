@@ -96,6 +96,7 @@ class ProviderTabsAdmin extends AbstractAdmin
 			))
 			->add('baseUrl')
 			->add('client', null, array('label' => 'Public Key'))
+			->add('owner')
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(),

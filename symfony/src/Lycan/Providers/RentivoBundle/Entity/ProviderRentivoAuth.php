@@ -10,7 +10,25 @@ use Lycan\Providers\CoreBundle\Entity\ProviderAuthBase as ProviderAuthBase;
  */
 class ProviderRentivoAuth extends ProviderAuthBase
 {
-
+	// This doesn't need to be an entity field..
+	private $providerName = "Rentivo";
+	
+	/**
+	 * @return string
+	 */
+	public function getProviderName()
+	{
+		return $this->providerName;
+	}
+	
+	/**
+	 * @param string $providerName
+	 */
+	public function setProviderName($providerName)
+	{
+		$this->providerName = $providerName;
+	}
+	
 	/**
 	 * @ORM\Column(type="string")
 	 */
@@ -96,6 +114,8 @@ class ProviderRentivoAuth extends ProviderAuthBase
 	{
 		$this->password = $password;
 	}
+	
+	
 	
 	
 	

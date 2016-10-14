@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use AppBundle\Entity\Base\MappedSuperclassBase as Base;
@@ -36,21 +37,11 @@ class Brand extends Base
 	
 	
 	/**
-	 * @ORM\Column(type="boolean", nullable=true)
+	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
+	 *
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\ChannelBrand", cascade={"all"},  mappedBy="brand",  orphanRemoval=true)
 	 */
-	private $moderateNewProperties;
-	
-	/**
-	 * @ORM\Column(type="integer", nullable=true)
-	 */
-	private $maxTotalProperties;
-	
-	/**
-	 * @ORM\Column(type="integer", nullable=true)
-	 */
-	private $maxTotalPropertiesPerMember;
-	
-
+	private $channels;
 	
 	/**
 	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
@@ -66,6 +57,24 @@ class Brand extends Base
 	
 	
 	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $moderateNewProperties;
+	
+	/**
+	 * @ORM\Column(type="integer", nullable=true)
+	 */
+	private $maxTotalProperties;
+	
+	/**
+	 * @ORM\Column(type="integer", nullable=true)
+	 */
+	private $maxTotalPropertiesPerMember;
+	
+	
+	
+	
+	/**
 	 * Constructor
 	 */
 	public function __construct()
@@ -73,6 +82,7 @@ class Brand extends Base
 		$this->users = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->properties = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->members = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->channels = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 	
 	function __toString()
@@ -193,11 +203,6 @@ class Brand extends Base
 		$this->members = $members;
 	}
 	
-
-	
-	
-	
-    
 	
 	
 	/**
@@ -224,9 +229,37 @@ class Brand extends Base
 		// $user->removeBrand($this);
         $this->members->removeElement($registry);
     }
+	
+	
+	/**
+	 * Add user
+	 *
+	 * @param \Application\Sonata\UserBundle\Entity\User $user
+	 *
+	 * @return Brand
+	 */
+	public function addChannel(\AppBundle\Entity\ChannelBrand $channel)
+	{
+		$this->channels[] = $channel;
+		$channel->getBrand($this);
+		return $this;
+	}
+	
+	/**
+	 * Remove user
+	 *
+	 * @param \Application\Sonata\UserBundle\Entity\User $user
+	 */
+	public function removeChannel(\AppBundle\Entity\ChannelBrand $channel)
+	{
+		// $user->removeBrand($this);
+		$this->channel->removeElement($channel);
+	}
 
-
-    /**
+	
+	
+	
+	/**
      * Add property
      *
      * @param \AppBundle\Entity\Property $property
@@ -259,6 +292,40 @@ class Brand extends Base
     {
         return $this->properties;
     }
+	
+	/**
+	 * @return \Doctrine\Common\Collections\ArrayCollection
+	 */
+	public function getUsers()
+	{
+		return $this->users;
+	}
+	
+	/**
+	 * @param \Doctrine\Common\Collections\ArrayCollection $users
+	 */
+	public function setUsers($users)
+	{
+		$this->users = $users;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getChannels()
+	{
+		return $this->channels;
+	}
+	
+	/**
+	 * @param mixed $channels
+	 */
+	public function setChannels($channels)
+	{
+		$this->channels = $channels;
+	}
+    
+    
 	
 
 }

@@ -26,6 +26,8 @@ class Property extends Base
 	 */
 	protected $id;
 	
+	
+	
 	/**
 	 * @ORM\Column(type="datetime", nullable=true)
 	 */
@@ -49,12 +51,13 @@ class Property extends Base
 	private $brands;
 	
 	
-    /**
+	/**
      * Constructor
      */
     public function __construct()
     {
         $this->brands = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->brand = new \Doctrine\Common\Collections\ArrayCollection();
     }
 	
 	

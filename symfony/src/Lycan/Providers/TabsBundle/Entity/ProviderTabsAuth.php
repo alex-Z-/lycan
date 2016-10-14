@@ -10,7 +10,27 @@ use Lycan\Providers\CoreBundle\Entity\ProviderAuthBase as ProviderAuthBase;
  */
 class ProviderTabsAuth extends ProviderAuthBase
 {
-
+	
+	// This doesn't need to be an entity field..
+	private $providerName = "Tabs";
+	
+	/**
+	 * @return string
+	 */
+	public function getProviderName()
+	{
+		return $this->providerName;
+	}
+	
+	/**
+	 * @param string $providerName
+	 */
+	public function setProviderName($providerName)
+	{
+		$this->providerName = $providerName;
+	}
+	
+	
 	/**
 	 * @ORM\Column(type="string")
 	 */
@@ -75,8 +95,6 @@ class ProviderTabsAuth extends ProviderAuthBase
 	{
 		$this->client = $client;
 	}
-	
-
 	
 	
 	

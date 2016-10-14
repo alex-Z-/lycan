@@ -59,6 +59,7 @@ class AppKernel extends Kernel
 			new Lycan\AclSonataAdminBundle\AclSonataAdminBundle(),
 			new Oneup\AclBundle\OneupAclBundle(),
 			new Application\Sonata\AdminBundle\ApplicationSonataAdminBundle(),
+			new JMose\CommandSchedulerBundle\JMoseCommandSchedulerBundle(),
         );
 		
 		
