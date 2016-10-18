@@ -1,8 +1,13 @@
-
 services:
     # ...
     admin.lycan.provider.rentivo:
         class: Lycan\Providers\RentivoBundle\Admin\ProviderRentivoAdmin
-        arguments: [~, Lycan\Providers\RentivoBundle\Entity\ProviderRentivoAuth, ~]
+        arguments: [~, Lycan\Providers\RentivoBundle\Entity\ProviderRentivoAuth, CoreBundle:CRUD ]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Providers, label: Rentivo }
+
+    lycan.rabbit.consumer.pull_provider.rentivo:
+        class : Lycan\Providers\RentivoBundle\Consumer\PullProviderConsumer
+        arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
+        calls:
+            - [ setContainer,[ @service_container ] ]

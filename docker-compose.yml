@@ -9,6 +9,17 @@ services:
             MYSQL_DATABASE: symfony
             MYSQL_USER: symfony
             MYSQL_PASSWORD: symfony
+    rabbit:
+        image: rabbitmq:3-management
+        environment:
+              - RABBITMQ_NODE_TYPE=queue-disc
+              - RABBITMQ_NODE_NAME=rabbit@rabbit
+              - RABBITMQ_DEFAULT_PASS=password
+              - RABBITMQ_NODE_PORT=5672
+              - RABBITMQ_MANAGER_PORT=15672
+        ports:
+            - '15672:15672'
+
     php:
         build: ./php-fpm
         expose:
@@ -19,6 +30,7 @@ services:
             - ./logs/symfony:/var/www/symfony/app/logs
         links:
             - db
+            - rabbit
     nginx:
         build: ./nginx
         ports:

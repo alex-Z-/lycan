@@ -14,14 +14,14 @@ namespace Application\Sonata\UserBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Sonata\UserBundle\Entity\BaseUser as BaseUser;
 use Doctrine\Common\Collections\ArrayCollection as ArrayCollection;
-
+use FOS\MessageBundle\Model\ParticipantInterface;
 /**
  * Property
  *
  * @ORM\Table("fos_user_user")
  * @ORM\Entity
  */
-class User extends BaseUser
+class User extends BaseUser implements ParticipantInterface
 {
 	/**
 	 * @var \Ramsey\Uuid\Uuid

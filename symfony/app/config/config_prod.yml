@@ -19,6 +19,11 @@ monolog:
             type:         fingers_crossed
             action_level: error
             handler:      nested
+        lycan:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%_lycan.log"
+            level: debug
+            channels: [ user_actions ]
         nested:
             type:  stream
             path:  "%kernel.logs_dir%/%kernel.environment%.log"

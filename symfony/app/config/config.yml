@@ -4,7 +4,9 @@ imports:
     - { resource: services.yml }
     - { resource: external/fos.yml }
     - { resource: external/sonata.yml }
-    - { resource: external/sonata_admins.yml }
+    - { resource: external/admins.yml }
+    - { resource: external/loggers.yml }
+    - { resource: external/rabbit.yml }
     - { resource: listeners/events.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
@@ -110,4 +112,10 @@ jmose_command_scheduler:
 
     # Doctrine manager
     doctrine_manager: default
+
+fos_message:
+    db_driver: orm
+    thread_class: AppBundle\Entity\Thread
+    message_class: AppBundle\Entity\Message
+
 

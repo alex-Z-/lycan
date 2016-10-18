@@ -1,3 +1,4 @@
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
@@ -42,3 +43,7 @@ sonata_user_impersonating:
 jmose_command_scheduler:
     resource: "@JMoseCommandSchedulerBundle/Resources/config/routing.yml"
     prefix:   /
+
+fos_message:
+    resource: "@FOSMessageBundle/Resources/config/routing.xml"
+    prefix: /optional_routing_prefix

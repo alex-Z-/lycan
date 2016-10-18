@@ -22,7 +22,9 @@ RUN apk add --update \
     php5-xml \
     php5-imagick \
     php5-dom \
-    php5-zlib
+    php5-zlib \
+    php5-bcmath \
+    php5-sockets
 
 RUN apk add wget curl git && rm /var/cache/apk/*
 

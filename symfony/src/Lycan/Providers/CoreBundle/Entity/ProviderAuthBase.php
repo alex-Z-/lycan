@@ -47,13 +47,27 @@ class ProviderAuthBase
 	 *
 	 * @ORM\Column(type="datetime", nullable=true)
 	 */
-	private $lastPullAt;
+	private $lastPullCompletedAt;
+	
+	
+	/**
+	 * @var \DateTime $contentChanged
+	 *
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $lastPullStartedAt;
 	
 	/**
 	 * @var \DateTime $contentChanged
 	 * @ORM\Column(type="datetime", nullable=true)
 	 */
-	private $lastPushAt;
+	private $lastPushCompletedAt;
+	
+	/**
+	 * @var \DateTime $contentChanged
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $lastPushStartedAt;
 	
 	/**
 	 * @var \DateTime $updated
@@ -62,6 +76,16 @@ class ProviderAuthBase
 	 * @ORM\Column(type="datetime")
 	 */
 	private $updatedAt;
+	
+	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $pullInProgress;
+	
+	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $pushInProgress;
 	
 	
 	/**
@@ -182,7 +206,7 @@ class ProviderAuthBase
 	}
 	
 	/**
-	 * @return mixed
+	 * @return \DateTime
 	 */
 	public function getCreatedAt()
 	{
@@ -190,7 +214,7 @@ class ProviderAuthBase
 	}
 	
 	/**
-	 * @param mixed $createdAt
+	 * @param \DateTime $createdAt
 	 */
 	public function setCreatedAt($createdAt)
 	{
@@ -198,39 +222,71 @@ class ProviderAuthBase
 	}
 	
 	/**
-	 * @return mixed
+	 * @return \DateTime
 	 */
-	public function getLastPullAt()
+	public function getLastPullCompletedAt()
 	{
-		return $this->lastPullAt;
+		return $this->lastPullCompletedAt;
 	}
 	
 	/**
-	 * @param mixed $lastPullAt
+	 * @param \DateTime $lastPullCompletedAt
 	 */
-	public function setLastPullAt($lastPullAt)
+	public function setLastPullCompletedAt($lastPullCompletedAt)
 	{
-		$this->lastPullAt = $lastPullAt;
+		$this->lastPullCompletedAt = $lastPullCompletedAt;
 	}
 	
 	/**
-	 * @return mixed
+	 * @return \DateTime
 	 */
-	public function getLastPushAt()
+	public function getLastPullStartedAt()
 	{
-		return $this->lastPushAt;
+		return $this->lastPullStartedAt;
 	}
 	
 	/**
-	 * @param mixed $lastPushAt
+	 * @param \DateTime $lastPullStartedAt
 	 */
-	public function setLastPushAt($lastPushAt)
+	public function setLastPullStartedAt($lastPullStartedAt)
 	{
-		$this->lastPushAt = $lastPushAt;
+		$this->lastPullStartedAt = $lastPullStartedAt;
 	}
 	
 	/**
-	 * @return mixed
+	 * @return \DateTime
+	 */
+	public function getLastPushCompletedAt()
+	{
+		return $this->lastPushCompletedAt;
+	}
+	
+	/**
+	 * @param \DateTime $lastPushCompletedAt
+	 */
+	public function setLastPushCompletedAt($lastPushCompletedAt)
+	{
+		$this->lastPushCompletedAt = $lastPushCompletedAt;
+	}
+	
+	/**
+	 * @return \DateTime
+	 */
+	public function getLastPushStartedAt()
+	{
+		return $this->lastPushStartedAt;
+	}
+	
+	/**
+	 * @param \DateTime $lastPushStartedAt
+	 */
+	public function setLastPushStartedAt($lastPushStartedAt)
+	{
+		$this->lastPushStartedAt = $lastPushStartedAt;
+	}
+	
+	/**
+	 * @return \DateTime
 	 */
 	public function getUpdatedAt()
 	{
@@ -238,11 +294,43 @@ class ProviderAuthBase
 	}
 	
 	/**
-	 * @param mixed $updatedAt
+	 * @param \DateTime $updatedAt
 	 */
 	public function setUpdatedAt($updatedAt)
 	{
 		$this->updatedAt = $updatedAt;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getPullInProgress()
+	{
+		return $this->pullInProgress;
+	}
+	
+	/**
+	 * @param mixed $pullInProgress
+	 */
+	public function setPullInProgress($pullInProgress)
+	{
+		$this->pullInProgress = $pullInProgress;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getPushInProgress()
+	{
+		return $this->pushInProgress;
+	}
+	
+	/**
+	 * @param mixed $pushInProgress
+	 */
+	public function setPushInProgress($pushInProgress)
+	{
+		$this->pushInProgress = $pushInProgress;
 	}
 	
 	/**
@@ -276,8 +364,6 @@ class ProviderAuthBase
 	{
 		$this->allowPush = $allowPush;
 	}
-	
-	
 	
 	
 

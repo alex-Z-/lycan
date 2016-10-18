@@ -1,0 +1,44 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     "%rabbitmq_host%"
+            user:     "%rabbitmq_user%"
+            password: "%rabbitmq_pass%"
+            port:     "%rabbitmq_port%"
+            vhost:    "%rabbitmq_vhost%"
+            lazy:     false
+            connection_timeout: 3
+            read_write_timeout: 3
+
+            # requires php-amqplib v2.4.1+ and PHP5.4+
+            keepalive: false
+
+            # requires php-amqplib v2.4.1+
+            heartbeat: 0
+
+            #requires php_sockets.dll
+            use_socket: false # default false
+    producers:
+        pull_provider:
+            connection: default
+            exchange_options: { name: 'pull_provider', type: 'topic' }
+            service_alias: lycan.rabbit.producer.pull_provider
+            # 3 hour TTL
+            queue_options:
+                name: 'pull_provider'
+                arguments: {'x-message-ttl': ['I', 180000]}
+                routing_keys:
+                    - 'lycan.#'
+
+
+    consumers:
+        pull_provider.rentivo:
+            connection:       default
+            exchange_options: {name: 'pull_provider', , type: topic}
+            queue_options:
+                name: 'pull_provider'
+                arguments: {'x-message-ttl': ['I', 180000]}
+                routing_keys:
+                    - lycan.provider.rentivo
+            callback:   lycan.rabbit.consumer.pull_provider.rentivo
+            enable_logger: true

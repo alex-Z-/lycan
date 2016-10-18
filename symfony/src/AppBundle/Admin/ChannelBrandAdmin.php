@@ -148,11 +148,11 @@ class ChannelBrandAdmin extends BaseAdmin
 				->end()
 			->end();
 		
-		
-		if (!$this->hasParentFieldDescription()) {
+		$subject = $this->getSubject();
+		if (!$this->hasParentFieldDescription() && $subject->getId() !== null ) {
 			$formMapper->get('brand')->setDisabled( true );
 			$formMapper->get('provider')->setDisabled( true );
-			$formMapper->get('provider')->setAttribute("sonata_help", "IF YOU SEE THIS TELL ME");
+			// $formMapper->get('provider')->setAttribute("sonata_help", "IF YOU SEE THIS TELL ME");
 			
 		}
 		

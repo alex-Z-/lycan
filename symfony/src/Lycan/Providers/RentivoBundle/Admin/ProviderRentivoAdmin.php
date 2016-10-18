@@ -15,11 +15,12 @@ class ProviderRentivoAdmin extends ProviderAdmin
 {
 	
 	const  ACCESS_ROLE_FOR_USERFIELD ="ROLE_SUPER_ADMIN";
-
+	
 	protected function configureRoutes(RouteCollection $collection)
 	{
 		
-	
+		$collection->add('pull', $this->getRouterIdParameter().'/pull');
+		$collection->add('pullStop', $this->getRouterIdParameter().'/pull-stop');
 		// to remove a single route
 		$collection->remove('acl');
 		// OR remove all route except named ones
@@ -130,6 +131,9 @@ class ProviderRentivoAdmin extends ProviderAdmin
 				'actions' => array(
 					'edit' => array(),
 					'delete' => array(),
+					'pull' => array(
+						'template' => 'CoreBundle:CRUD:list__action_pull.html.twig'
+					)
 				)
 			));
 		

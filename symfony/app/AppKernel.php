@@ -60,6 +60,12 @@ class AppKernel extends Kernel
 			new Oneup\AclBundle\OneupAclBundle(),
 			new Application\Sonata\AdminBundle\ApplicationSonataAdminBundle(),
 			new JMose\CommandSchedulerBundle\JMoseCommandSchedulerBundle(),
+	
+			new FOS\MessageBundle\FOSMessageBundle(), // We ARE NOT USING THIS.....
+	
+			new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
+			new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
+           
         );
 		
 		
