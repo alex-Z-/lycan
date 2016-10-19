@@ -2,14 +2,11 @@
 namespace Lycan\Providers\CoreBundle\Controller;
 
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
-use AppBundle\Exception\NoBrandFoundException;
+
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use AppBundle\AppBundle;
-use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
-use PhpAmqpLib\Message\AMQPMessage;
 use Incoming;
-use AppBundle\Schema\Container as SchemaContainer;
-use Lycan\Providers\RentivoBundle\Incoming\Hydrator\SchemaHydrator;
+use Pristine\Schema\Container as SchemaContainer;
+use Lycan\Providers\RentivoBundle\Incoming\Hydrator\SchemaHydrator as Hydrator;
 use Lycan\Providers\RentivoBundle\Incoming\Transformer\RentivoTransformer;
 
 class CRUDController extends Controller
@@ -49,7 +46,7 @@ class CRUDController extends Controller
 		$schema = $incoming->process(
 			$data,
 			new SchemaContainer(),
-			new SchemaHydrator()
+			new Hydrator()
 		);
 		dump($schema->toArray());
 		die();

@@ -1,7 +1,7 @@
 <?php
 namespace Lycan\Providers\RentivoBundle\Incoming\Transformer;
 use Incoming;
-use AppBundle\Schema\Container as SchemaContainer;
+use Pristine\Schema\Container as SchemaContainer;
 class RentivoTransformer implements Incoming\Transformer\TransformerInterface
 {
 	public function transform($input)
