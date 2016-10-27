@@ -8,9 +8,21 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\CoreBundle\Validator\ErrorElement as ErrorElement;
+use ListingSchema\Load;
+use JsonSchema\Constraints\Factory;
+use JsonSchema\Constraints\Constraint;
+use JsonSchema\SchemaStorage;
+use JsonSchema\Validator;
+
+
 class PropertyAdmin extends BaseAdmin
 {
-	
+	protected $datagridValues = array(
+		'_page' => 1,
+		'_sort_order' => 'DESC',
+		'_sort_by' => 'createdAt'
+	);
 	const  ACCESS_ROLE_FOR_USERFIELD ="MASTER";
 	protected $parentAssociationMapping = 'brands';
 	protected function configureFormFields(FormMapper $formMapper)
@@ -44,6 +56,9 @@ class PropertyAdmin extends BaseAdmin
 				->with('Property Name', array('class' => 'col-md-7'))->end()
 				->with('Ownership', array('class' => 'col-md-5'))->end()
 				->with('Brand', array('class' => 'col-md-5'))->end()
+			->end()
+			->tab('Schema')
+				->with('Property Schema', array('class' => 'col-md-12'))->end()
 			->end();
 		
 		$formMapper
@@ -71,13 +86,22 @@ class PropertyAdmin extends BaseAdmin
 		// We don't want to let properties be transfered until we understand more of the implications.
 		
 		$formMapper
-			->with('Ownership')
-			->add('owner', 'sonata_type_model', array(
-				'required' => false,
-				'btn_add' => ($accessToUserFields) ? "Create a new user" : false,
-				"disabled" => !$this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ),
-			))
+				->with('Ownership')
+				->add('owner', 'sonata_type_model', array(
+					'required' => false,
+					'btn_add' => ($accessToUserFields) ? "Create a new user" : false,
+					"disabled" => !$this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ),
+				))
+				->end()
 			->end();
+		
+		$formMapper->tab('Schema')
+				->with('Property Schema')
+					->add('schemaObject', 'textarea', array(
+						'attr' => array( 'rows' => '10'),
+					))
+				->end()
+			->end();;
 		
 	}
 	
@@ -86,6 +110,47 @@ class PropertyAdmin extends BaseAdmin
 		$datagridMapper->add('descriptiveName')
 			->add('owner')
 			->add('brands');
+	}
+	
+	// add this method
+	public function validate(ErrorElement $errorElement, $object)
+	{
+		
+		
+		$schemaDefinition = json_decode( Load::getInstance()->load() );
+		
+		// Provide $schemaStorage to the Validator so that references can be resolved during validation
+		$schemaStorage = new SchemaStorage();
+		$schemaStorage->addSchema('file://list-schema', $schemaDefinition);
+		$validator = new Validator(new Factory(
+			$schemaStorage,
+			null,
+			Constraint::CHECK_MODE_TYPE_CAST | Constraint::CHECK_MODE_COERCE
+		));
+		$validator->check(   json_decode( $object->getSchemaObject() ) ,  $schemaDefinition );
+		
+		if(!$validator->isValid()){
+			$errorElement
+				->with('schemaObject')
+				->addViolation('Does not conform to valid schema format.')
+				->end();
+			
+			if($validator->getErrors()){
+				foreach($validator->getErrors() as $error){
+					
+					$errorElement
+						->with('schemaObject')
+						->addViolation($error['message'] . " - " .  $error['property'] . " points to: " . $error['pointer'])
+						->end();
+				}
+			}
+			
+		}
+		
+		
+		
+		
+		
 	}
 	
 	
@@ -104,6 +169,8 @@ class PropertyAdmin extends BaseAdmin
 		if ($this->isGranted( SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
 			$listMapper->add('owner');
 		}
+		
+		$listMapper->add('isSchemaValid');
 		
 		$listMapper->add('_action', 'actions', array(
 		'actions' => array(
@@ -128,6 +195,9 @@ class PropertyAdmin extends BaseAdmin
 	
 	public function prePersist($property)
 	{
+		
+		
+		
 		if($property->getOwner() === null ){
 			$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
 			$property->setOwner( $owner );

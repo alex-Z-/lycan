@@ -2,12 +2,10 @@
 
 namespace Lycan\Providers\RentivoBundle\Consumer;
 
-use AppBundle\AppBundle;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
-use Incoming;
-use AppBundle\Schema\Container as SchemaContainer;
-use Lycan\Providers\RentivoBundle\Transformer\SchemaHydrator;
+
+use Lycan\Providers\RentivoBundle\API\Client;
 class PullProviderConsumer implements ConsumerInterface
 {
 	
@@ -47,25 +45,22 @@ class PullProviderConsumer implements ConsumerInterface
 		// Get the provider information.
 		// Fetch from provider.
 		// Create schemas. Add schemas.
-		
 		// Create our incoming processor
 		
-		$client   = $this->container->get('guzzle.client.rentivo');
-		$response = $client->get('/api/public/properties/schemas/52021');
-		$result = json_decode ( (string) $response->getBody(), true );
-		$data = $result['data'];
-	
-		$incoming = new Incoming\Processor();
-		$schema = $incoming->process(
-			$data,
-			new SchemaContainer(),
-			new SchemaHydrator()
-		);
-		dump($schema);die();
+		$rentivo = Client::getInstance();
+		$rentivo->setAuthProvider($provider);
+		$properties = $rentivo->fetchAllProperties();
+		// We have to update each of the individual properties
 		
+		foreach($properties['data'] as $property){
 		
+			$this->logger->info( sprintf("Sending Property with ID of %s to Queue for fetch.", $property['id']), $property );
+			$msg = [ "id" => $property['id'], "provider" => $id ];
+			$routingKey = sprintf("lycan.provider.rentivo", $provider);
+			$this->container->get('lycan.rabbit.producer.pull_listing')->publish(serialize($msg), $routingKey);
+		}
 		
-		
+		$this->em->clear();
 		// dump($message);
 		
 	}

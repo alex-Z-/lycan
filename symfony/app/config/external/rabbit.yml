@@ -29,6 +29,16 @@ old_sound_rabbit_mq:
                 arguments: {'x-message-ttl': ['I', 180000]}
                 routing_keys:
                     - 'lycan.#'
+        pull_listing:
+            connection: default
+            exchange_options: { name: 'pull_listing', type: 'topic' }
+            service_alias: lycan.rabbit.producer.pull_listing
+            # 3 hour TTL
+            queue_options:
+                name: 'pull_listing'
+                arguments: {'x-message-ttl': ['I', 180000]}
+                routing_keys:
+                    - 'lycan.#'
 
 
     consumers:
@@ -41,4 +51,15 @@ old_sound_rabbit_mq:
                 routing_keys:
                     - lycan.provider.rentivo
             callback:   lycan.rabbit.consumer.pull_provider.rentivo
+            enable_logger: true
+
+        pull_listing.rentivo:
+            connection:       default
+            exchange_options: {name: 'pull_listingr', , type: topic}
+            queue_options:
+                name: 'pull_listing'
+                arguments: {'x-message-ttl': ['I', 180000]}
+                routing_keys:
+                    - lycan.provider.rentivo
+            callback:   lycan.rabbit.consumer.pull_listing.rentivo
             enable_logger: true

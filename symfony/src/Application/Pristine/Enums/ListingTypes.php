@@ -2,7 +2,7 @@
 namespace Pristine\Enums;
 
 class ListingTypes {
-	const PREFIX = "LISTING::";
+	const PREFIX = "LISTING_TYPE_";
 	const LISTING_TYPE_APARTMENT 	= self::PREFIX . "APARTMENT";
 	const LISTING_TYPE_BARN 		= self::PREFIX . "BARN";
 	const LISTING_TYPE_HOUSE 		= self::PREFIX . "HOUSE";

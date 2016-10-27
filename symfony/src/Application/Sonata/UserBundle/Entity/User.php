@@ -57,6 +57,14 @@ class User extends BaseUser implements ParticipantInterface
 		$this->brands = new ArrayCollection();
 	}
 	
+	public function getLogValues(){
+		return [
+			"id" => (string) $this->getId(),
+			"username" => $this->getUsername(),
+			"email"	=> $this->getEmail()
+		];
+	}
+	
 	/**
 	 * @return mixed
 	 */

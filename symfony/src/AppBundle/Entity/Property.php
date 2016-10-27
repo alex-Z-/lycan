@@ -52,6 +52,17 @@ class Property extends Base
 	
 	
 	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $isSchemaValid;
+	
+	/**
+	 * @ORM\Column(type="json")
+	 */
+	private $schemaErrors;
+	
+	
+	/**
      * Constructor
      */
     public function __construct()
@@ -154,6 +165,40 @@ class Property extends Base
 	{
 		$this->deletedAt = $deletedAt;
 	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getIsSchemaValid()
+	{
+		return $this->isSchemaValid;
+	}
+	
+	/**
+	 * @param mixed $isSchemaValid
+	 */
+	public function setIsSchemaValid($isSchemaValid)
+	{
+		$this->isSchemaValid = $isSchemaValid;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getSchemaErrors()
+	{
+		return $this->schemaErrors;
+	}
+	
+	/**
+	 * @param mixed $schemaErrors
+	 */
+	public function setSchemaErrors($schemaErrors)
+	{
+		$this->schemaErrors = $schemaErrors;
+	}
+	
+	
 	
 	
 }

@@ -6,6 +6,12 @@ parameters:
 
 services:
 
+    app.importer:
+        class: AppBundle\Importer\Importer
+        arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
     appbundle.tblprefix_subscriber:
             class: AppBundle\Subscriber\TablePrefixSubscriber
             arguments: [%appbundle.db.table_prefix%]

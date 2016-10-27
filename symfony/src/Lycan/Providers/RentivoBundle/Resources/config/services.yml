@@ -11,3 +11,10 @@ services:
         arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
         calls:
             - [ setContainer,[ @service_container ] ]
+
+    lycan.rabbit.consumer.pull_listing.rentivo:
+        class : Lycan\Providers\RentivoBundle\Consumer\PullListingConsumer
+        arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
+        calls:
+            - [ setContainer,[ @service_container ] ]
+

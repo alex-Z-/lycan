@@ -8,14 +8,21 @@ use Incoming;
 use Pristine\Schema\Container as SchemaContainer;
 use Lycan\Providers\RentivoBundle\Incoming\Hydrator\SchemaHydrator as Hydrator;
 use Lycan\Providers\RentivoBundle\Incoming\Transformer\RentivoTransformer;
+use JsonSchema\SchemaStorage;
+use JsonSchema\Validator;
+use ListingSchema\Load;
+use JsonSchema\Constraints\Factory;
+use JsonSchema\Constraints\Constraint;
 
+
+use Lycan\Providers\RentivoBundle\API\Client;
 class CRUDController extends Controller
 {
 	public function pullAction(){
 		$object = $this->admin->getSubject();
 		
 		if (!$object) {
-			throw new NotFoundHttpException(sprintf('unable to find the object with id : %s', $id));
+			throw new NotFoundHttpException('There is no provider available');
 		}
 		
 		$em =  $this->container->get('doctrine')->getEntityManager();
@@ -34,27 +41,7 @@ class CRUDController extends Controller
 		
 		$routingKey = sprintf("lycan.provider.%s", $provider);
 		$this->container->get('lycan.rabbit.producer.pull_provider')->publish(serialize($msg), $routingKey);
-		
-		//////
-		
-		$client   = $this->container->get('guzzle.client.rentivo');
-		$response = $client->get('/api/public/properties/schemas/52021');
-		$result = json_decode ( (string) $response->getBody(), true );
-		$data = $result['data'];
-		$incoming = new Incoming\Processor(  new RentivoTransformer() );
-		
-		$schema = $incoming->process(
-			$data,
-			new SchemaContainer(),
-			new Hydrator()
-		);
-		dump($schema->toArray());
-		die();
-		
-		
-		////
-		
-		
+			
 		
 		return new RedirectResponse($this->admin->generateUrl('list'));
 		
@@ -65,7 +52,7 @@ class CRUDController extends Controller
 		$object = $this->admin->getSubject();
 		
 		if (!$object) {
-			throw new NotFoundHttpException(sprintf('unable to find the object with id : %s', $id));
+			throw new NotFoundHttpException('There is no provider available');
 		}
 		
 		$em =  $this->container->get('doctrine')->getEntityManager();

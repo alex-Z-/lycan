@@ -18,6 +18,7 @@ class Mapping {
 	private $_enumClass;
 	private $_enums;
 	private $_mappings;
+	public $lastMatch = [];
 	private $_costVersusScore = [
 		1 => 0.7,
 		2 => 0.55,
@@ -30,6 +31,7 @@ class Mapping {
 		9 => 0.22,
 		10 => 0.2
 	];
+	private $tolerance = null;
 	private $_matchOnStems = true;
 	private $_explodeOnMappings = true;
 	private $_matcher;
@@ -145,7 +147,9 @@ class Mapping {
 	public function map($string){
 		
 		// Given this string.. we need to find out what the best match is.
-				
+		// RESET IT
+		$this->setLastMatch(null);
+		
 		$match = $this->_getBestMatch($string);
 		if(!$match && $this->_matchOnStems){
 			// If we have failed on the matching on the main, we can also try and match on the stems.
@@ -159,6 +163,7 @@ class Mapping {
 		}
 		
 		if($match){
+			$this->setLastMatch($match);
 			return $match->get("enum");
 		}
 		return null;
@@ -252,7 +257,48 @@ class Mapping {
 	
 	public function getCostTolerance($cost)
 	{
+		
+		if($this->getTolerance()){
+			return $this->getTolerance();
+		}
+		// Otherise use cost versus tolerance score
 		return isset($this->_costVersusScore[$cost]) ? $this->_costVersusScore[$cost] : 0.2;
 	}
+	
+	/**
+	 * @return array
+	 */
+	public function getLastMatch()
+	{
+		return $this->lastMatch;
+	}
+	
+	/**
+	 * @return null
+	 */
+	public function getTolerance()
+	{
+		return $this->tolerance;
+	}
+	
+	/**
+	 * @param null $tolerance
+	 */
+	public function setTolerance($tolerance)
+	{
+		$this->tolerance = $tolerance;
+	}
+	
+	
+	
+	/**
+	 * @param array $lastMatch
+	 */
+	public function setLastMatch($lastMatch)
+	{
+		$this->lastMatch = $lastMatch;
+	}
+	
+	
 	
 }
