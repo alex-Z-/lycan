@@ -21,6 +21,32 @@ class ProviderAdmin extends BaseAdmin
 		$this->container = $container;
 	}
 	
+	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
+	{
+		
+		if (!$childAdmin && !in_array($action, array('edit', 'show'))) {
+			return;
+		}
+		
+		
+		$admin = $this->isChild() ? $this->getParent() : $this;
+		
+		$router = $this->getConfigurationPool()->getContainer()->get('router');
+		
+		if($childAdmin->getBaseCodeRoute() === "admin.lycan.providers|admin.lycan.batch_executions" && $childAdmin->getSubject()){
+			$menu->addChild(
+				$this->trans('View Events in Job', array(), 'SonataUserBundle'),
+				array('uri' => $router->generate('admin_providers_core_batchexecutions_event_list',
+					array(
+						'id' => (string) $childAdmin->getSubject()->getId(),
+						// 'filter[brands][value]' => (string)  $admin->getSubject()->getId()
+					)
+				))
+			);
+		}
+		
+	}
+	
 	
 	public function getPersistentParameters()
 	{

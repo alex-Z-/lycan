@@ -209,6 +209,35 @@ class Log
 		return $this->createdAt;
 	}
 	
+	public function getLevelValue(){
+		switch($this->getLevel()){
+			case 100:
+				return "Debug";
+				break;
+			case 200:
+				return "Info";
+				break;
+			case 250:
+				return "Notice";
+				break;
+			case 300:
+				return "Warning";
+				break;
+			case 400:
+				return "Error";
+				break;
+			case 500:
+				return "Critical";
+				break;
+			case 550:
+				return "Alert";
+				break;
+			case 600:
+				return "Emergency";
+				break;
+		}
+	}
+	
 
 	
 	/**
@@ -216,7 +245,7 @@ class Log
 	 */
 	public function getContext()
 	{
-		return $this->context;
+		return  unserialize($this->context);
 	}
 	
 	/**
@@ -224,7 +253,7 @@ class Log
 	 */
 	public function setContext($context)
 	{
-		$this->context = $context;
+		$this->context = serialize( $context );
 		
 		return $this;
 	}

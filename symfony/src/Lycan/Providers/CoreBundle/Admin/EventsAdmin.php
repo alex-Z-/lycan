@@ -44,31 +44,60 @@ class EventsAdmin extends BaseAdmin
 		
 		return $actions;
 	}
-
 	
-	protected function configureFormFields(FormMapper $formMapper)
+	protected function configureShowFields(ShowMapper $showMapper)
 	{
-		
-		// define group zoning
-		$formMapper
-			->tab('Executions')
+		// here we set the fields of the ShowMapper variable,
+		// $showMapper (but this can be called anything)
+		$showMapper
+			->tab('General') // the tab call is optional
+				->with('Event Output', array(
+					'class'       => 'col-md-12',
+					'box_class'   => 'box box-solid',
+					'description' => 'Lorem ipsum',
+				))
+					->add('log')
+				->end()
+				
+			->with('Batch Execution', array(
+					'class'       => 'col-md-7',
+					'box_class'   => 'box box-solid',
+					'description' => 'Lorem ipsum',
+				))
+					->add('id')
+					->add('levelValue')
+					->add('createdAt')
+					->add('updatedAt')
+				->end()
 			
-			->end();
-		
-		return $formMapper;
+				->with('Server Data', array(
+					'class'       => 'col-md-5',
+					'box_class'   => 'box box-solid',
+					'description' => 'Lorem ipsum',
+				))
+					->add('serverData', 'data')
+					->add('context', 'data' )
+			->end()
+			
+			
+		;
 		
 	}
-	
-	
-	
+
 	protected function configureListFields(ListMapper $listMapper)
 	{
 		// app.request.get('_sonata_admin')
 		$this->container->get('request')->request->set('_sonata_admin', 'admin_app_log_list');
 	
 		
-		$listMapper->addIdentifier('id', null, array());
-		$listMapper->add('level');
+		$listMapper
+		->addIdentifier('id', null, array(
+			'route' => array(
+				'name' => 'show'
+			)
+		));
+		
+		$listMapper->add('level', 'html');
 		$listMapper->add('batch.id');
 		$listMapper->add('log');
 		$listMapper->add('createdAt', 'datetime' ,  array('date_format' => 'yyyy-MM-dd HH:mm:ss') );

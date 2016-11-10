@@ -15,6 +15,10 @@ use AppBundle\Admin\BaseAdmin as BaseAdmin;
 class BatchExecutionsAdmin extends BaseAdmin
 {
 	
+	protected $parentAssociationMapping = 'provider';
+	protected $baseRoutePattern = 'jobs';
+	
+	
 	protected $datagridValues = array(
 		'_page' => 1,
 		'_sort_order' => 'DESC',
@@ -40,7 +44,7 @@ class BatchExecutionsAdmin extends BaseAdmin
 		if (!$childAdmin && !in_array($action, array('edit', 'show'))) {
 			return;
 		}
-		
+	
 		$admin = $this->isChild() ? $this->getParent() : $this;
 		$router = $this->getConfigurationPool()->getContainer()->get('router');
 		if($admin->getSubject()->getId()) {

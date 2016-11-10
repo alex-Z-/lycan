@@ -1,0 +1,31 @@
+{% extends 'SonataAdminBundle:CRUD:show_array.html.twig' %}
+
+{% block field%}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/php.min.js"></script>
+    <script>$(document).ready(function() {
+            $('code').each(function(i, block) {
+                hljs.highlightBlock(block);
+            });
+        });</script>
+
+    {%  if value is iterable %}
+        <code class="php">
+        {% for key, val in value %}
+            {% if field_description.options.safe %}
+                [{{ key }} => {{ val|raw }}]
+            {% else %}
+                [{{ key }} => {{ val }}]
+            {% endif %}
+
+            {% if not loop.last %}
+                {% if field_description.options.inline is not defined or false == field_description.options.inline %}<br>{% endif %}
+            {% endif %}
+        {% endfor %}
+        </code></pre>
+    {% else %}
+        <pre><code class="php">{{ value|trim }}</code></pre>
+    {%  endif %}
+
+{% endblock %}

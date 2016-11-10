@@ -33,7 +33,7 @@ class JobProcessor extends WebProcessor
 	{
 		
 		if(isset($record['context'])){
-			$record['extra']['context'] = serialize($record['context'] );
+			$record['extra']['context'] = $record['context'];
 		}
 		
 		if(isset($this->_batch)){

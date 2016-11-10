@@ -48,10 +48,19 @@ class ProviderRentivoAdmin extends ProviderAdmin
 			);
 		}
 		
-		$menu->addChild(
-			$this->trans('View Batch Executions'),
-			array('uri' => $router->generate('admin_sonata_user_user_edit', array('id' => $admin->getSubject()->getOwner()->getId() )))
-		);
+		if($admin->getSubject()->getId()) {
+			
+			$menu->addChild(
+				$this->trans('View Batch Jobs', array(), 'SonataUserBundle'),
+				array('uri' => $router->generate('admin_providers_core_providerauthbase_batchexecutions_list',
+					array(
+						'id' => (string) $admin->getSubject()->getId(),
+						// 'filter[brands][value]' => (string)  $admin->getSubject()->getId()
+					)
+				))
+			);
+			
+		}
 		
 		
 	}
