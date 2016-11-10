@@ -3,7 +3,6 @@
 parameters:
 #    parameter_name: value
     appbundle.db.table_prefix: lycan_
-
 services:
 
     app.importer:

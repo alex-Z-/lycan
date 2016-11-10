@@ -14,7 +14,6 @@ use AppBundle\Entity\Base\MappedSuperclassBase as Base;
  */
 class Property extends Base
 {
- 
 	
 	/**
 	 * @var \Ramsey\Uuid\Uuid

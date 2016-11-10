@@ -48,6 +48,11 @@ class ProviderRentivoAdmin extends ProviderAdmin
 			);
 		}
 		
+		$menu->addChild(
+			$this->trans('View Batch Executions'),
+			array('uri' => $router->generate('admin_sonata_user_user_edit', array('id' => $admin->getSubject()->getOwner()->getId() )))
+		);
+		
 		
 	}
 	

@@ -10,3 +10,20 @@ services:
         arguments: ['@logger']
         tags:
             - { name: monolog.logger, channel: console }
+
+    app.logger.handler.event:
+        class: AppBundle\Monolog\Handler\EventHandler
+        calls:
+            - [ setContainer, [ @service_container ] ]
+
+    monolog.processor.jobs:
+            class: AppBundle\Monolog\Processor\JobProcessor
+            arguments:  ['@session']
+            tags:
+                - { name: monolog.processor, method: processRecord, channel: jobs }
+
+    app.logger.jobs:
+        class: AppBundle\Monolog\JobLogger
+        arguments: ['@logger']
+        tags:
+            - { name: monolog.logger, channel: jobs }

@@ -29,6 +29,11 @@ monolog:
                 VERBOSITY_NORMAL: INFO
             level: debug
             channels: [!event, !doctrine]
+        job:
+             type: service
+             level: debug
+             id: app.logger.handler.event
+             channels: [jobs]
         # uncomment to get logging in your browser
         # you may have to allow bigger header sizes in your Web server configuration
         #firephp:

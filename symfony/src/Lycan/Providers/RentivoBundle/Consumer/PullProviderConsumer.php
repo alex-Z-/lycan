@@ -9,6 +9,8 @@ use Lycan\Providers\RentivoBundle\API\Client;
 class PullProviderConsumer implements ConsumerInterface
 {
 	
+	
+	
 	private $logger; // Monolog-logger.
 	private $container;
 	private $em;
@@ -28,7 +30,13 @@ class PullProviderConsumer implements ConsumerInterface
 	{
 		
 		$message = unserialize($msg->body);
+		
+		$batchLogger = $this->container->get('app.logger.jobs');
+		$batchLogger->setBatch($message['batch']);
+		
+		$batchLogger->info("Processing Pull Provider", $message);
 		$this->logger->info("Processing Pull Provider", $message);
+		
 		//Process picture upload.
 		//$msg will be an instance of `PhpAmqpLib\Message\AMQPMessage` with the $msg->body being the data sent over RabbitMQ.
 		
@@ -55,7 +63,9 @@ class PullProviderConsumer implements ConsumerInterface
 		foreach($properties['data'] as $property){
 		
 			$this->logger->info( sprintf("Sending Property with ID of %s to Queue for fetch.", $property['id']), $property );
-			$msg = [ "id" => $property['id'], "provider" => $id ];
+			$batchLogger->info(sprintf("Sending Property with ID of %s to Queue for fetch.", $property['id']), $property);
+			
+			$msg = [ "id" => $property['id'], "provider" => $id, "batch" => $message['batch'] ];
 			$routingKey = sprintf("lycan.provider.rentivo", $provider);
 			$this->container->get('lycan.rabbit.producer.pull_listing')->publish(serialize($msg), $routingKey);
 		}

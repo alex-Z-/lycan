@@ -1,0 +1,6 @@
+{% if admin.hasRoute('list') %}
+    <a href="{{ url('admin_providers_core_batchexecutions_event_list', { 'id' : object.id }) }}" class="btn btn btn-sm btn-default edit_link" title="{{ 'Show Events'|trans({}, 'SonataAdminBundle') }}">
+        <i class="icon-remove"></i>
+        {{ 'Show Events'|trans({}, 'SonataAdminBundle') }}
+    </a>
+{% endif %}

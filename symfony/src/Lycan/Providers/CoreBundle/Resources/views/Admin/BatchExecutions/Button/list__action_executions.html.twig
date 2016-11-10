@@ -1,0 +1,6 @@
+{% if admin.hasRoute('executions') %}
+    <a href="{{ admin.generateObjectUrl('executions', object) }}" class="btn btn btn-sm btn-default edit_link" title="{{ 'executions'|trans({}, 'SonataAdminBundle') }}">
+        <i class="icon-remove"></i>
+        {{ 'Show Events'|trans({}, 'SonataAdminBundle') }}
+    </a>
+{% endif %}

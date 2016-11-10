@@ -36,9 +36,16 @@ class PullListingConsumer implements ConsumerInterface
 		$message = unserialize($msg->body);
 		$this->logger->info("Processing Pull Listing", $message);
 		
+		$batchLogger = $this->container->get('app.logger.jobs');
+		$batchLogger->setBatch($message['batch']);
+		$batchLogger->info("Processing Pull Listing", $message);
+		
+		
 		$providerId = $message['provider'];
 		$provider = $this->em->getRepository('\Lycan\Providers\CoreBundle\Entity\ProviderAuthBase')->find($providerId);
 		if(!$provider->getPullInProgress() ){
+			
+			$batchLogger->warning("Provider is not recognised as in progress. Terminating Pull Request.", $message );
 			$this->logger->warning("Provider is not recognised as in progress. Terminating Pull Request.", $message );
 			// Discard the message.
 			return true;

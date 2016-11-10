@@ -33,6 +33,8 @@ class ProviderAuthBase
 	 */
 	private $brandChannels;
 	
+	
+	
 	/**
 	 * @var \DateTime $created
 	 *
@@ -81,6 +83,12 @@ class ProviderAuthBase
 	 * @ORM\Column(type="boolean", nullable=true)
 	 */
 	private $pullInProgress;
+	
+	/**
+	 * @ORM\OneToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\BatchExecutions")
+	 * @ORM\JoinColumn(name="last_active_batch", referencedColumnName="id", onDelete="SET NULL")
+	 */
+	private $lastActiveBatch;
 	
 	/**
 	 * @ORM\Column(type="boolean", nullable=true)
@@ -364,6 +372,24 @@ class ProviderAuthBase
 	{
 		$this->allowPush = $allowPush;
 	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getLastActiveBatch()
+	{
+		return $this->lastActiveBatch;
+	}
+	
+	/**
+	 * @param mixed $lastActiveBatch
+	 */
+	public function setLastActiveBatch($lastActiveBatch)
+	{
+		$this->lastActiveBatch = $lastActiveBatch;
+	}
+	
+	
 	
 	
 
