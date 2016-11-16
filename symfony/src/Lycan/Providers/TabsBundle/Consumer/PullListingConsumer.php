@@ -1,15 +1,15 @@
 <?php
 
-namespace Lycan\Providers\RentivoBundle\Consumer;
+namespace Lycan\Providers\TabsBundle\Consumer;
 
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Incoming;
 use \Ramsey\Uuid\Uuid;
 use Pristine\Schema\Container as SchemaContainer;
-use Lycan\Providers\TabsBundle\Incoming\Hydrator\SchemaHydrator as Hydrator;
-use Lycan\Providers\TabsBundle\Incoming\Transformer\RentivoTransformer;
-use Lycan\Providers\TabsBundle\API\Client;
+use Lycan\Providers\RentivoBundle\Incoming\Hydrator\SchemaHydrator as Hydrator;
+use Lycan\Providers\RentivoBundle\Incoming\Transformer\RentivoTransformer;
+use Lycan\Providers\RentivoBundle\API\Client;
 use AppBundle\Importer\Importer as Importer;
 
 class PullListingConsumer implements ConsumerInterface
@@ -32,7 +32,7 @@ class PullListingConsumer implements ConsumerInterface
 			
 	public function execute(AMQPMessage $msg)
 	{
-	
+		
 		$message = unserialize($msg->body);
 		$this->logger->info("Processing Pull Listing", $message);
 		
@@ -53,15 +53,15 @@ class PullListingConsumer implements ConsumerInterface
 		}
 		
 		// Rentivo API Client
-		$rentivo = Client::getInstance();
-		$rentivo->setAuthProvider($provider);
-		$data =  $rentivo->getPropertyFull($message['id']);
+		$tabs = Client::getInstance();
+		$tabs->setAuthProvider($provider);
+		$data =  $tabs->getPropertyFull($message['id']);
 		$batchLogger->info("Fetch Property Listing from Provider", [ "input" => $data ] );
 		// Get Lycan Importer
 		$lycan = $this->container->get("app.importer");
 		// We want the import function to do the checks.
 		// This avoids duplication around lots of code.
-		$incoming = new Incoming\Processor(  new RentivoTransformer() );
+		$incoming = new Incoming\Processor(  new TabsTransformer() );
 		$schema = $incoming->process(
 			$data,
 			new SchemaContainer(),

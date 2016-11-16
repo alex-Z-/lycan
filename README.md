@@ -70,6 +70,18 @@ Running a Rabbit Consumer
 
 For development and testing, you can run an individual Rabbit Consumer by running the console command
 
+**Provider Example**
+
+This consumer takes big batch jobs and executions individual mini-jobs. For example, a full provider syncronization will be comprised of hundreds of individual listing syncronizations. 
+
 `php app/console  rabbitmq:consumer pull_provider.rentivo`
+
+**Listing Example**
+
+
+`php app/console  rabbitmq:consumer pull_listing.rentivo`
+
+
+
 
 Switch out `pull_provider.rentivo` with the actual consumer that you wish to run. 

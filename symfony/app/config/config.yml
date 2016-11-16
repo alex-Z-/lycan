@@ -118,6 +118,15 @@ fos_message:
     thread_class: AppBundle\Entity\Thread
     message_class: AppBundle\Entity\Message
 
+
+
+sonata_admin:
+    templates:
+        list:                           AppBundle:Admin/CRUD:list.html.twig
+        show:                           AppBundle:Admin/CRUD:show.html.twig
+
+
+
 sonata_doctrine_orm_admin:
     templates:
         types:

@@ -25,6 +25,30 @@ class JobLogger
 		
 	}
 	
+	public function setEventGroup($eventGroup){
+		
+		
+		foreach($this->logger->getProcessors() as $processor){
+			
+			if($processor[0] instanceof JobProcessor){
+				$processor[0]->setEventGroup($eventGroup);
+			}
+			
+		}
+		
+	}
+	
+	
+	public function getEventGroup(){
+		foreach($this->logger->getProcessors() as $processor){
+			
+			if($processor[0] instanceof JobProcessor){
+				return $processor[0]->getEventGroup();
+			}
+			
+		}
+	}
+	
 	public function __call(  $name , array $arguments){
 			return call_user_func_array([$this->logger, $name], $arguments);
 		

@@ -1,15 +1,13 @@
 <?php
 
-namespace Lycan\Providers\RentivoBundle\Consumer;
+namespace Lycan\Providers\TabsBundle\Consumer;
 
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Ramsey\Uuid\Uuid;
-use Lycan\Providers\RentivoBundle\API\Client;
+use Lycan\Providers\TabsBundle\API\Client;
 class PullProviderConsumer implements ConsumerInterface
 {
-	
-	
 	
 	private $logger; // Monolog-logger.
 	private $container;
@@ -54,17 +52,17 @@ class PullProviderConsumer implements ConsumerInterface
 		// Create schemas. Add schemas.
 		// Create our incoming processor
 		
-		$rentivo = Client::getInstance();
-		$rentivo->setAuthProvider($provider);
-		$properties = $rentivo->fetchAllProperties();
+		$tabs = Client::getInstance();
+		$tabs->setAuthProvider($provider);
+		$properties = $tabs->fetchAllProperties();
 		// We have to update each of the individual properties
 		
-		$jobsInBatch = count($properties['data']);
-		foreach($properties['data'] as $index=>$property){
+		$jobsInBatch = count($properties['results']);
+		foreach($properties['results'] as $index=>$property){
 			$msg = [ "id" => $property['id'], "provider" => $id, "batch" => $message['batch'], "jobsInBatch" => $jobsInBatch, "jobIndex" => $index ];
 			$batchLogger->info(sprintf("Sending Property with ID of %s to Queue for fetch.", $property['id']), array_merge( ["input" => $property], $msg ));
 			
-			$routingKey = "lycan.provider.rentivo";
+			$routingKey = "lycan.provider.tabs";
 			$this->container->get('lycan.rabbit.producer.pull_listing')->publish(serialize($msg), $routingKey);
 		}
 		

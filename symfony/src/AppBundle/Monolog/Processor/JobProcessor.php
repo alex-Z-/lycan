@@ -18,6 +18,7 @@ class JobProcessor extends WebProcessor
 {
 	private $_session;
 	private $_batch;
+	private $_eventGroup;
 	
 	public function __construct(Session $session)
 	{
@@ -29,8 +30,22 @@ class JobProcessor extends WebProcessor
 		return $this;
 	}
 	
+	public function setEventGroup($eventGroup){
+		$this->_eventGroup = $eventGroup;
+		return $this;
+	}
+	
+	public function getEventGroup(){
+		return $this->_eventGroup;
+	}
+	
 	public function processRecord(array $record)
 	{
+		
+		$record['input'] = isset($record['context']['input']) ? $record['context']['input'] : null;
+		$record['output'] = isset($record['context']['output'])? $record['context']['output'] : null;
+		
+		unset($record['context']['output'], $record['context']['input']);
 		
 		if(isset($record['context'])){
 			$record['extra']['context'] = $record['context'];
@@ -39,7 +54,9 @@ class JobProcessor extends WebProcessor
 		if(isset($this->_batch)){
 			$record['extra']['batch'] = (String) $this->_batch;
 		}
-		
+		if(isset($this->_eventGroup)){
+			$record['extra']['eventGroup'] = (String) $this->_eventGroup;
+		}
 		
 		$record['extra']['serverData'] = "";
 		

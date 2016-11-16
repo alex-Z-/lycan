@@ -6,15 +6,9 @@ use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Lycan\Providers\CoreBundle\Entity\BatchExecutions;
 
-use Incoming;
-use Pristine\Schema\Container as SchemaContainer;
-use Lycan\Providers\RentivoBundle\Incoming\Hydrator\SchemaHydrator as Hydrator;
-use Lycan\Providers\RentivoBundle\Incoming\Transformer\RentivoTransformer;
-use JsonSchema\SchemaStorage;
-use JsonSchema\Validator;
-use ListingSchema\Load;
-use JsonSchema\Constraints\Factory;
-use JsonSchema\Constraints\Constraint;
+use Lycan\Providers\TabsBundle\API\Client\ApiClient as TabsClient;
+use Lycan\Providers\TabsBundle\API\Client as TClient;
+
 
 
 use Lycan\Providers\RentivoBundle\API\Client;
@@ -45,8 +39,19 @@ class CRUDController extends Controller
 		
 	}
 	
+	public function goAction(){
+		$debug = true;
+		
+		$object = $this->admin->getSubject();
+		
+		$tabs = TClient::getInstance();
+		$tabs->setAuthProvider($object);
+		$properties = $tabs->fetchAllProperties();
+		dump($properties);die();
+	}
 	
 	public function pullAction(){
+		
 		$object = $this->admin->getSubject();
 		
 		if (!$object) {
@@ -62,7 +67,7 @@ class CRUDController extends Controller
 		$em->persist($object);
 		$em->persist($batch);
 		$em->flush();
-		$this->addFlash('sonata_flash_success', sprintf( 'Performing a Pull Syncronization for %s', $object->getNickname() ));
+		$this->addFlash('sonata_flash_success', sprintf( 'Performing a Pull Syncronization for %s (%s) ', $object->getNickname(), $object->getProviderName() ));
 		
 		$logger = $this->container->get('app.logger.jobs');
 		$logger->setBatch($batch->getId());
@@ -76,7 +81,9 @@ class CRUDController extends Controller
 		$msg = [ "id" => $object->getId(), "batch" => $batch->getId() ];
 		$code = $this->admin->getCode();
 		$provider = current( array_slice( explode( ".", $code ) , -1 ));
-		
+		if($provider !== strtolower($object->getProviderName())){
+			throw new \Error("Mismatch on Provider Admin and Provider Name on Subject Entity");
+		}
 		$routingKey = sprintf("lycan.provider.%s", $provider);
 		$this->container->get('lycan.rabbit.producer.pull_provider')->publish(serialize($msg), $routingKey);
 		

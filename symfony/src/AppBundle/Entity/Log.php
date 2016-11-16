@@ -48,7 +48,16 @@ class Log
 	private $serverData;
 	
 	
+	/**
+	 * @ORM\ManyToOne(targetEntity="Log", inversedBy="children")
+	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+	 */
+	private $parent;
 	
+	/**
+	 * @ORM\OneToMany(targetEntity="Log", mappedBy="parent")
+	 */
+	private $children;
 	
 	
 	/**
@@ -262,6 +271,40 @@ class Log
 	{
 		return $this->getLog();
 	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getParent()
+	{
+		return $this->parent;
+	}
+	
+	/**
+	 * @param mixed $parent
+	 */
+	public function setParent($parent)
+	{
+		$this->parent = $parent;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getChildren()
+	{
+		return $this->children;
+	}
+	
+	/**
+	 * @param mixed $children
+	 */
+	public function setChildren($children)
+	{
+		$this->children = $children;
+	}
+	
+	
 	
 	
 }

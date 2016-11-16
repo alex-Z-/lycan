@@ -4,6 +4,11 @@
    {% include 'AppBundle:Admin/CRUD:action_buttons.html.twig' %}
 {%- endblock -%}
 
+{% block tab_menu %}
+    {{ knp_menu_render(admin.sidemenu(action), {  'allow_safe_labels': true, 'currentClass' : 'active' }, 'twig')|raw }}
+{% endblock %}
+
+
 {% block list_footer %}
     {% if admin.datagrid.results|length > 0 %}
         <div class="box-footer">

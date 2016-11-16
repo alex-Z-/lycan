@@ -47,7 +47,9 @@ class BatchExecutionsAdmin extends BaseAdmin
 	
 		$admin = $this->isChild() ? $this->getParent() : $this;
 		$router = $this->getConfigurationPool()->getContainer()->get('router');
-		if($admin->getSubject()->getId()) {
+		
+	
+		if( $childAdmin === null && $admin->getSubject()->getId()) {
 			
 			$menu->addChild(
 				$this->trans('View Events in Job', array(), 'SonataUserBundle'),
@@ -59,6 +61,42 @@ class BatchExecutionsAdmin extends BaseAdmin
 				))
 			);
 			
+		}
+		
+		
+		if($childAdmin && $childAdmin->getCode() === "admin.lycan.events"){
+			
+			$menu->setExtra( 'safe_label' , true );
+			$menu->addChild(
+				'Refresh', array(
+					'uri' => $_SERVER['REQUEST_URI'],
+					'label' => "Refresh &nbsp; <i class='fa fa-refresh'></i>"
+				)
+			)->setExtra( 'safe_label' , true );
+			
+			$menu->addChild(
+				'Back to All Jobs',
+				array('uri' => $router->generate('admin_providers_core_batchexecutions_list',
+					array(
+						'id' => (string) $admin->getSubject()->getId(),
+						// 'filter[brands][value]' => (string)  $admin->getSubject()->getId()
+					)
+				))
+			);
+			
+			
+			if($action === "show") {
+				$menu->addChild(
+					$this->trans('View Events in Job', [], 'SonataUserBundle'),
+					['uri' => $router->generate('admin_providers_core_batchexecutions_event_list',
+						[
+							'id' => (string)$admin->getSubject()
+								->getId(),
+							// 'filter[brands][value]' => (string)  $admin->getSubject()->getId()
+						]
+					)]
+				);
+			}
 		}
 		
 	}
@@ -99,6 +137,7 @@ class BatchExecutionsAdmin extends BaseAdmin
 			->add('id')
 			->add('createdAt')
 			->add('updatedAt')
+			->add('eventsInJob')
 			// ...
 			->end()
 			->end()
@@ -118,7 +157,7 @@ class BatchExecutionsAdmin extends BaseAdmin
 				)
 			))
 			
-			->add('provider.providerName', null, [ 'label' => 'Channel'])
+			->add('provider', null, [ 'label' => 'Channel', 'route' => [ 'name' => 'edit']])
 			->add('createdAt')
 			->add('eventsInJob', 'string', [] )
 			->add('_action', 'actions', array(

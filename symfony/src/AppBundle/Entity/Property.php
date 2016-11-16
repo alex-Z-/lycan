@@ -197,7 +197,10 @@ class Property extends Base
 		$this->schemaErrors = $schemaErrors;
 	}
 	
-	
+	public  function __toString()
+	{
+			return $this->getDescriptiveName();
+	}
 	
 	
 }

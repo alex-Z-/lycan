@@ -21,6 +21,19 @@ class ProviderAdmin extends BaseAdmin
 		$this->container = $container;
 	}
 	
+	protected function configureRoutes(RouteCollection $collection)
+	{
+		
+		$collection->add('go', $this->getRouterIdParameter().'/go');
+		$collection->add('pull', $this->getRouterIdParameter().'/pull');
+		$collection->add('pullStop', $this->getRouterIdParameter().'/pull-stop');
+		// to remove a single route
+		$collection->remove('acl');
+		// OR remove all route except named ones
+		// $collection->clearExcept(array('list', 'show'));
+		
+	}
+	
 	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
 	{
 		
@@ -33,7 +46,7 @@ class ProviderAdmin extends BaseAdmin
 		
 		$router = $this->getConfigurationPool()->getContainer()->get('router');
 		
-		if($childAdmin->getBaseCodeRoute() === "admin.lycan.providers|admin.lycan.batch_executions" && $childAdmin->getSubject()){
+		if($childAdmin && $childAdmin->getBaseCodeRoute() === "admin.lycan.providers|admin.lycan.batch_executions" && $childAdmin->getSubject()){
 			$menu->addChild(
 				$this->trans('View Events in Job', array(), 'SonataUserBundle'),
 				array('uri' => $router->generate('admin_providers_core_batchexecutions_event_list',
@@ -95,10 +108,6 @@ class ProviderAdmin extends BaseAdmin
 	
 	}
 	
-	protected function configureRoutes(\Sonata\AdminBundle\Route\RouteCollection $collection)
-	{
-		
-	}
 	
 	protected function configureListFields(ListMapper $listMapper)
 	{

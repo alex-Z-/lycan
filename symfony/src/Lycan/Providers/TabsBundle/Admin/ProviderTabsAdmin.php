@@ -9,23 +9,12 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
-
-class ProviderTabsAdmin extends AbstractAdmin
+use Lycan\Providers\CoreBundle\Admin\ProviderAdmin;
+class ProviderTabsAdmin extends ProviderAdmin
 {
 	
 	const  ACCESS_ROLE_FOR_USERFIELD ="ROLE_SUPERADMIN";
 
-	
-	protected function configureRoutes(RouteCollection $collection)
-	{
-		
-	
-		// to remove a single route
-		$collection->remove('acl');
-		// OR remove all route except named ones
-		// $collection->clearExcept(array('list', 'show'));
-	
-	}
 	
 	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
 	{
@@ -101,6 +90,9 @@ class ProviderTabsAdmin extends AbstractAdmin
 				'actions' => array(
 					'edit' => array(),
 					'delete' => array(),
+					'pull' => array(
+						'template' => 'CoreBundle:CRUD:list__action_pull.html.twig'
+					)
 				)
 			));
 		

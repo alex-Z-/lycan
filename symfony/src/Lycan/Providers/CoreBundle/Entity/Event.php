@@ -19,7 +19,13 @@ class Event extends Log
 	 */
 	private $batch;
 	
-	
+	/**
+	 * @var \Ramsey\Uuid\Uuid
+	 * @ORM\Column(type="uuid")
+	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
+	 */
+	protected $eventGroup;
+		
 	/**
 	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase")
 	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
@@ -33,6 +39,18 @@ class Event extends Log
 	 *
 	 */
 	private $property;
+	
+	
+	/**
+	 * @ORM\Column(type="text", nullable=true)
+	 */
+	private $input;
+	
+	/**
+	 * @ORM\Column(type="text", nullable=true)
+	 */
+	private $output;
+	
 	
 	/**
 	 * @return mixed
@@ -89,6 +107,60 @@ class Event extends Log
 		
 		return $this;
 	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getEventGroup()
+	{
+		return $this->eventGroup;
+	}
+	
+	/**
+	 * @param mixed $eventGroup
+	 */
+	public function setEventGroup($eventGroup)
+	{
+		$this->eventGroup = $eventGroup;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getInput()
+	{
+		return unserialize($this->input);
+	}
+	
+	/**
+	 * @param mixed $input
+	 */
+	public function setInput($input)
+	{
+		
+		
+		
+		$this->input = serialize($input);
+		return $this;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getOutput()
+	{
+		return unserialize($this->output);
+	}
+	
+	/**
+	 * @param mixed $output
+	 */
+	public function setOutput($output)
+	{
+		$this->output = serialize($output);
+		return $this;
+	}
+
 	
 	
 	

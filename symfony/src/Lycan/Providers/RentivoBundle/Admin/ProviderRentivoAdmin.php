@@ -16,17 +16,7 @@ class ProviderRentivoAdmin extends ProviderAdmin
 	
 	const  ACCESS_ROLE_FOR_USERFIELD ="ROLE_SUPER_ADMIN";
 	
-	protected function configureRoutes(RouteCollection $collection)
-	{
-		
-		$collection->add('pull', $this->getRouterIdParameter().'/pull');
-		$collection->add('pullStop', $this->getRouterIdParameter().'/pull-stop');
-		// to remove a single route
-		$collection->remove('acl');
-		// OR remove all route except named ones
-		// $collection->clearExcept(array('list', 'show'));
-	
-	}
+
 	
 	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
 	{

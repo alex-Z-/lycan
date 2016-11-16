@@ -40,6 +40,9 @@ class Importer {
 		//$schemaDefinition = json_decode(file_get_contents(__DIR__.'/test.json'));
 		$schemaDefinition = json_decode( Load::getInstance()->load() );
 		
+		$batchLogger = $this->container->get('app.logger.jobs');
+	
+		
 		// Provide $schemaStorage to the Validator so that references can be resolved during validation
 		$schemaStorage = new SchemaStorage();
 		$schemaStorage->addSchema('file://list-schema', $schemaDefinition);
@@ -56,6 +59,10 @@ class Importer {
 		
 		$validator->check(  json_decode(json_encode( $schema->toArray() ) ),  $schemaDefinition );
 		if($validator->isValid()){
+			
+			$batchLogger->info("Importing Schema - Valid", [ "input" => $schema->toArray() ] );
+			
+			
 			$this->logger->debug("Schema was valid." );
 			$this->logger->info( "Schema will be imported or upserted to user account", $provider->getOwner()->getLogValues() );
 			$property = $this->_upsert($schema, $provider);
@@ -64,14 +71,17 @@ class Importer {
 			$this->em->flush();
 		} else {
 			$this->logger->warning("Schema was not found to be valid.", $validator->getErrors() );
-			
+			$batchLogger->warning("Importing Schema - Schema was found to be invalid", [ "input" => $schema->toArray(), "output" => $validator->getErrors() ] );
 			$property = $this->_upsert($schema, $provider);
 			$property->setIsSchemaValid(false);
 			$property->setSchemaErrors($validator->getErrors());
 			$this->em->persist($property);
 			$this->em->flush();
 			
+			
 		}
+		
+		return $property;
 		
 	}
 	

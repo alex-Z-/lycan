@@ -6,6 +6,7 @@ use Lycan\Providers\RentivoBundle\Entity\ProviderRentivoAuth;
 use GuzzleHttp\Handler\CurlHandler;
 use Somoza\Psr7\OAuth2Middleware;
 use League\OAuth2\Client\Provider\GenericProvider;
+
 class Client {
 	
 	private static $instance;

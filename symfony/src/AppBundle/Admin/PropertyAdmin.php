@@ -214,6 +214,10 @@ class PropertyAdmin extends BaseAdmin
 		if (!$childAdmin && !in_array($action, array('edit'))) {
 			return;
 		}
+		// NOT SURE>..
+		if($childAdmin) {
+			return $childAdmin->configureSideMenu($menu, $action);
+		}
 		
 		$admin = $this->isChild() ? $this->getParent() : $this;
 		
@@ -226,6 +230,16 @@ class PropertyAdmin extends BaseAdmin
 				$this->trans('Edit Owner', array(), 'SonataUserBundle'),
 				array('uri' => $router->generate('admin_sonata_user_user_edit', array('id' => $admin->getSubject()->getOwner()->getId() )))
 			);
+		}
+		
+		if ( $this->isGranted("ROLE_SUPERADMIN")  ){
+			
+			$menu->addChild(
+				$this->trans('Show Event Log', array(), 'SonataUserBundle'),
+				array('uri' => $router->generate('admin_app_property_event_list', array('id' => $admin->getSubject()->getId() )))
+			);
+			
+			
 		}
 		
 		

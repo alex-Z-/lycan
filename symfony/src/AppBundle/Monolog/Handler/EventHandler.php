@@ -49,16 +49,24 @@ class EventHandler extends AbstractProcessingHandler
 			$serverData = $record['extra']['serverData'];
 			
 			$uuid = isset($record['extra']['batch']) ? $record['extra']['batch'] : null;
+			$eventGroup = isset($record['extra']['eventGroup']) ? $record['extra']['eventGroup'] : null;
+			$input = $record['input'] ?: null;
+			$output = $record['output'] ?: null;
+			
 			
 			$created = new \DateTime();
 			$item = new Event();
+			
 			$item->setLog( $record['message'] )
 				->setLevel( $record['level'] )
 				->setServerData( $serverData )
 				->setContext($record['extra']['context'])
 				->setModifiedAt( $created )
 				->setCreatedAt( $created )
-				->setBatch( $uuid ? $em->getReference('Lycan\Providers\CoreBundle\Entity\BatchExecutions', $uuid) : null );
+				->setBatch( $uuid ? $em->getReference('Lycan\Providers\CoreBundle\Entity\BatchExecutions', $uuid) : null )
+				->setInput($input)
+				->setOutput($output)
+				->setEventGroup( $eventGroup );
 			
 			$em = $this->_container->get('doctrine')->getEntityManager();
 			$em->persist($item);

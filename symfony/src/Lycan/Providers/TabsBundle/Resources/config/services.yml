@@ -3,7 +3,7 @@ services:
     # ...
     admin.lycan.provider.tabs:
         class: Lycan\Providers\TabsBundle\Admin\ProviderTabsAdmin
-        arguments: [~, Lycan\Providers\TabsBundle\Entity\ProviderTabsAuth, ~]
+        arguments: [~, Lycan\Providers\TabsBundle\Entity\ProviderTabsAuth,  CoreBundle:CRUD]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Providers, label: Tabs }
 

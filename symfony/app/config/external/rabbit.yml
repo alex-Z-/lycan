@@ -23,12 +23,11 @@ old_sound_rabbit_mq:
             connection: default
             exchange_options: { name: 'pull_provider', type: 'topic' }
             service_alias: lycan.rabbit.producer.pull_provider
-            # 3 hour TTL
+            # 2 DAY TTL 60000 * 60 * 24 * 2
             queue_options:
                 name: 'pull_provider'
-                arguments: {'x-message-ttl': ['I', 180000]}
-                routing_keys:
-                    - 'lycan.#'
+                arguments: {'x-message-ttl': ['I', 172800000]}
+
         pull_listing:
             connection: default
             exchange_options: { name: 'pull_listing', type: 'topic' }
@@ -36,10 +35,7 @@ old_sound_rabbit_mq:
             # 3 hour TTL
             queue_options:
                 name: 'pull_listing'
-                arguments: {'x-message-ttl': ['I', 180000]}
-                routing_keys:
-                    - 'lycan.#'
-
+                arguments: {'x-message-ttl': ['I', 172800000]}
 
     consumers:
         pull_provider.rentivo:
@@ -47,7 +43,7 @@ old_sound_rabbit_mq:
             exchange_options: {name: 'pull_provider', , type: topic}
             queue_options:
                 name: 'pull_provider'
-                arguments: {'x-message-ttl': ['I', 180000]}
+                arguments: {'x-message-ttl': ['I', 172800000]}
                 routing_keys:
                     - lycan.provider.rentivo
             callback:   lycan.rabbit.consumer.pull_provider.rentivo
@@ -55,11 +51,34 @@ old_sound_rabbit_mq:
 
         pull_listing.rentivo:
             connection:       default
-            exchange_options: {name: 'pull_listingr', , type: topic}
+            exchange_options: {name: 'pull_listing', , type: topic}
             queue_options:
                 name: 'pull_listing'
-                arguments: {'x-message-ttl': ['I', 180000]}
+                arguments: {'x-message-ttl': ['I', 172800000]}
                 routing_keys:
                     - lycan.provider.rentivo
+            callback:   lycan.rabbit.consumer.pull_listing.rentivo
+            enable_logger: true
+
+
+        pull_provider.tabs:
+            connection:       default
+            exchange_options: {name: 'pull_provider', , type: topic}
+            queue_options:
+                name: 'pull_provider'
+                arguments: {'x-message-ttl': ['I', 172800000]}
+                routing_keys:
+                    - lycan.provider.tabs
+            callback:   lycan.rabbit.consumer.pull_provider.tabs
+            enable_logger: true
+
+        pull_listing.tabs:
+            connection:       default
+            exchange_options: {name: 'pull_listing', , type: topic}
+            queue_options:
+                name: 'pull_listing'
+                arguments: {'x-message-ttl': ['I', 172800000]}
+                routing_keys:
+                    - lycan.provider.tabs
             callback:   lycan.rabbit.consumer.pull_listing.rentivo
             enable_logger: true

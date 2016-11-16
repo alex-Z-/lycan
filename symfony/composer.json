@@ -42,7 +42,8 @@
        
         "aptenex/listing-schema": "dev-master",
         "justinrainbow/json-schema": "~4.0",
-        "somoza/oauth2-client-middleware": "^0.2.5"
+        "somoza/oauth2-client-middleware": "^0.2.5",
+        "acquia/http-hmac-php": "^3.1"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "~2.7"
