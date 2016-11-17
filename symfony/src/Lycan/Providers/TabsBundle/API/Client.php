@@ -7,11 +7,13 @@ use Lycan\Providers\TabsBundle\API\Client\Middleware\Key as Key;
 use Lycan\Providers\TabsBundle\Entity\ProviderTabsAuth;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client as HttpClient;
-
+use GuzzleHttp\Promise;
+use React\Promise\Deferred;
 class Client {
 	
 	private static $instance;
 	private $client;
+	private $container;
 	public static function getInstance()
 	{
 		if (null === static::$instance) {
@@ -20,6 +22,11 @@ class Client {
 		
 		return static::$instance;
 	}
+	
+	public function setContainer($container){
+		$this->container = $container;
+	}
+	
 	
 	protected function __construct()
 	{
@@ -71,15 +78,18 @@ class Client {
 		
 	}
 	
-	public function fetchAllProperties(){
-		$response = $this->_fetchAllProperties();
-		return \GuzzleHttp\json_decode(  $response->getBody(), true );
+	public function fetchAllListings(){
+		$deferred = new Deferred();
+		$response = $this->_fetchAllListings();
+		$data = \GuzzleHttp\json_decode(  $response->getBody(), true );
+		$deferred->resolve($data);
+		return $deferred->promise();
 	}
 	
-	private function _fetchAllProperties(){
+	private function _fetchAllListings(){
 		// "url" => "http://di.api.carltonsoftware.co.uk/property?APIKEY=hydrant&orderBy=propname_asc&page=0&pageSize=5&hash=e8f4e66c4b80af4edd55e796aa198684ff97ef7821ad6796716e993bae93cbd3"
 		$params = array(
-			'pageSize' => 500,
+			'pageSize' => 1000,
 			'page'     => 0,
 			'orderBy'  => 'propname_asc',
 		);
@@ -88,13 +98,36 @@ class Client {
 		return $response;
 	}
 	
-	public function getPropertyFull($id){
+	public function getListingFull($id){
+		$deferred = new Deferred();
 		
-		$response = $this->getClient()->get( sprintf('/api/public/properties/schemas/%s', $id ) );
-		$result = json_decode ( (string) $response->getBody(), true );
-		$data = $result['data'];
-		return $data;
+		// $property              = $this->makeRequest("GET", "/property/{$property_id}");
+		// $property->description = $this->makeRequest("GET", "/property/{$property_id}/description");
+		$params = [ 'pageSize' => 0];
+		
+		$promises = [
+			$this->getClient()->getAsync("/property/$id", [ 'query' => $params ]),
+			$this->getClient()->getAsync("/property/$id/description", [ 'query' => $params ]),
+			
+		];
+		Promise\all($promises)->then( function( array $responses)  use ($deferred)  {
+		
+			foreach( $responses as $response){
+				$data = json_decode((string)$response->getBody(), true);
+				if(!isset($results)) {
+					$results = $data;
+				} else {
+					$results['descriptions'] = $data;
+				}
+			}
+			
+			$deferred->resolve($results);
+		})->wait();
+		
+		return $deferred->promise();
 	}
+	
+	
 	
 	
 	

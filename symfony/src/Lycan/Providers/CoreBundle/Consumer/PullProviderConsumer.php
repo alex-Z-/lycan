@@ -1,11 +1,11 @@
 <?php
 
-namespace Lycan\Providers\RentivoBundle\Consumer;
+namespace Lycan\Providers\CoreBundle\Consumer;
 
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Ramsey\Uuid\Uuid;
-use Lycan\Providers\RentivoBundle\API\Client;
+
 class PullProviderConsumer implements ConsumerInterface
 {
 	
@@ -54,20 +54,16 @@ class PullProviderConsumer implements ConsumerInterface
 		// Create schemas. Add schemas.
 		// Create our incoming processor
 		
-		$rentivo = Client::getInstance();
-		$rentivo->setAuthProvider($provider);
-		$properties = $rentivo->fetchAllProperties();
-		// We have to update each of the individual properties
-		
-		$jobsInBatch = count($properties['data']);
-		foreach($properties['data'] as $index=>$property){
-			$msg = [ "id" => $property['id'], "provider" => $id, "batch" => $message['batch'], "jobsInBatch" => $jobsInBatch, "jobIndex" => $index ];
-			$batchLogger->info(sprintf("Sending Property with ID of %s to Queue for fetch.", $property['id']), array_merge( ["input" => $property], $msg ));
-			
-			$routingKey = "lycan.provider.rentivo";
-			$this->container->get('lycan.rabbit.producer.pull_listing')->publish(serialize($msg), $routingKey);
-		}
-		
+		$providerKey = strtolower( $provider->getProviderName() );
+		$client = $this->container->get('lycan.provider.api.factory')->create($providerKey, $provider);
+		// The manager is what controls HOW things are done.
+		// The client is the actual API client for each provider.
+		$manager = $this->container->get('lycan.provider.manager.factory')->create($providerKey);
+		$manager->setMessage($message);
+		$manager->setProvider($provider);
+		$client->fetchAllListings()
+				->then($manager->getQueuePullListingsClosure());
+				
 		$this->em->clear();
 		// dump($message);
 		

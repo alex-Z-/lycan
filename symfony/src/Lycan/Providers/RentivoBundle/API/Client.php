@@ -3,14 +3,17 @@
 namespace Lycan\Providers\RentivoBundle\API;
 
 use Lycan\Providers\RentivoBundle\Entity\ProviderRentivoAuth;
+use Lycan\Providers\CoreBundle\Entity\ProviderAuthBase;
 use GuzzleHttp\Handler\CurlHandler;
 use Somoza\Psr7\OAuth2Middleware;
 use League\OAuth2\Client\Provider\GenericProvider;
-
-class Client {
+use Lycan\Providers\CoreBundle\API\ClientInterface;
+use React\Promise\Deferred;
+class Client implements ClientInterface {
 	
 	private static $instance;
 	private $client;
+	private $container;
 	public static function getInstance()
 	{
 		if (null === static::$instance) {
@@ -24,7 +27,12 @@ class Client {
 	{
 	}
 	
-	public function setAuthProvider(ProviderRentivoAuth  $auth){
+	
+	public function setContainer($container){
+		$this->container = $container;
+	}
+	
+	public function setAuthProvider(ProviderAuthBase  $auth){
 		
 		$stack = new \GuzzleHttp\HandlerStack();
 		$stack->setHandler(new CurlHandler());
@@ -70,23 +78,30 @@ class Client {
 		return call_user_func_array([$this->getClient(), "get"], func_get_args());
 	}
 	
-	public function fetchAllProperties(){
-		$response = $this->_fetchAllProperties();
-		return \GuzzleHttp\json_decode(  $response->getBody(), true );
+	public function fetchAllListings(){
+		$deferred = new Deferred();
+		$response = $this->_fetchAllListings();
+		$data = \GuzzleHttp\json_decode(  $response->getBody(), true );
+		$deferred->resolve($data);
+		return $deferred->promise();
 	}
 	
-	private function _fetchAllProperties(){
+	private function _fetchAllListings(){
 		$response = $this->getClient()->get('/api/r/properties');
 		return $response;
 	}
 	
-	public function getPropertyFull($id){
+	public function getListingFull($id){
 		
+		$deferred = new Deferred();
 		$response = $this->getClient()->get( sprintf('/api/public/properties/schemas/%s', $id ) );
 		$result = json_decode ( (string) $response->getBody(), true );
+		
 		$data = $result['data'];
-		return $data;
+		$deferred->resolve($data);
+		return $deferred->promise();
 	}
+	
 	
 	
 	

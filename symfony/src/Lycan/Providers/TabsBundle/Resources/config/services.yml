@@ -1,6 +1,17 @@
 
 services:
     # ...
+    lycan.provider.api.tabs:
+        class: Lycan\Providers\TabsBundle\API\Client
+        factory: [ Lycan\Providers\TabsBundle\API\Client, getInstance ]
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
+    lycan.provider.manager.tabs:
+        class: Lycan\Providers\TabsBundle\API\Manager
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
     admin.lycan.provider.tabs:
         class: Lycan\Providers\TabsBundle\Admin\ProviderTabsAdmin
         arguments: [~, Lycan\Providers\TabsBundle\Entity\ProviderTabsAuth,  CoreBundle:CRUD]

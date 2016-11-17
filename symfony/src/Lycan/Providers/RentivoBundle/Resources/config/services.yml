@@ -1,32 +1,32 @@
 services:
     # ...
+    lycan.provider.api.rentivo:
+        class: Lycan\Providers\RentivoBundle\API\Client
+        factory: [ Lycan\Providers\RentivoBundle\API\Client, getInstance ]
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
+    lycan.provider.manager.rentivo:
+        class: Lycan\Providers\RentivoBundle\API\Manager
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
     admin.lycan.provider.rentivo:
         class: Lycan\Providers\RentivoBundle\Admin\ProviderRentivoAdmin
         arguments: [~, Lycan\Providers\RentivoBundle\Entity\ProviderRentivoAuth, CoreBundle:CRUD ]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Providers, label: Rentivo }
 
-    lycan.rabbit.consumer.pull_provider.rentivo:
-        class : Lycan\Providers\RentivoBundle\Consumer\PullProviderConsumer
+    lycan.rabbit.consumer.pull_provider:
+        class : Lycan\Providers\CoreBundle\Consumer\PullProviderConsumer
         arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
         calls:
             - [ setContainer,[ @service_container ] ]
 
-    lycan.rabbit.consumer.pull_listing.rentivo:
-        class : Lycan\Providers\RentivoBundle\Consumer\PullListingConsumer
+    lycan.rabbit.consumer.pull_listing:
+        class : Lycan\Providers\CoreBundle\Consumer\PullListingConsumer
         arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
         calls:
             - [ setContainer,[ @service_container ] ]
 
-    lycan.rabbit.consumer.pull_provider.tabs:
-            class : Lycan\Providers\TabsBundle\Consumer\PullProviderConsumer
-            arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
-            calls:
-                - [ setContainer,[ @service_container ] ]
-
-    lycan.rabbit.consumer.pull_listing.tabs:
-        class : Lycan\Providers\TabsBundle\Consumer\PullListingConsumer
-        arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
-        calls:
-            - [ setContainer,[ @service_container ] ]
 

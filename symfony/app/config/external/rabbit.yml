@@ -38,47 +38,25 @@ old_sound_rabbit_mq:
                 arguments: {'x-message-ttl': ['I', 172800000]}
 
     consumers:
-        pull_provider.rentivo:
+        pull_provider:
             connection:       default
             exchange_options: {name: 'pull_provider', , type: topic}
             queue_options:
                 name: 'pull_provider'
                 arguments: {'x-message-ttl': ['I', 172800000]}
                 routing_keys:
-                    - lycan.provider.rentivo
-            callback:   lycan.rabbit.consumer.pull_provider.rentivo
+                    - lycan.provider.#
+            callback:   lycan.rabbit.consumer.pull_provider
             enable_logger: true
 
-        pull_listing.rentivo:
+        pull_listing:
             connection:       default
             exchange_options: {name: 'pull_listing', , type: topic}
             queue_options:
                 name: 'pull_listing'
                 arguments: {'x-message-ttl': ['I', 172800000]}
                 routing_keys:
-                    - lycan.provider.rentivo
-            callback:   lycan.rabbit.consumer.pull_listing.rentivo
+                    - lycan.provider.#
+            callback:   lycan.rabbit.consumer.pull_listing
             enable_logger: true
 
-
-        pull_provider.tabs:
-            connection:       default
-            exchange_options: {name: 'pull_provider', , type: topic}
-            queue_options:
-                name: 'pull_provider'
-                arguments: {'x-message-ttl': ['I', 172800000]}
-                routing_keys:
-                    - lycan.provider.tabs
-            callback:   lycan.rabbit.consumer.pull_provider.tabs
-            enable_logger: true
-
-        pull_listing.tabs:
-            connection:       default
-            exchange_options: {name: 'pull_listing', , type: topic}
-            queue_options:
-                name: 'pull_listing'
-                arguments: {'x-message-ttl': ['I', 172800000]}
-                routing_keys:
-                    - lycan.provider.tabs
-            callback:   lycan.rabbit.consumer.pull_listing.rentivo
-            enable_logger: true

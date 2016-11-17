@@ -43,10 +43,9 @@ class CRUDController extends Controller
 		$debug = true;
 		
 		$object = $this->admin->getSubject();
-		
-		$tabs = TClient::getInstance();
-		$tabs->setAuthProvider($object);
-		$properties = $tabs->fetchAllProperties();
+		$factory = $this->container->get('lycan.provider.api.factory');
+		$client = $factory->create(strtolower($object->getProviderName()), $object);
+		$properties = $client->fetchAllProperties();
 		dump($properties);die();
 	}
 	

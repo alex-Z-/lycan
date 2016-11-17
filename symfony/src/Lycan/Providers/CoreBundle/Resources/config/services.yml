@@ -1,5 +1,16 @@
 services:
     # ...
+     lycan.provider.api.factory:
+            class: Lycan\Providers\CoreBundle\API\ClientFactory
+            arguments:  ~
+            calls:
+                - [ setContainer,[ @service_container ] ]
+
+     lycan.provider.manager.factory:
+            class: Lycan\Providers\CoreBundle\API\ManagerFactory
+            arguments:  ~
+            calls:
+                - [ setContainer,[ @service_container ] ]
 
      admin.lycan.batch_executions:
             class: Lycan\Providers\CoreBundle\Admin\BatchExecutionsAdmin
