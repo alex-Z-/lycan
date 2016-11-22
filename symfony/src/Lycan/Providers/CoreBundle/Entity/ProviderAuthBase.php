@@ -2,6 +2,7 @@
 
 namespace Lycan\Providers\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 /**
@@ -112,6 +113,50 @@ class ProviderAuthBase
 	 */
 	private $nickname;
 	
+	/**
+	 * @ORM\Column(type="array", nullable=true)
+	 */
+	private $autoMappedToBrands;
+	
+	
+	public function setAutoMappedToBrands($brands)
+	{
+	
+		foreach ($brands as $brand) {
+			$this->addAutoMappedToBrand($brand);
+		}
+		
+		return $this;
+	}
+	
+	public function getAutoMappedToBrands()
+	{
+		$r = $this->autoMappedToBrands ?: $this->autoMappedToBrands = [];
+		return $r;
+		
+	}
+	
+	
+	public function addAutoMappedToBrand($brand)
+	{
+	
+		$this->autoMappedToBrands[] = $brand;
+		
+		return $this;
+	}
+	
+	public function removeAutoMappedToBrand($brand)
+	{
+		if(($key = array_search($brand, $this->autoMappedToBrands)) !== false) {
+			
+			unset($this->autoMappedToBrands[$key]);
+		}
+		
+		return $this;
+	}
+	
+	
+	
 	public function getProviderType(){
 		return $this->getProviderName();
 	}
@@ -203,15 +248,45 @@ class ProviderAuthBase
 			$parts[] = sprintf("%s Unattached(BASE)%s", self::TO_STRING_PREFIX_SPACER, self::TO_STRING_SUFFIX_SPACER);
 		}
 		
-		$parts[] =  sprintf("%s" . $this->getNickName(), self::TO_STRING_PREFIX_SPACER);
+		// $parts[] =  sprintf("%s" . $this->getNickName(), self::TO_STRING_PREFIX_SPACER);
 		
 		if(!$this->getAllowPush()){
-			$parts[] = "(not active)";
+			// $parts[] = "(not active)";
 		}
-		
 		
 		return trim(implode($parts, self::TO_STRING_SEPARATOR));
 	}
+	
+	public function getDetailedConnections(){
+		if(!$this->getId()){
+			return "Create a Provider";
+		}
+		
+		$parts = [];
+		
+		// This shows if it's attached to a channel....
+		if($this->getBrandChannels() && !$this->getBrandChannels()->isEmpty() && method_exists($this, "getProviderName")){
+			// $prefix = $this->getBrandChannels()->current()->getBrand()->getBrandName();
+			$parts[] = sprintf("%s" .$this->getProviderName() . "%s", self::TO_STRING_PREFIX_SPACER, self::TO_STRING_SUFFIX_SPACER);
+		} else if( method_exists($this, "getProviderName") ) {
+			$parts[] = sprintf("%s Unattached(" .$this->getProviderName() . ")%s", self::TO_STRING_PREFIX_SPACER, self::TO_STRING_SUFFIX_SPACER);
+		} else {
+			$parts[] = sprintf("%s Unattached(BASE)%s", self::TO_STRING_PREFIX_SPACER, self::TO_STRING_SUFFIX_SPACER);
+		}
+		
+		// $parts[] =  sprintf("%s" . $this->getNickName(), self::TO_STRING_PREFIX_SPACER);
+		
+		if(!$this->getAllowPush()){
+			// $parts[] = "(not active)";
+		}
+		
+		return trim(implode($parts, self::TO_STRING_SEPARATOR));
+	}
+	
+	public function getTypeAndName(){
+		return $this->getProviderType() . " - " . $this->getNickname();
+	}
+	
 	
 	/**
 	 * @return \DateTime

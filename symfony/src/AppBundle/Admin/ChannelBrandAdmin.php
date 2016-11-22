@@ -190,7 +190,7 @@ class ChannelBrandAdmin extends BaseAdmin
 		$listMapper->addIdentifier('id')
 			->add('brand')
 			->add('provider.providerName', null, [ 'label' => 'Channel'])
-			->add('provider', null, [ 'label' => 'Credentials Used'])
+			->add('provider', null, [ 'label' => 'Credentials Used',  'associated_property' => 'typeAndName' ])
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(),

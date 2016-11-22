@@ -111,7 +111,9 @@ class PropertyAdmin extends BaseAdmin
 	{
 		$datagridMapper->add('descriptiveName')
 			->add('owner')
-			->add('brands');
+			->add('brands')
+			->add('provider')
+			->add('providerListingId');
 	}
 	
 	// add this method
@@ -156,7 +158,6 @@ class PropertyAdmin extends BaseAdmin
 	}
 	
 	
-	
 	protected function configureListFields(ListMapper $listMapper)
 	{
 		$listMapper->addIdentifier('id', null, array(
@@ -167,13 +168,18 @@ class PropertyAdmin extends BaseAdmin
 			->add('descriptiveName', null, array( 'template'=>'AppBundle') );
 		
 		$listMapper->add('brands');
+		//
+		// , 'stemplate' => 'AppBundle:Admin/PropertyAdmin:list_provider.html.twig'
+		$listMapper->add('provider', null, [ 'associated_property' => 'typeAndName' ]);
+		
+		$listMapper->add('providerListingId', 'string');
 		
 		if ($this->isGranted( SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
 			$listMapper->add('owner');
 		}
 		
 		$listMapper->add('isSchemaValid');
-		
+		$listMapper->add('updatedAt');
 		$listMapper->add('_action', 'actions', array(
 		'actions' => array(
 			'edit' => array(),

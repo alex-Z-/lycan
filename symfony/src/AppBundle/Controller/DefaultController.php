@@ -15,7 +15,7 @@ class DefaultController extends Controller
     {
 	
 		
-		$message = ["id" => 'VI05DU_DI', "provider" => 2];
+		$message = ["id" => 'TI03WE_DI', "provider" => 2];
 		$this->em = $this->container->get("doctrine")->getEntityManager();
 		
 	
@@ -29,6 +29,7 @@ class DefaultController extends Controller
 		// Get Listing
 		// Get the Mapping Definitions
 		// Import
+		
 		$client ->getListingFull($message['id'])
 			->then($manager->getProcessMappingClosure())
 			->then(function($schema) use ($provider) {
@@ -37,17 +38,9 @@ class DefaultController extends Controller
 				// We want the import function to do the checks.
 				// This avoids duplication around lots of code.
 				$property = $lycan->import( $schema, $provider );
-				return $property;
-			} )
-			->then( function($property) use ($eventGroup) {
-				// We should now attempt to claim all logs with the current eventGroup...
-				// And assign them to this property..
-			
-			})->then( function() use ($message, $provider){
 				
+				return $property;
 			});
-		
-		
 		
 		die("Test Index Homepage");
 		// $this->render("AppBundle::custom_layout.html.twig");

@@ -1,7 +1,7 @@
 <?php
 
 namespace Lycan\Providers\RentivoBundle\Admin;
-
+use Lycan\Providers\CoreBundle\Form\Type\BrandsType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Lycan\Providers\CoreBundle\Admin\ProviderAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -72,6 +72,29 @@ class ProviderRentivoAdmin extends ProviderAdmin
 	protected function configureFormFields(FormMapper $formMapper)
 	{
 		
+		$user = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
+		$accessToUserFields = ( $this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) && $this->getSubject()->getId() === null);
+		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
+		
+		// $builder = $formMapper->getFormBuilder()->getFormFactory()->createBuilder(BrandsType::class);
+		
+		if($this->getSubject()->getId() && $this->getSubject()->getOwner() ){
+			$user =   $this->getSubject()->getOwner();
+		}
+		
+		// WE ABSOLUTELY WANT THE EXISTING BRAND TO ALSO SHOW...
+		$brandsQuery =  $query = $em->createQueryBuilder("b")
+			->select("b")
+			->from("AppBundle:Brand", "b")
+			->leftjoin("b.members", "m")
+			->where("b.owner = :owner or m.member = :owner")
+			->setParameter("owner", $user->getId() );
+		$choices = [];
+		foreach($brandsQuery->getQuery()->getResult() as $brand){
+			$choices[(string) $brand->getId()] = (string) $brand;
+		}
+		
+		
 		// $formMapper = parent::configureFormFields($formMapper);
 		// dump($formMapper);die();
 		// define group zoning
@@ -111,6 +134,23 @@ class ProviderRentivoAdmin extends ProviderAdmin
 					->end()
 				->end();
 		}
+		
+		$formMapper
+			->tab('Credentials')
+			->with("Auto Map to Brand" , [
+				'class' => 'col-md-5',
+				'box_class' => 'box box-primary',
+				'description' => "When properties are pulled from the external provider, we can automatically add the listings to any brand that you  own or are a member of." .
+								 "<br /><p><b>Working with other managers?</b><br />Brands which have been shared with you will also show up here.</p>"])
+			->add('autoMappedToBrands', BrandsType::class , array(
+					'choices' => $choices ,
+					'required' => false,
+					'expanded' => !empty($choices),
+					'multiple' => true
+				
+				)
+			)
+			->end();
 		
 	}
 	

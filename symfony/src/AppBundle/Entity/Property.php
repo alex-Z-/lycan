@@ -60,6 +60,18 @@ class Property extends Base
 	 */
 	private $schemaErrors;
 	
+	/**
+	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase")
+	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
+	 *
+	 */
+	private $provider;
+	
+	/**
+	 * @ORM\Column(type="string", nullable=true)
+	 */
+	private $providerListingId;
+	
 	
 	/**
      * Constructor
@@ -201,6 +213,55 @@ class Property extends Base
 	{
 			return $this->getDescriptiveName();
 	}
+	
+	/**
+	 * @return \Doctrine\Common\Collections\ArrayCollection
+	 */
+	public function getBrand()
+	{
+		return $this->brand;
+	}
+	
+	/**
+	 * @param \Doctrine\Common\Collections\ArrayCollection $brand
+	 */
+	public function setBrand($brand)
+	{
+		$this->brand = $brand;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getProvider()
+	{
+		return $this->provider;
+	}
+	
+	/**
+	 * @param mixed $provider
+	 */
+	public function setProvider($provider)
+	{
+		$this->provider = $provider;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getProviderListingId()
+	{
+		return $this->providerListingId;
+	}
+	
+	/**
+	 * @param mixed $providerListingId
+	 */
+	public function setProviderListingId($providerListingId)
+	{
+		$this->providerListingId = $providerListingId;
+	}
+	
 	
 	
 }

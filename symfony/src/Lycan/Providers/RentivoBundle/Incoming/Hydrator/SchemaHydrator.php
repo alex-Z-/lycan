@@ -32,7 +32,7 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 		$model->set('listing.sleeps', $input->get("attributes.maxGuests")); // Total comfortable sleeps..
 		
 		$model->set('location.latitude', $input->get('location.lat'));
-		$model->set('location.lng', $input->get('location.lng'));
+		$model->set('location.longitude', $input->get('location.lng'));
 		
 		$model->set('advertisingDestination.geoplanet.woeid', $input->get('woeid.woeid'));
 		
@@ -206,6 +206,8 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 				$model->set("pricing.visual", $v);
 			}
 		}
+		
+		
 		
 				
 		return $model;

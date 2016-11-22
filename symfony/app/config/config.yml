@@ -158,4 +158,4 @@ sonata_doctrine_orm_admin:
                 bigint:     SonataAdminBundle:CRUD:base_show_field.html.twig
                 integer:    SonataAdminBundle:CRUD:base_show_field.html.twig
                 decimal:    SonataAdminBundle:CRUD:base_show_field.html.twig
-                data:       AppBundle:Admin/CRUD:show_data.html.twig
+                data:       AppBundle:Admin/CRUD:show_data_field.html.twig

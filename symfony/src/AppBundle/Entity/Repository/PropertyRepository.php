@@ -10,4 +10,20 @@ namespace AppBundle\Entity\Repository;
  */
 class PropertyRepository extends \Doctrine\ORM\EntityRepository
 {
+	
+	public function findPropertyByProviderAndExternal($provider, $external){
+		$query = $this->_em->createQueryBuilder();
+		try {
+			return $query->select("p")
+				->from("AppBundle:Property", "p")
+				->where("p.providerListingId = :providerExternal")
+				->andWhere("p.provider = :provider")
+				->setParameter("provider", $provider->getId())
+				->setParameter("providerExternal", $external)
+				->getQuery()
+				->getOneOrNullResult();
+		} catch (\Exception $e	){
+			return null;
+		}
+	}
 }

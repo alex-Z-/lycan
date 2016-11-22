@@ -38,6 +38,13 @@ class ArrayCollection
 		return $this->elements;
 	}
 	
+	public function ksort(){
+		
+		$iterator = $this->getIterator();
+		$iterator->ksort();
+		return $this;
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

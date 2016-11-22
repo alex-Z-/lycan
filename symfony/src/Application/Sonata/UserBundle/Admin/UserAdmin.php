@@ -10,7 +10,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
-
+use Sonata\AdminBundle\Show\ShowMapper;
 class UserAdmin extends  BaseAdmin
 {
 	
@@ -23,12 +23,24 @@ class UserAdmin extends  BaseAdmin
 		// dump($em->getOwnedProperties());die();
 		// $query = $this->modelManager->getEntityManager($entity)->createQuery('SELECT s FROM MyCompany\MyProjectBundle\Entity\Seria s ORDER BY s.nameASC');
 		
+		/*
+		$formMapper->remove('groups');
 		
+		$formMapper->tab('Security')
+			->with('Groups')
+			->add('groups', 'sonata_type_model', array(
+				'required' => false,
+				'expanded' => true,
+				'multiple' => true,
+			))
+		->end()->end();
+		*/
 		$formMapper->tab("Notes")
 		->with("Your Personal Notes")
 			->add('notes', 'textarea',  array('required' => false));
 		
 	}
+	
 	
 	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
 	{

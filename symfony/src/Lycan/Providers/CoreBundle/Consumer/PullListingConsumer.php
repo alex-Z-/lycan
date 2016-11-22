@@ -64,7 +64,10 @@ class PullListingConsumer implements ConsumerInterface
 					$lycan = $this->container->get("app.importer");
 					// We want the import function to do the checks.
 					// This avoids duplication around lots of code.
+					
 					$property = $lycan->import( $schema, $provider );
+					
+					
 					return $property;
 				} )
 				->then( function($property) use ($eventGroup) {

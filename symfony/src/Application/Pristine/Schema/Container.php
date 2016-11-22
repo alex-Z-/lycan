@@ -74,6 +74,11 @@ class Container extends ArrayCollection {
 			// We don't want to remove protected
 			$s = $this->toArray(true);
 			$f = ArrayUtils::getNestedArrayValue( $name, $s);
+			if(is_array($f)){
+				$container = new self();
+				$container->fromArray($f);
+				return $container;
+			}
 			return $f;
 		}
 		return $this->has($name)

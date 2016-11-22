@@ -109,6 +109,7 @@ class LoadFixtures extends AbstractFixture implements FixtureInterface, Containe
 				$property = new Property();
 				$name = ucfirst($adjectives[array_rand($adjectives)]) . " " . ucfirst($nouns[array_rand($nouns)]) . " managed by " . $u;
 				$property->setDescriptiveName($name );
+				$property->setIsSchemaValid(false);
 				$property->setOwner( $this->getReference('user-' . $u) );
 				$manager->persist($property);
 			}

@@ -11,6 +11,7 @@ use Lycan\Providers\CoreBundle\Entity\ProviderAuthBase as ProviderAuthBase;
 class ProviderTabsAuth extends ProviderAuthBase
 {
 	
+
 	// This doesn't need to be an entity field..
 	private $providerName = "Tabs";
 	

@@ -56,13 +56,11 @@ class Importer {
 		// 1) Mutates $jsonSchemaObject to normalize the references (to file://mySchema#/definitions/integerData, etc)
 		// 2) Tells $schemaStorage that references to file://mySchema... should be resolved by looking in $jsonSchemaObject
 		
-		
 		$validator->check(  json_decode(json_encode( $schema->toArray() ) ),  $schemaDefinition );
+	
 		if($validator->isValid()){
-			
+		
 			$batchLogger->info("Importing Schema - Valid", [ "input" => $schema->toArray() ] );
-			
-			
 			$this->logger->debug("Schema was valid." );
 			$this->logger->info( "Schema will be imported or upserted to user account", $provider->getOwner()->getLogValues() );
 			$property = $this->_upsert($schema, $provider);
@@ -70,10 +68,12 @@ class Importer {
 			$this->em->persist($property);
 			$this->em->flush();
 		} else {
+			
 			$this->logger->warning("Schema was not found to be valid.", $validator->getErrors() );
 			$batchLogger->warning("Importing Schema - Schema was found to be invalid", [ "input" => $schema->toArray(), "output" => $validator->getErrors() ] );
 			$property = $this->_upsert($schema, $provider);
 			$property->setIsSchemaValid(false);
+			
 			$property->setSchemaErrors($validator->getErrors());
 			$this->em->persist($property);
 			$this->em->flush();
@@ -90,7 +90,11 @@ class Importer {
 		// Composite Key Query :::->
 		// $id from the schema.
 		// Reference to the User
-		$property = new Property();
+		
+		$property = $this->em->getRepository("AppBundle:Property")->findPropertyByProviderAndExternal($provider, $schema->get('$id'));
+		if(!$property) {
+			$property = new Property();
+		}
 		
 		$property->setDescriptiveName( $schema->get("name") );
 		$property->setOwner( $provider->getOwner() );

@@ -106,21 +106,25 @@ class Client {
 		$params = [ 'pageSize' => 0];
 		
 		$promises = [
-			$this->getClient()->getAsync("/property/$id", [ 'query' => $params ]),
-			$this->getClient()->getAsync("/property/$id/description", [ 'query' => $params ]),
+			"_" => $this->getClient()->getAsync("/property/$id", [ 'query' => $params ]),
+			"description" => $this->getClient()->getAsync("/property/$id/description", [ 'query' => $params ]),
+			"availablebreaks" => $this->getClient()->getAsync("/property/$id/availablebreaks", [ 'query' => $params ]),
+			"calendar" => $this->getClient()->getAsync("/property/$id/calendar", [ 'query' => $params ]),
+			
 			
 		];
 		Promise\all($promises)->then( function( array $responses)  use ($deferred)  {
 		
-			foreach( $responses as $response){
+			foreach( $responses as $index => $response){
+				
 				$data = json_decode((string)$response->getBody(), true);
 				if(!isset($results)) {
 					$results = $data;
 				} else {
-					$results['descriptions'] = $data;
+					$results[$index] = $data;
 				}
 			}
-			
+		
 			$deferred->resolve($results);
 		})->wait();
 		

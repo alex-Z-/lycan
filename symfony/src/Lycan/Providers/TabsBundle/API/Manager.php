@@ -36,9 +36,10 @@ class Manager  implements ManagerInterface {
 	public function getProcessMappingClosure(){
 		
 		return function($data) {
-		
+			
 			$incoming = new Processor(new TabsTransformer());
-			$schema   = $incoming->process(
+			
+			$schema = $incoming->process(
 				$data,
 				new SchemaContainer(),
 				new Hydrator()

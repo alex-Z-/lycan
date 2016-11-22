@@ -6,6 +6,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Lycan\Providers\CoreBundle\Mapping\DiscriminatorListener;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Sonata\CoreBundle\Form\FormHelper;
 class CoreBundle extends Bundle
 {
 	
@@ -18,7 +19,22 @@ class CoreBundle extends Bundle
 
 		// create and then add our event!
 		$em->getEventManager()->addEventSubscriber( new DiscriminatorListener( $em ) );
-
+		$this->registerFormMapping();
 	}
+	
+	/**
+	 * Register form mapping information.
+	 */
+	public function registerFormMapping()
+	{
+	
+		FormHelper::registerFormTypeMapping(array(
+			'lycan_brands' => 'Sonata\UserBundle\Form\Type\SecurityRolesType'
+			
+		));
+		
+	}
+	
+	
 
 }

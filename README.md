@@ -74,12 +74,12 @@ For development and testing, you can run an individual Rabbit Consumer by runnin
 
 This consumer takes big batch jobs and executions individual mini-jobs. For example, a full provider syncronization will be comprised of hundreds of individual listing syncronizations. 
 
-`php app/console  rabbitmq:consumer pull_provider.rentivo`
+`php app/console  rabbitmq:consumer pull_provider`
 
 **Listing Example**
 
 
-`php app/console  rabbitmq:consumer pull_listing.rentivo`
+`php app/console  rabbitmq:consumer pull_listing`
 
 
 
