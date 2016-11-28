@@ -15,7 +15,7 @@ class DefaultController extends Controller
     {
 	
 		
-		$message = ["id" => 'TI03WE_DI', "provider" => 2];
+		$message = ["id" => 'C068A_CC', "provider" => 1];
 		$this->em = $this->container->get("doctrine")->getEntityManager();
 		
 	
@@ -39,6 +39,7 @@ class DefaultController extends Controller
 				// This avoids duplication around lots of code.
 				$property = $lycan->import( $schema, $provider );
 				
+				$this->em->flush();
 				return $property;
 			});
 		

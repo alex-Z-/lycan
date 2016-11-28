@@ -24,7 +24,29 @@ class ChannelBrand extends ChannelBridge
 	 *
 	 */
 	private $provider;
-
+	
+	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $pushInProgress;
+	
+	/**
+	 * @ORM\OneToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\BatchExecutions")
+	 * @ORM\JoinColumn(name="last_active_batch", referencedColumnName="id", onDelete="SET NULL")
+	 */
+	private $lastActiveBatch;
+	
+	/**
+	 * @var \DateTime $contentChanged
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $lastPushCompletedAt;
+	
+	/**
+	 * @var \DateTime $contentChanged
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $lastPushStartedAt;
 
 	
 	/**
@@ -74,6 +96,72 @@ class ChannelBrand extends ChannelBridge
 	{
 		$this->provider = $provider;
 	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getPushInProgress()
+	{
+		return $this->pushInProgress;
+	}
+	
+	/**
+	 * @param mixed $pushInProgress
+	 */
+	public function setPushInProgress($pushInProgress)
+	{
+		$this->pushInProgress = $pushInProgress;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getLastActiveBatch()
+	{
+		return $this->lastActiveBatch;
+	}
+	
+	/**
+	 * @param mixed $lastActiveBatch
+	 */
+	public function setLastActiveBatch($lastActiveBatch)
+	{
+		$this->lastActiveBatch = $lastActiveBatch;
+	}
+	
+	/**
+	 * @return \DateTime
+	 */
+	public function getLastPushCompletedAt()
+	{
+		return $this->lastPushCompletedAt;
+	}
+	
+	/**
+	 * @param \DateTime $lastPushCompletedAt
+	 */
+	public function setLastPushCompletedAt($lastPushCompletedAt)
+	{
+		$this->lastPushCompletedAt = $lastPushCompletedAt;
+	}
+	
+	/**
+	 * @return \DateTime
+	 */
+	public function getLastPushStartedAt()
+	{
+		return $this->lastPushStartedAt;
+	}
+	
+	/**
+	 * @param \DateTime $lastPushStartedAt
+	 */
+	public function setLastPushStartedAt($lastPushStartedAt)
+	{
+		$this->lastPushStartedAt = $lastPushStartedAt;
+	}
+	
+	
 
 
 	

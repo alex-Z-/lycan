@@ -24,7 +24,7 @@ class ProviderAdmin extends BaseAdmin
 	protected function configureRoutes(RouteCollection $collection)
 	{
 		
-		$collection->add('go', $this->getRouterIdParameter().'/go');
+		
 		$collection->add('pull', $this->getRouterIdParameter().'/pull');
 		$collection->add('pullStop', $this->getRouterIdParameter().'/pull-stop');
 		// to remove a single route

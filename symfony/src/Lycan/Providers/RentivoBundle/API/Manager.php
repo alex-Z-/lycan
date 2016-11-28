@@ -35,6 +35,7 @@ class Manager implements ManagerInterface {
 		};
 	}
 	
+	
 	public function getProcessMappingClosure(){
 		
 		return function($data) {

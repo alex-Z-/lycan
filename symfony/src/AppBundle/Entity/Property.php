@@ -12,7 +12,7 @@ use AppBundle\Entity\Base\MappedSuperclassBase as Base;
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\PropertyRepository")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Property extends Base
+class Property
 {
 	
 	/**
@@ -32,6 +32,32 @@ class Property extends Base
 	 */
 	private $deletedAt;
 	
+	/**
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $syncedAt;
+	
+	/**
+	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User",  cascade={"persist"})
+	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+	 */
+	private $owner;
+	
+	/**
+	 * @var \DateTime $created
+	 *
+	 * @Gedmo\Timestampable(on="create")
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $createdAt;
+	
+	/**
+	 * @var \DateTime $updated
+	 *
+	 * @Gedmo\Timestampable(on="change", field={"descriptiveName", "schemaObject"})
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $updatedAt;
 	
 	/**
 	 * @ORM\Column(type="json")
@@ -231,7 +257,7 @@ class Property extends Base
 	}
 	
 	/**
-	 * @return mixed
+	 * @return \Lycan\Providers\CoreBundle\Entity\ProviderAuthBase|null
 	 */
 	public function getProvider()
 	{
@@ -260,6 +286,70 @@ class Property extends Base
 	public function setProviderListingId($providerListingId)
 	{
 		$this->providerListingId = $providerListingId;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getSyncedAt()
+	{
+		return $this->syncedAt;
+	}
+	
+	/**
+	 * @param mixed $syncedAt
+	 */
+	public function setSyncedAt($syncedAt)
+	{
+		$this->syncedAt = $syncedAt;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getOwner()
+	{
+		return $this->owner;
+	}
+	
+	/**
+	 * @param mixed $owner
+	 */
+	public function setOwner($owner)
+	{
+		$this->owner = $owner;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getCreatedAt()
+	{
+		return $this->createdAt;
+	}
+	
+	/**
+	 * @param mixed $createdAt
+	 */
+	public function setCreatedAt($createdAt)
+	{
+		$this->createdAt = $createdAt;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getUpdatedAt()
+	{
+		return $this->updatedAt;
+	}
+	
+	/**
+	 * @param mixed $updatedAt
+	 */
+	public function setUpdatedAt($updatedAt)
+	{
+		$this->updatedAt = $updatedAt;
 	}
 	
 	

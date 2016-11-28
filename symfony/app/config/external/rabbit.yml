@@ -37,10 +37,28 @@ old_sound_rabbit_mq:
                 name: 'pull_listing'
                 arguments: {'x-message-ttl': ['I', 172800000]}
 
+        push_brand:
+            connection: default
+            exchange_options: { name: 'push_brand', type: 'topic' }
+            service_alias: lycan.rabbit.producer.push_brand
+            # 2 DAY TTL 60000 * 60 * 24 * 2
+            queue_options:
+                name: 'push_brand'
+                arguments: {'x-message-ttl': ['I', 172800000]}
+
+        push_listing:
+            connection: default
+            exchange_options: { name: 'push_listing', type: 'topic' }
+            service_alias: lycan.rabbit.producer.push_listing
+            # 3 hour TTL
+            queue_options:
+                name: 'push_listing'
+                arguments: {'x-message-ttl': ['I', 172800000]}
+
     consumers:
         pull_provider:
             connection:       default
-            exchange_options: {name: 'pull_provider', , type: topic}
+            exchange_options: {name: 'pull_provider', type: topic}
             queue_options:
                 name: 'pull_provider'
                 arguments: {'x-message-ttl': ['I', 172800000]}
@@ -51,7 +69,7 @@ old_sound_rabbit_mq:
 
         pull_listing:
             connection:       default
-            exchange_options: {name: 'pull_listing', , type: topic}
+            exchange_options: {name: 'pull_listing',  type: topic}
             queue_options:
                 name: 'pull_listing'
                 arguments: {'x-message-ttl': ['I', 172800000]}
@@ -60,3 +78,24 @@ old_sound_rabbit_mq:
             callback:   lycan.rabbit.consumer.pull_listing
             enable_logger: true
 
+        push_brand:
+            connection:       default
+            exchange_options: {name: 'push_brand',  type: topic}
+            queue_options:
+                name: 'push_brand'
+                arguments: {'x-message-ttl': ['I', 172800000]}
+                routing_keys:
+                    - lycan.provider.#
+            callback:   lycan.rabbit.consumer.push_brand
+            enable_logger: true
+
+        push_listing:
+            connection:       default
+            exchange_options: {name: 'pull_listing', type: topic}
+            queue_options:
+                name: 'push_listing'
+                arguments: {'x-message-ttl': ['I', 172800000]}
+                routing_keys:
+                    - lycan.provider.#
+            callback:   lycan.rabbit.consumer.push_listing
+            enable_logger: true

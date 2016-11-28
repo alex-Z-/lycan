@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Admin\AdminInterface;
 use AppBundle\Exception\NoBrandFoundException;
 use Knp\Menu\FactoryInterface as MenuFactoryInterface;
 use Knp\Menu\ItemInterface;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\CoreBundle\Validator\ErrorElement as ErrorElement;
 class ChannelBrandAdmin extends BaseAdmin
 {
@@ -32,6 +33,17 @@ class ChannelBrandAdmin extends BaseAdmin
 		
 		return $instance;
 	}
+	
+	protected function configureRoutes(RouteCollection $collection)
+	{
+		
+	
+		$collection->add('push', $this->getRouterIdParameter().'/push');
+		$collection->add('pushStop', $this->getRouterIdParameter().'/push-stop');
+		// to remove a single route
+		
+	}
+	
 	
 	protected function configureFormFields(FormMapper $formMapper)
 	{
@@ -195,6 +207,9 @@ class ChannelBrandAdmin extends BaseAdmin
 				'actions' => array(
 					'edit' => array(),
 					'delete' => array(),
+					'pull' => array(
+						'template' => 'AppBundle:Admin/ChannelBrandAdmin:list__action_push.html.twig'
+					)
 				)
 			));
 		

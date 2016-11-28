@@ -23,7 +23,7 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 		$mapper = new Mapping( 'Pristine\Enums\ListingTypes', new Mapper\PropertyTypes() );
 		$model->set('listing.type', $mapper->map( "Cottage" ) );
 		$model->set('listing.arrangement', "ENTIRE_LISTING");
-		$model->set('listing.bedroomsss', $input->get("bedrooms"));
+		$model->set('listing.bedrooms', $input->get("bedrooms"));
 		$model->set('listing.bathrooms', $input->get("attributes.Bathrooms", null ));
 		$model->set('listing.maxOccupancy', $input->get("accommodates")); // Additionals with extra beds
 		$model->set('listing.sleeps', $input->get("accommodates")); // Total comfortable sleeps..

@@ -29,4 +29,18 @@ services:
         calls:
             - [ setContainer,[ @service_container ] ]
 
+    lycan.rabbit.consumer.push_brand:
+        class : Lycan\Providers\CoreBundle\Consumer\PushBrandConsumer
+        arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
+    lycan.rabbit.consumer.push_listing:
+        class : Lycan\Providers\CoreBundle\Consumer\PushListingConsumer
+        arguments:  [@app.logger.console, @doctrine.orm.entity_manager ]
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
+
+
 

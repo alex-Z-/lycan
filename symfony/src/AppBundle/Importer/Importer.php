@@ -73,7 +73,6 @@ class Importer {
 			$batchLogger->warning("Importing Schema - Schema was found to be invalid", [ "input" => $schema->toArray(), "output" => $validator->getErrors() ] );
 			$property = $this->_upsert($schema, $provider);
 			$property->setIsSchemaValid(false);
-			
 			$property->setSchemaErrors($validator->getErrors());
 			$this->em->persist($property);
 			$this->em->flush();
@@ -96,7 +95,14 @@ class Importer {
 			$property = new Property();
 		}
 		
+	
+		$property->setProvider($provider);
+		$property->setProviderListingId($schema->get('$id'));
 		$property->setDescriptiveName( $schema->get("name") );
+		$property->setSyncedAt( new \DateTime() );
+		$property->setDescriptiveName(uniqid());
+		
+		
 		$property->setOwner( $provider->getOwner() );
 		$property->setSchemaObject($schema->toJson());
 		return $property;
