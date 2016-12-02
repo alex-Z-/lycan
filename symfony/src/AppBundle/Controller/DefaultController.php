@@ -2,10 +2,11 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Listing;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-
+use React\Promise\Deferred;
 class DefaultController extends Controller
 {
     /**
@@ -29,21 +30,79 @@ class DefaultController extends Controller
 		// Get Listing
 		// Get the Mapping Definitions
 		// Import
+	
+		$message = [
+			"id"	 => "67c2d621-4671-4d30-987d-a10326291796",
+			"provider" => 2
+		];
+	
+	
+		$providerId = $message['provider'];
+		$provider = $this->em->getRepository('\Lycan\Providers\CoreBundle\Entity\ProviderAuthBase')->find($providerId);
 		
-		$client ->getListingFull($message['id'])
-			->then($manager->getProcessMappingClosure())
-			->then(function($schema) use ($provider) {
-				// Get Lycan Importer
-				$lycan = $this->container->get("app.importer");
-				// We want the import function to do the checks.
-				// This avoids duplication around lots of code.
-				$property = $lycan->import( $schema, $provider );
+		$providerKey = strtolower( $provider->getProviderName() );
+		$client  = $this->container->get('lycan.provider.api.factory')->create($providerKey, $provider);
+		$manager = $this->container->get('lycan.provider.manager.factory')->create($providerKey);
+		$manager->setClient($client);
+		// Get Listing from Lycan
+	
+		$listing = $this->em->getRepository("AppBundle:Property")->find($message['id']);
+		
+		if(!$listing->getIsSchemaValid()){
+			$batchLogger->warning("Schema is not valid. Cannot export and syncronization to external channel.", $message);
+			return true;
+		}
+		$schema = $listing->getSchemaObject();
+		// $schemaContainer = new Container(json_decode( $schema, true));
+		// $schemaContainer->fromArray();
+	
+		$deferred = new Deferred();
+		$deferred->resolve($schema);
+		
+		// This is where things get tricky.
+		// A provider might be like Rentivo and can recieve the property in a SINGLE request.
+		// Although this is unlikely. We may need to create an abstract "TRANSPORT" object which envelops a batch job process.
+		// Something like "create" property. Get ID. Push images. Push descriptions. etc.
+		// We'll refactor when we know how other systems do it.
+		$deferred->promise()
+			->then($manager->getProcessOutgoingMappingClosure())
+			->then(function($model) use ($manager, $listing, $provider){
+				// This will insert/update the lycan model
+				$listings = $this->em->getRepository("AppBundle:Property")
+					->findListingsByProvider($provider, $listing);
+				$channelListing = null;
+				if($listings && $listings->count() >= 1){
+					$channelListing = $listings->current();
+				}
 				
-				$this->em->flush();
-				return $property;
+				$id = $manager->upsert($model, $channelListing);
+				// If NOT NULL
+				
+				if($id){
+					try {
+						// Now we create a child listing.
+						$channelListing = $channelListing?: new Listing();
+						$channelListing->setProvider($provider);
+						$channelListing->setProviderListingId($id);
+						$channelListing->setSchemaObject($model->toJson());
+						$channelListing->setMaster($listing);
+						$channelListing->setDescriptiveName($model->get("name"));
+						$channelListing->setIsSchemaValid($listing->getIsSchemaValid());
+						$this->em->persist($channelListing);
+						$this->em->persist($listing);
+						$this->em->flush();
+					} catch (\Exception $e){
+						
+					}
+					
+				}
+				
 			});
 		
-		die("Test Index Homepage");
+		
+		
+
+		die("Test Index Homepage: " . uniqid());
 		// $this->render("AppBundle::custom_layout.html.twig");
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', array(

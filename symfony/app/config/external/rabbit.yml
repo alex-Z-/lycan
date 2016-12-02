@@ -91,7 +91,7 @@ old_sound_rabbit_mq:
 
         push_listing:
             connection:       default
-            exchange_options: {name: 'pull_listing', type: topic}
+            exchange_options: {name: 'push_listing', type: topic}
             queue_options:
                 name: 'push_listing'
                 arguments: {'x-message-ttl': ['I', 172800000]}

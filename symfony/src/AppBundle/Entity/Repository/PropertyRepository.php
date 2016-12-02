@@ -26,4 +26,30 @@ class PropertyRepository extends \Doctrine\ORM\EntityRepository
 			return null;
 		}
 	}
+	
+	
+	public function findListingsByProvider($provider, $property){
+		$query = $this->_em->createQueryBuilder();
+		try {
+			$property = $query->select("p")
+				->from("AppBundle:Property", "p")
+				->leftJoin("p.listings", "l")
+				->where("p.id = :propertyId")
+				->andWhere("l.provider = :provider")
+				->setParameter("provider", $provider->getId())
+				->setParameter("propertyId", $property->getId())
+				->getQuery()
+				->getOneOrNullResult();
+			if($property){
+				return $property->getListings();
+			}
+			return null;
+			
+		} catch (\Exception $e	){
+			return null;
+		}
+	}
+	
+
+	
 }

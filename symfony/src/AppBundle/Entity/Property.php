@@ -6,9 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use AppBundle\Entity\Base\MappedSuperclassBase as Base;
 /**
- * Property
- *
- * @ORM\Table()
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"property" = "Property", "listing" = "Listing"})
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\PropertyRepository")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
@@ -25,7 +25,15 @@ class Property
 	 */
 	protected $id;
 	
+	/**
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Listing", mappedBy="master", cascade={"all"}, orphanRemoval=true)
+	 */
+	private $listings;
 	
+	/**
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="listings")
+	 */
+	private $master;
 	
 	/**
 	 * @ORM\Column(type="datetime", nullable=true)
@@ -351,6 +359,50 @@ class Property
 	{
 		$this->updatedAt = $updatedAt;
 	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getListings()
+	{
+		return $this->listings;
+	}
+	
+	/**
+	 * @param mixed $listings
+	 */
+	public function setListings($listings)
+	{
+		$this->listings = $listings;
+	}
+	
+	
+	
+	
+	public function addListing(\AppBundle\Entity\Property $property)
+	{
+		$this->listings[] = $property;
+		return $this;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getMaster()
+	{
+		return $this->master;
+	}
+	
+	/**
+	 * @param mixed $master
+	 */
+	public function setMaster($master)
+	{
+		$this->master = $master;
+	}
+	
+	
+	
 	
 	
 	

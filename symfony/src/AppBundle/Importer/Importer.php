@@ -100,7 +100,8 @@ class Importer {
 		$property->setProviderListingId($schema->get('$id'));
 		$property->setDescriptiveName( $schema->get("name") );
 		$property->setSyncedAt( new \DateTime() );
-		$property->setDescriptiveName(uniqid());
+		
+		// $property->setDescriptiveName(uniqid());
 		
 		
 		$property->setOwner( $provider->getOwner() );

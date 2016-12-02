@@ -17,6 +17,17 @@ class Manager  implements ManagerInterface {
 		$this->container = $container;
 	}
 	
+	public function getQueuePushListingsClosure()
+	{
+		// TODO: Implement getQueuePushListingsClosure() method.
+	}
+	
+	public function getProcessOutgoingMappingClosure()
+	{
+		// TODO: Implement getProcessOutgoingMappingClosure() method.
+	}
+	
+	
 	public function getQueuePullListingsClosure(){
 		return function($listings){
 			$logger = $this->container->get('app.logger.jobs');
@@ -33,7 +44,7 @@ class Manager  implements ManagerInterface {
 		};
 	}
 	
-	public function getProcessMappingClosure(){
+	public function getProcessIncomingMappingClosure(){
 		
 		return function($data) {
 			

@@ -58,7 +58,7 @@ class PullListingConsumer implements ConsumerInterface
 		// Get the Mapping Definitions
 		// Import
 		$client ->getListingFull($message['id'])
-				->then($manager->getProcessMappingClosure())
+				->then($manager->getProcessIncomingMappingClosure())
 				->then(function($schema) use ($provider) {
 					// Get Lycan Importer
 					$lycan = $this->container->get("app.importer");

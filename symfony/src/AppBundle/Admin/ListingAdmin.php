@@ -16,7 +16,7 @@ use JsonSchema\SchemaStorage;
 use JsonSchema\Validator;
 
 
-class PropertyAdmin extends BaseAdmin
+class ListingAdmin extends BaseAdmin
 {
 	protected $datagridValues = array(
 		'_page' => 1,
@@ -24,9 +24,7 @@ class PropertyAdmin extends BaseAdmin
 		'_sort_by' => 'createdAt'
 	);
 	const  ACCESS_ROLE_FOR_USERFIELD ="MASTER";
-	protected $parentAssociationMapping = 'brands';
-	
-	
+
 	protected function configureFormFields(FormMapper $formMapper)
 	{
 		// This is the current logged in.. but I think we actually want the
@@ -56,14 +54,9 @@ class PropertyAdmin extends BaseAdmin
 		$formMapper
 			->tab('Property')
 				->with('Property Name', array('class' => 'col-md-7'))->end()
-				->with('Ownership', array('class' => 'col-md-5'))->end()
-				->with('Brand', array('class' => 'col-md-5'))->end()
 			->end()
 			->tab('Schema')
 				->with('Property Schema', array('class' => 'col-md-12'))->end()
-			->end()
-			->tab('Channel Listings')
-				->with('Channel Listings', array('class' => 'col-md-12'))->end()
 			->end();
 		
 		$formMapper
@@ -72,34 +65,15 @@ class PropertyAdmin extends BaseAdmin
 						'box_class' => 'box box-warning',
 						'description' => "Create your property and give it a descriptive name. <br />This name is just a useful internal nickname, and does not need to relate to the marketing name for your rental. "	))
 					->add('descriptiveName', 'text')
-				->end()
-				->with("Brand" , [
-						'box_class' => 'box box-primary',
-						'description' => "Each property on your account can be assigned to a brand. You will most likely only have a single brand, but maintaining brands is an easy way to classify and group similar rentals in a manageable process." .
-										"<br /><p><b>Working with other managers?</b><br />Brands which have been shared with you will also show up here.</p>"])
-					->add('brands', 'sonata_type_model',
-						array(
-							'btn_add' => false,
-							'by_reference' => false,
-							'expanded' => false,
-							'multiple' => true,
-							'label' => 'Brands',
-							'query' => $brandsQuery
-						)
-					)->end();
-		
-		// We don't want to let properties be transfered until we understand more of the implications.
-		
-		$formMapper
-				->with('Ownership')
-				->add('owner', 'sonata_type_model', array(
-					'required' => false,
-					'btn_add' => ($accessToUserFields) ? "Create a new user" : false,
-					"disabled" => !$this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ),
-				))
+					->add('provider', null , ['disabled' => true])
 				->end()
 			->end();
 		
+		// We don't want to let properties be transfered until we understand more of the implications.
+		
+		
+		// TODO. The problem Is that ID is being updated. Need to find a new way to create the link in the
+		// <a href="{{ path('admin_app_listing_edit', {'id' :  nested_field.vars.data })}}">Edit</a>
 		$formMapper->tab('Schema')
 				->with('Property Schema')
 					->add('schemaObject', 'textarea', array(
@@ -108,42 +82,15 @@ class PropertyAdmin extends BaseAdmin
 				->end()
 			->end();
 		
-		$formMapper->tab('Channel Listings')
-			->with('Channel Listings')
-			->add('listings', 'sonata_type_collection', array(
-				'help' => 'View and Edit your Channel Listings. Each channel has it\'s own listing, so you customise descriptions and attributes on a per channel basis',
-				'required' => false,
-				'by_reference' => true,
-				'type_options' => array(
-					// Prevents the "Delete" option from being displayed
-					'delete' => true,
-				
-				
-				)
-				// 'label' => false,
-				// 'sonata_help' => "Add Users to this brand",
-				// 'sonata_field_description' => "Add Users to this brand",
-				// 'query' => $query,
-				// 'btn_add' => false, 'by_reference' => false, 'expanded' => false, 'multiple' => true, 'label' => 'Users'
-			),
-				array(
-					'edit' => 'inline',
-					'inline' => 'table'
-				))
-			->end()
-			->end();
-		
 		
 	}
 	
 	protected function configureDatagridFilters(DatagridMapper $datagridMapper)
 	{
 		$datagridMapper->add('descriptiveName')
-			->add('owner')
-			->add('brands')
-			->add('provider')
-			->add('providerListingId');
+			;
 	}
+	
 	
 	// add this method
 	public function validate(ErrorElement $errorElement, $object)
@@ -186,34 +133,29 @@ class PropertyAdmin extends BaseAdmin
 		
 	}
 	
-	public function getFormTheme()
+	public function preRemove($property)
 	{
-		return array_merge(
-			parent::getFormTheme(),
-			array('AppBundle:Admin/PropertyAdmin/Form:form_admin_fields.html.twig')
-		);
+		dump($property);die();
+		
 	}
 	
 	
 	protected function configureListFields(ListMapper $listMapper)
 	{
-		$listMapper->addIdentifier('id', null, array(
+		$listMapper->addIdentifier('descriptiveName', null, array(
 				'route' => array(
 					'name' => 'edit'
 				)
-			))
-			->add('descriptiveName', null, array( 'template'=>'AppBundle') );
+			));
+			
 		
-		$listMapper->add('brands');
+		$listMapper->add('master');
 		//
 		// , 'stemplate' => 'AppBundle:Admin/PropertyAdmin:list_provider.html.twig'
 		$listMapper->add('provider', null, [ 'associated_property' => 'typeAndName' ]);
 		
 		$listMapper->add('providerListingId', 'string');
 		
-		if ($this->isGranted( SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
-			$listMapper->add('owner');
-		}
 		
 		$listMapper->add('isSchemaValid');
 		$listMapper->add('updatedAt');
@@ -225,61 +167,6 @@ class PropertyAdmin extends BaseAdmin
 		
 	}
 	
-	public function createQuery($context = 'list')
-	{
-		$query = parent::createQuery($context);
-		$query->andWhere("o.master is null");
-		if ( !$this->isGranted("ROLE_SUPERADMIN") ||  !$this->isGranted('MASTER') ){
-			$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
-			// Is this correct? What about OR property?
-			$query->andWhere('o.owner = :owner')
-			->setParameter('owner', $owner);
-		}
-		return $query;
-	}
-	
-	public function preUpdate($property)
-	{
-	
-	}
-	
-	
-	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-	{
-		
-		if (!$childAdmin && !in_array($action, array('edit'))) {
-			return;
-		}
-		// NOT SURE>..
-		if($childAdmin) {
-			return $childAdmin->configureSideMenu($menu, $action);
-		}
-		
-		$admin = $this->isChild() ? $this->getParent() : $this;
-		
-		// $id = $admin->getRequest()->get('id');
-		$router = $this->getConfigurationPool()->getContainer()->get('router');
-		
-		if($admin->getSubject()->getOwner()) {
-			
-			$menu->addChild(
-				$this->trans('Edit Owner', array(), 'SonataUserBundle'),
-				array('uri' => $router->generate('admin_sonata_user_user_edit', array('id' => $admin->getSubject()->getOwner()->getId() )))
-			);
-		}
-		
-		if ( $this->isGranted("ROLE_SUPERADMIN")  ){
-			
-			$menu->addChild(
-				$this->trans('Show Event Log', array(), 'SonataUserBundle'),
-				array('uri' => $router->generate('admin_app_property_event_list', array('id' => $admin->getSubject()->getId() )))
-			);
-			
-			
-		}
-		
-		
-	}
 	
 	
 }

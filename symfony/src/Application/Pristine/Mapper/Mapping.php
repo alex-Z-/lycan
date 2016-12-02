@@ -38,6 +38,7 @@ class Mapping {
 	
 	public function __construct($enumClass, $mapping )
 	{
+	
 		$this->_enumClass = $enumClass;
 		$reflectorEnums = new \ReflectionClass($this->_enumClass);
 		$this->_enums = $reflectorEnums->getConstants();
@@ -185,8 +186,7 @@ class Mapping {
 		if($this->getMode() === self::STEM){
 			$string = PorterStemmer::stem($string);
 		}
-		
-		
+	
 		foreach($mappings as $key => $value){
 			
 			if($this->getMode() === self::STEM){
@@ -202,8 +202,9 @@ class Mapping {
 			$item->set("result", $result);
 			$collection->add($item);
 		}
-	
+		
 		$exact = $collection->filter(function ($a) {
+			
 			if($a->get("result")->getSimilar()){
 				return true;
 			} else {
@@ -211,11 +212,13 @@ class Mapping {
 			}
 			
 		});
+		
+		
 		// We only have one result. Great. Let's roll with it.
-		if(!$exact->isEmpty()){
+		if(!$exact->isEmpty() && $exact->count() === 1){
 			return $exact->first();
 		}
-		
+	
 		// So now, let's filter any items which have an awful score.
 		$best = $collection->filter(function ($a) {
 			if($a->get("result")->getScore() > $this->getCostTolerance( $a->get("result")->getCost() ) ){

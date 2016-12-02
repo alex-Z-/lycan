@@ -2,10 +2,11 @@
 
 namespace Lycan\Providers\CoreBundle\Consumer;
 
+use Lycan\Providers\CoreBundle\API\ManagerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Ramsey\Uuid\Uuid;
-
+use React\Promise\Deferred;
 class PushBrandConsumer implements ConsumerInterface
 {
 	
@@ -56,14 +57,16 @@ class PushBrandConsumer implements ConsumerInterface
 		// Create a push_listing job for each property to push it to the provider
 		$provider = $channel->getProvider();
 		$providerKey = strtolower( $provider->getProviderName() );
+		/* @var ManagerInterface */
 		$manager = $this->container->get('lycan.provider.manager.factory')->create($providerKey);
+		$manager->setMessage($message);
+		$manager->setProvider($provider);
 		
 		$brand = $channel->getBrand();
 		$listings = $brand->getProperties();
-		$listings->forAll(function ($index, $item){
-			
-			dump($item);die();
-		});
+	
+		$closure = $manager->getQueuePushListingsClosure();
+		$closure( $listings );
 		
 		
 				
