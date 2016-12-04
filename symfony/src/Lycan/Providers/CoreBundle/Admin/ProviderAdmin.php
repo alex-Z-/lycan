@@ -21,6 +21,15 @@ class ProviderAdmin extends BaseAdmin
 		$this->container = $container;
 	}
 	
+	public function getNewInstance()
+	{
+		$instance = parent::getNewInstance();
+		$instance->setPassOnCredentials(true);
+		$instance->setAllowPush(true);
+		
+		return $instance;
+	}
+	
 	protected function configureRoutes(RouteCollection $collection)
 	{
 		
@@ -124,7 +133,7 @@ class ProviderAdmin extends BaseAdmin
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(
-						'id' => 3
+						
 					),
 					'delete' => array(),
 				)

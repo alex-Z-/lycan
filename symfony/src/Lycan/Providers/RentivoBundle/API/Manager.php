@@ -19,6 +19,7 @@ class Manager implements ManagerInterface {
 	private $container;
 	public $message;
 	public $provider;
+	public $passThroughProvider;
 	public $client;
 	
 	public function setContainer($container){
@@ -74,7 +75,7 @@ class Manager implements ManagerInterface {
 			$schema   = $outgoing->process(
 				$json,
 				new SchemaContainer(),
-				new OutgoingHydrator()
+				new OutgoingHydrator($this->getPassThroughProvider())
 			);
 			return $schema;
 		};
@@ -110,16 +111,23 @@ class Manager implements ManagerInterface {
 		}
 		// In order to upsert, we have to push to Rentivo and if we KNOW what the ID is on Rentivo, we should use that ID.
 		// Otherwise we can just POST as a new property.
+		$data = json_decode((string) $response->getBody(), true);
 		
 		if($response->getStatusCode() === 200){
-			$data = json_decode((string) $response->getBody(), true);
+			
 			// This is the ID of the inserted property.
 			$id = $data['data'][0]['id'];
+			$logger = $this->container->get('app.logger.jobs');
+			
+			$logger->warning("Successfully upserted Listing on Rentivo.", ["id"=> $id]);
+			
 			return $id;
 		} else {
 			// Failed to insert. We should log this..
 			$logger = $this->container->get('app.logger.jobs');
-			$logger->warning("Error when trying to push rental to Rentivo. Returned a non 200 status code.");
+			$data = json_decode((string) $response->getBody(), true);
+			$logger->warning(sprintf("Error when trying to push rental to Rentivo. Returned a %s status code.", $response->getStatusCode()), [ "endpoint" => $endpoint, "input" => $model->toArray(), "output"=> $data ]);
+	
 			return null;
 		}
 	
@@ -156,6 +164,24 @@ class Manager implements ManagerInterface {
 	{
 		$this->provider = $provider;
 	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getPassThroughProvider()
+	{
+		return $this->passThroughProvider;
+	}
+	
+	/**
+	 * @param mixed $passThroughProvider
+	 */
+	public function setPassThroughProvider($passThroughProvider)
+	{
+		$this->passThroughProvider = $passThroughProvider;
+	}
+	
+	
 	
 	/**
 	 * @return mixed

@@ -84,6 +84,8 @@ class ProviderTabsAdmin extends ProviderAdmin
 		$formMapper
 			->tab('Credentials')
 			->with('Tabs Credentials', array('class' => 'col-md-7'))->end()
+			->with('Channel Configuration', array('class' => 'col-md-5'))->end()
+			->with('Provider Supports Features', array('class' => 'col-md-5'))->end()
 			->end();
 		
 		
@@ -94,6 +96,13 @@ class ProviderTabsAdmin extends ProviderAdmin
 				->add('baseUrl', 'url')
 				->add('client', 'text', array('label' => 'Public Key'))
 				->add('secret', 'text')
+			->end()
+			->with('Channel Configuration')
+				->add('shouldPull', 'checkbox', ['required' => false, 'label' => 'Shall we pull rentals from this provider?'])
+				->add('passOnCredentials', 'checkbox', ['required' => false, 'label' => 'Can Lycan share API credentials to downstream channels.'])
+			->end()
+			->with('Provider Supports Features')
+				->add('supportsRealTimePricing', 'checkbox', ['required' => false, 'label' => 'Supports Realtime Pricing'])
 			->end()
 			->end();
 		

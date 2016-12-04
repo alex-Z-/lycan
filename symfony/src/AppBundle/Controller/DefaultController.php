@@ -53,6 +53,7 @@ class DefaultController extends Controller
 			return true;
 		}
 		$schema = $listing->getSchemaObject();
+		
 		// $schemaContainer = new Container(json_decode( $schema, true));
 		// $schemaContainer->fromArray();
 	
@@ -65,15 +66,21 @@ class DefaultController extends Controller
 		// Something like "create" property. Get ID. Push images. Push descriptions. etc.
 		// We'll refactor when we know how other systems do it.
 		$deferred->promise()
+			->then(function($schema) use ($manager, $listing){
+				// If we can pass on credentials. Do a mixin before passing on.
+				if($listing->getProvider()->getPassOnCredentials()){
+					// If passthrough provider is set. We can receive this in the process outgoing.
+					$manager->setPassThroughProvider($listing->getProvider());
+				}
+				return $schema;
+			})
 			->then($manager->getProcessOutgoingMappingClosure())
 			->then(function($model) use ($manager, $listing, $provider){
 				// This will insert/update the lycan model
-				$listings = $this->em->getRepository("AppBundle:Property")
-					->findListingsByProvider($provider, $listing);
-				$channelListing = null;
-				if($listings && $listings->count() >= 1){
-					$channelListing = $listings->current();
-				}
+				$listings = $this->em->getRepository("AppBundle:Property")->findListingsByProvider($provider, $listing);
+				// We're assuming we only have a single channel listing for now, but this might change. This will need refactoring.
+				$channelListing =  ($listings && $listings->count() >= 1) ? $listings->current() : null;
+				// If we know what the CHANNEL LISTING is, we pass that to the upsert. Because then we can UPDATE. Rather than insert.
 				
 				$id = $manager->upsert($model, $channelListing);
 				// If NOT NULL

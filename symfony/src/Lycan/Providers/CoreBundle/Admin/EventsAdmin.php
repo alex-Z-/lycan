@@ -100,6 +100,10 @@ class EventsAdmin extends BaseAdmin
 							'name' => 'show'
 						)))
 					->add('eventGroup')
+					->add('property', null, array(
+						'route' => array(
+							'name' => 'edit'
+						)))
 					->add('levelValue')
 					->add('createdAt')
 					->add('updatedAt')

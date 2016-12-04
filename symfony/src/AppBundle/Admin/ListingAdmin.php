@@ -52,7 +52,7 @@ class ListingAdmin extends BaseAdmin
 		
 		// define group zoning
 		$formMapper
-			->tab('Property')
+			->tab('Listing')
 				->with('Property Name', array('class' => 'col-md-7'))->end()
 			->end()
 			->tab('Schema')
@@ -60,7 +60,7 @@ class ListingAdmin extends BaseAdmin
 			->end();
 		
 		$formMapper
-			->tab('Property')
+			->tab('Listing')
 				->with('Property Name',	array(
 						'box_class' => 'box box-warning',
 						'description' => "Create your property and give it a descriptive name. <br />This name is just a useful internal nickname, and does not need to relate to the marketing name for your rental. "	))
@@ -164,6 +164,52 @@ class ListingAdmin extends BaseAdmin
 			'edit' => array(),
 			'delete' => array(),
 		)));
+		
+	}
+	
+	
+	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
+	{
+		
+		if (!$childAdmin && !in_array($action, array('edit'))) {
+			return;
+		}
+		// NOT SURE>..
+		if($childAdmin) {
+			return $childAdmin->configureSideMenu($menu, $action);
+		}
+		
+		$admin = $this->isChild() ? $this->getParent() : $this;
+		
+		// $id = $admin->getRequest()->get('id');
+		$router = $this->getConfigurationPool()->getContainer()->get('router');
+		
+		if($admin->getSubject()->getMaster()) {
+			
+			$menu->setExtra( 'safe_label' , true );
+		
+			
+			
+			$menu->addChild(
+				"Master Property",
+				array(
+					'uri' => $router->generate('admin_app_property_edit', array('id' => $admin->getSubject()->getMaster()->getId() )),
+					'label' => "Go up to Master Property"
+				
+				)
+			)->setExtra( 'safe_label' , true );
+		}
+		
+		if ( $this->isGranted("ROLE_SUPERADMIN")  ){
+			
+			$menu->addChild(
+				$this->trans('Show Event Log', array(), 'SonataUserBundle'),
+				array('uri' => $router->generate('admin_app_property_event_list', array('id' => $admin->getSubject()->getId() )))
+			);
+			
+			
+		}
+		
 		
 	}
 	

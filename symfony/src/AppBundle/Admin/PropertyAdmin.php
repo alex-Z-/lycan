@@ -27,6 +27,7 @@ class PropertyAdmin extends BaseAdmin
 	protected $parentAssociationMapping = 'brands';
 	
 	
+	
 	protected function configureFormFields(FormMapper $formMapper)
 	{
 		// This is the current logged in.. but I think we actually want the

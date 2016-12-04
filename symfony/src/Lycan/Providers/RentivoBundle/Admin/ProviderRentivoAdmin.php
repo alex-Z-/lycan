@@ -115,6 +115,7 @@ class ProviderRentivoAdmin extends ProviderAdmin
 				->end()
 				->with('Channel Configuration')
 					->add('shouldPull', 'checkbox', ['required' => false, 'label' => 'Shall we pull rentals from this provider?'])
+					->add('passOnCredentials', 'checkbox', ['required' => false, 'label' => 'Can Lycan share API credentials to downstream channels.'])
 					->add('allowPush', 'checkbox', [ 'required' => false, 'label' => 'Allow this provider to be used as a downstream push channel'])
 				->end()
 			->end();

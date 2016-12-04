@@ -1,6 +1,7 @@
 <?php
 namespace Lycan\Providers\RentivoBundle\Outgoing\Hydrator;
 use Incoming;
+use Lycan\Providers\CoreBundle\Entity\ProviderAuthBase;
 use Pristine\ISO\CountryNames;
 use Pristine\Schema\Container as SchemaContainer;
 use Pristine\Enums;
@@ -10,6 +11,13 @@ use Pristine\Utils\LocaleUtils;
 
 class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 {
+	protected $provider;
+	public function __construct(ProviderAuthBase $provider)
+	{
+		$this->setProvider($provider);
+	}
+	
+	
 	public function hydrate( $input, $model)
 	{
 	
@@ -23,7 +31,7 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 		
 		$model->set('name', $input->get("name"));
 		$model->set('active', true);
-		$model->set('enabled', true);
+		$model->set('published', true);
 		$model->set('attributes.propertyType', $mapper->map(  $input->get("listing.type") ) );
 		$model->set('attributes.bedrooms', $input->get("listing.bedrooms"));
 		$model->set('attributes.bathrooms', $input->get("listing.bathrooms"));
@@ -137,6 +145,44 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 			$model->set("availability.startDatum", $input->get("+availability.startDatum"));
 			$model->set("availability.availability", $input->get("+availability.sequence"));
 		}
+		// Set meta provider
+		/*
+		 * "meta": {
+		"yieldProvider": "vacaypay",
+		"integrations": {
+			"vacaypay": {
+				"useExternalProviderEndpoint": true,
+				"defaultCurrency": "THB",
+				"credentials": {
+					"_protected": true,
+					"key": "qd36jaw7Ya9BOHG85pUzapzMvsmSB1swnTQGqUHrA08"
+				}
+			},
+			"klik": {
+				"property": {
+					"id": "5091"
+				}
+			}
+		}
+	},
+		 */
+		if($this->getProvider() && $this->getProvider()->getSupportsRealTimePricing()){
+			$t =  strtolower( $this->getProvider()->getProviderType());
+			$externalId = $input->get('$id');
+			$integration = [
+				"property" => [ "id" => $externalId],
+				"credentials" => [
+					"_protected"=> true,
+					"client" => $this->getProvider()->getClient(),
+					"secret" => $this->getProvider()->getSecret()
+				]
+			];
+			
+			
+			$model->set("meta.yieldProvider", $t );
+			$model->set( sprintf( "meta.integrations.%s", $t), $integration );
+			
+		}
 				
 		return $model;
 	}
@@ -158,4 +204,22 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 		$date = new \DateTime($d);
 		return $date->format("Y-m-d\TH:i:s\Z");
 	}
+	
+	
+	/**
+	 * @return mixed
+	 */
+	public function getProvider()
+	{
+		return $this->provider;
+	}
+	
+	/**
+	 * @param mixed $provider
+	 */
+	public function setProvider($provider)
+	{
+		$this->provider = $provider;
+	}
+	
 }

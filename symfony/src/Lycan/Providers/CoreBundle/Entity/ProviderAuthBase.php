@@ -107,6 +107,52 @@ class ProviderAuthBase
 	 */
 	private $allowPush;
 	
+	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $passOnCredentials = true;
+	
+	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $supportsRealTimePricing;
+	
+	/**
+	 * @return mixed
+	 */
+	public function getSupportsRealTimePricing()
+	{
+		return $this->supportsRealTimePricing;
+	}
+	
+	/**
+	 * @param mixed $supportsRealTimePricing
+	 */
+	public function setSupportsRealTimePricing($supportsRealTimePricing)
+	{
+		$this->supportsRealTimePricing = $supportsRealTimePricing;
+	}
+	
+	
+	
+	/**
+	 * @return mixed
+	 */
+	public function getPassOnCredentials()
+	{
+		return $this->passOnCredentials;
+	}
+	
+	/**
+	 * @param mixed $passOnCredentials
+	 */
+	public function setPassOnCredentials($passOnCredentials)
+	{
+		$this->passOnCredentials = $passOnCredentials;
+	}
+
+
+	
 	
 	/**
 	 * @ORM\Column(type="string", nullable=true)
