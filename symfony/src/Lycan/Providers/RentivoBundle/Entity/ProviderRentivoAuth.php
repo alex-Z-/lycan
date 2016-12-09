@@ -115,7 +115,9 @@ class ProviderRentivoAuth extends ProviderAuthBase
 		$this->password = $password;
 	}
 	
-	
+	public function getLogValues(){
+		return get_object_vars ($this);
+	}
 	
 	
 	

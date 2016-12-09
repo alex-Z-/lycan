@@ -11,6 +11,12 @@ services:
         calls:
             - [ setContainer,[ @service_container ] ]
 
+    app.importer.csv:
+        class: AppBundle\Block\UpsertCSVService
+        arguments: [ "upsert_csv_not_needed", @templating, @service_container ]
+        tags:
+            - { name: sonata.block }
+
     appbundle.tblprefix_subscriber:
             class: AppBundle\Subscriber\TablePrefixSubscriber
             arguments: [%appbundle.db.table_prefix%]
@@ -30,3 +36,8 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ @annotation_reader ] ]
+
+    app.log.formatter.blank:
+            class: Symfony\Bridge\Monolog\Formatter\ConsoleFormatter
+            arguments:
+                - "%%start_tag%%%%message%%%%end_tag%%, %%context%%\n"

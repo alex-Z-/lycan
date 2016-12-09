@@ -114,7 +114,7 @@ class ProviderTabsAdmin extends ProviderAdmin
 				->add('owner', 'sonata_type_model', array(
 					'required' => false,
 					'expanded' => false,
-					'btn_add' => false,
+					'btn_add' => 'Create new user',
 					'multiple' => false,
 				))
 				->end()
@@ -152,7 +152,9 @@ class ProviderTabsAdmin extends ProviderAdmin
 	
 	protected function configureListFields(ListMapper $listMapper)
 	{
-		$listMapper->addIdentifier('nickname', null, array(
+		$listMapper
+			->add('isValidCredentials', null, ['label' => 'Valid'])
+			->addIdentifier('nickname', null, array(
 				'route' => array(
 					'name' => 'edit'
 				)

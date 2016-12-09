@@ -27,3 +27,9 @@ services:
         arguments: ['@logger']
         tags:
             - { name: monolog.logger, channel: jobs }
+
+    app.logger.missing:
+            class: AppBundle\Monolog\Logger
+            arguments: ['@logger']
+            tags:
+                - { name: monolog.logger, channel: missing }

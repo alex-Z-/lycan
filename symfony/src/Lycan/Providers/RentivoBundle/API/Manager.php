@@ -27,16 +27,49 @@ class Manager implements ManagerInterface {
 	}
 	
 	
+	public function getQueuePullProviderClosure(){
+		
+		return function($object) {
+			$em = $this->container->get('doctrine')
+				->getEntityManager();
+			
+			
+			$object->setPullInProgress(true);
+			$batch = new BatchExecutions();
+			$batch->setProvider($object);
+			$object->setLastActiveBatch($batch);
+			$em->persist($object);
+			$em->persist($batch);
+			$em->flush();
+			
+			$logger = $this->container->get('app.logger.jobs');
+			$logger->setBatch($batch->getId());
+			$logger->debug("Creating a new batch execution job");
+			
+			$logger = $this->container->get('app.logger.user_actions')->logger;
+			$logger->info('Manual initiation of pull syncronization', ['provider' => $object->getId(), "nickname" => $object->getNickname()]);
+			
+			// Add
+			$msg      = ["id" => $object->getId(), "batch" => $batch->getId()];
+			$code     = strtolower($object->getProviderName());
+			$routingKey = sprintf("lycan.provider.pull.provider.%s", $code);
+			$this->container->get('lycan.rabbit.producer.pull_provider')->publish(serialize($msg), $routingKey);
+		};
+		
+		
+	}
+	
+	
 	public function getQueuePullListingsClosure(){
 		return function($listings) {
 			$logger = $this->container->get('app.logger.jobs');
 			$jobsInBatch = count($listings['data']);
 			$message = $this->getMessage();
 			foreach($listings['data'] as $index=>$listing){
-				$msg = [ "id" => $listing['id'], "provider" => (string) $this->getProvider()->getId() , "batch" => $message['batch'], "jobsInBatch" => $jobsInBatch, "jobIndex" => $index ];
+				$msg = [ "id" => $listing['id'], "provider" => (string) $this->getProvider()->getId() , "batch" => (string) $message['batch'], "jobsInBatch" => $jobsInBatch, "jobIndex" => $index + 1 ];
 				$logger->info(sprintf("Sending Property with ID of %s to Queue for fetch.", $listing['id']), array_merge( ["input" => $listing], $msg ));
 				
-				$routingKey = "lycan.provider.rentivo";
+				$routingKey = "lycan.provider.pull.listing.rentivo";
 				$this->container->get('lycan.rabbit.producer.pull_listing')->publish(serialize($msg), $routingKey);
 			}
 			
@@ -53,10 +86,10 @@ class Manager implements ManagerInterface {
 			
 			foreach($listings as $index=>$listing){
 			
-				$msg = [ "id" => (string) $listing->getId(), "provider" => (string) $this->getProvider()->getId() , "batch" => $message['batch'], "jobsInBatch" => $jobsInBatch, "jobIndex" => $index ];
+				$msg = [ "id" => (string) $listing->getId(), "provider" => (string) $this->getProvider()->getId() , "batch" => (string) $message['batch'], "jobsInBatch" => $jobsInBatch, "jobIndex" => $index + 1  ];
 				$logger->info(sprintf("Sending Property with ID of %s to Queue for Push Syncronization.",  (string) $listing->getId() ),  $msg );
 				
-				$routingKey = "lycan.provider.rentivo";
+				$routingKey = "lycan.provider.push.listing.rentivo";
 				$this->container->get('lycan.rabbit.producer.push_listing')->publish(serialize($msg), $routingKey);
 			}
 			

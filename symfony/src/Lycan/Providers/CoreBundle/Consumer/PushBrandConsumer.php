@@ -44,7 +44,6 @@ class PushBrandConsumer implements ConsumerInterface
 		// Get Provider..
 		
 		
-		
 		$channel = $this->em->getRepository('AppBundle:ChannelBrand')->find($id);
 		if(!$channel->getPushInProgress() ){
 			$batchLogger->warning("Channel is not recognised as in progress. Terminating Push Request.", $message );

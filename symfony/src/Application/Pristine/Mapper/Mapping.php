@@ -122,7 +122,7 @@ class Mapping {
 	}
 	
 	/**
-	 * @return mixed
+	 * @return Levo
 	 */
 	public function getMatcher()
 	{
@@ -194,15 +194,16 @@ class Mapping {
 			}
 			
 			$result = $this->getMatcher()->match($string, $key);
-			
-			$item = new LanguageCollection();
-			$item->set("source", $string);
-			$item->set("string", $key);
-			$item->set("enum", $value);
-			$item->set("result", $result);
-			$collection->add($item);
+			if($result) {
+				$item = new LanguageCollection();
+				$item->set("source", $string);
+				$item->set("string", $key);
+				$item->set("enum", $value);
+				$item->set("result", $result);
+				$collection->add($item);
+			}
 		}
-		
+	
 		$exact = $collection->filter(function ($a) {
 			
 			if($a->get("result")->getSimilar()){

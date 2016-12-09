@@ -9,6 +9,7 @@ sonata_block:
          sonata.user.block.menu:    # used to display the menu in profile pages
          sonata.user.block.account: # used to display menu option (login option)
          sonata.block.service.text: # used to if you plan to use Sonata user routes
+         app.importer.csv: ~
 
 raindrop_sonata_theme:
     theme: flatly
@@ -31,6 +32,11 @@ sonata_admin:
 
     title:      Lycan
     title_logo: /img/logos/lycan.svg
+    dashboard:
+         blocks:
+             # display a dashboard block
+             - { position: left, type: sonata.admin.block.admin_list }
+             - { position: right, type: app.importer.csv }
 
 sonata_user:
     security_acl: true

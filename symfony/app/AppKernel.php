@@ -65,7 +65,8 @@ class AppKernel extends Kernel
 			new FOS\MessageBundle\FOSMessageBundle(), // We ARE NOT USING THIS.....
 	
 			new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
-			new EightPoints\Bundle\GuzzleBundle\GuzzleBundle()
+			new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
+			new Ddeboer\DataImportBundle\DdeboerDataImportBundle()
            
         );
 		

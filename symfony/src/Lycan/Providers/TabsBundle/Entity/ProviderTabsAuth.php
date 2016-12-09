@@ -97,6 +97,8 @@ class ProviderTabsAuth extends ProviderAuthBase
 		$this->client = $client;
 	}
 	
-	
+	public function getLogValues(){
+		return get_object_vars ($this);
+	}
 	
 }

@@ -10,30 +10,10 @@ use AppBundle\Entity\Base\MappedSuperclassBase as Base;
  */
 class Listing extends Property
 {
-
 	
-	/**
-	 * @ORM\Column(type="string")
-	 */
-	private $providerPublicURL;
 	
-	/**
-	 * @return mixed
-	 */
-	public function getProviderPublicURL()
-	{
-		return $this->providerPublicURL;
-	}
 	
-	/**
-	 * @param mixed $providerPublicURL
-	 */
-	public function setProviderPublicURL($providerPublicURL)
-	{
-		$this->providerPublicURL = $providerPublicURL;
-	}
 	
-
 	
 	
 }

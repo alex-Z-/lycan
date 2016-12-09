@@ -67,6 +67,19 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 		$model->set("location.country", CountryNames::getCountryName($input->get("address.countryISO2")));
 		$model->set("location.iso3166", $input->get("address.countryISO2"));
 		
+		// Also add debug missing features..
+		if($input->has("_debug.unmapped.features")){
+			foreach($input->get("_debug.unmapped.features")->getIterator() as $amenity){
+				$a = [
+					"namespace"    => "Amenities\\\\General",
+					"name"        => $amenity
+				];
+				$model->set("amenities.[]", $a);
+			}
+		}
+		
+		
+		
 		if($input->has("features")){
 			
 			$mapper = new Mapping( 'Pristine\Enums\Features', new Mapper\Features() );
@@ -98,6 +111,7 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 			}
 		}
 		
+	
 		if($input->has("texts")){
 			
 			foreach($input->get("texts")->getIterator() as $text){
@@ -119,7 +133,7 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 					if($media->get("type") === "URI"){
 						$image = [
 							"url" => $media->get("uri"),
-							"position" => $media->get("position"),
+							"position" => $media->get("position")
 						];
 						$model->set("images.[]", $image);
 					}

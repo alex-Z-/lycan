@@ -21,6 +21,38 @@ class ProviderAdmin extends BaseAdmin
 		$this->container = $container;
 	}
 	
+	
+	
+	public function getBatchActions()
+	{
+		// retrieve the default batch actions (currently only delete)
+		$actions = parent::getBatchActions();
+		
+		if (
+			$this->hasRoute('edit') && $this->isGranted('EDIT') &&
+			$this->hasRoute('delete') && $this->isGranted('DELETE')
+		) {
+			$actions['pull'] = array(
+				'label' => 'Start - Pull Providers',
+				'ask_confirmation' => true
+			);
+				
+			$actions['pullStop'] = array(
+				'label' => 'Stop - Pulling Providers',
+				'ask_confirmation' => true
+			);
+			
+			$actions['validateCredentials'] = array(
+				'label' => 'Validate Credentials',
+				'ask_confirmation' => false
+			);
+			
+		}
+		
+		return $actions;
+	}
+	
+	
 	public function getNewInstance()
 	{
 		$instance = parent::getNewInstance();
@@ -115,6 +147,30 @@ class ProviderAdmin extends BaseAdmin
 	protected function configureDatagridFilters(DatagridMapper $datagridMapper)
 	{
 	
+	}
+	
+	
+	public function preUpdate($object)
+	{
+		// If we haven't validated the credentials we should attempt to do it now.
+		$providerKey = strtolower( $object->getProviderName() );
+		$this->container = $this->getConfigurationPool()->getContainer();
+		$client = $this->container->get('lycan.provider.api.factory')->create($providerKey, $object);
+		try {
+			$ponged = $client->ping();
+			
+			if($ponged->getStatusCode() === 200){
+				$object->setIsValidCredentials(true);
+			} else {
+				$this->getRequest()->getSession()->getFlashBag()->add("error", "The current credentials are invalid.");
+				$object->setIsValidCredentials(false);
+			}
+		} catch(\Exception $e){
+			$object->setIsValidCredentials(false);
+			$this->getRequest()->getSession()->getFlashBag()->add("error", "Failed with message: " . $e->getMessage() );
+		}
+			
+		
 	}
 	
 	

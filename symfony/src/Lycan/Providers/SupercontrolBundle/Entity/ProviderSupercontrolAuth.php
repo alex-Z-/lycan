@@ -46,6 +46,12 @@ class ProviderSupercontrolAuth extends ProviderAuthBase
 	 * @ORM\Column(type="string")
 	 */
 	private $secret;
+	
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	private $siteId;
+	
 
 	/**
 	 * @return mixed
@@ -97,7 +103,26 @@ class ProviderSupercontrolAuth extends ProviderAuthBase
 		$this->client = $client;
 	}
 	
-
+	/**
+	 * @return mixed
+	 */
+	public function getSiteId()
+	{
+		return $this->siteId;
+	}
+	
+	/**
+	 * @param mixed $siteId
+	 */
+	public function setSiteId($siteId)
+	{
+		$this->siteId = $siteId;
+	}
+	
+	
+	public function getLogValues(){
+		return get_object_vars ($this);
+	}
 	
 	
 	

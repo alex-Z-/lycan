@@ -47,3 +47,7 @@ jmose_command_scheduler:
 fos_message:
     resource: "@FOSMessageBundle/Resources/config/routing.xml"
     prefix: /optional_routing_prefix
+
+import_csv:
+     path: /admin/csv/import
+     defaults:  { _controller: AppBundle:UpsertCSV:importFile }

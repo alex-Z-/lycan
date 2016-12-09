@@ -14,6 +14,7 @@ use JsonSchema\Constraints\Factory;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\SchemaStorage;
 use JsonSchema\Validator;
+use AppBundle\Form\Type\UriType;
 
 
 class PropertyAdmin extends BaseAdmin
@@ -87,7 +88,15 @@ class PropertyAdmin extends BaseAdmin
 							'label' => 'Brands',
 							'query' => $brandsQuery
 						)
-					)->end();
+					)->end()->end();
+		
+		$formMapper
+			->tab('Property')
+				->with('Provider', array('class' => 'col-md-5 pull-right'))
+					->add('providerPublicUrl',  UriType::class, ["disabled"=> true])
+					->add('provider', null ,["disabled"=> true])
+					->add('providerListingId', null ,["disabled"=> true])
+				->end();
 		
 		// We don't want to let properties be transfered until we understand more of the implications.
 		
@@ -198,12 +207,12 @@ class PropertyAdmin extends BaseAdmin
 	
 	protected function configureListFields(ListMapper $listMapper)
 	{
-		$listMapper->addIdentifier('id', null, array(
+		$listMapper->addIdentifier('descriptiveName', null, array(
 				'route' => array(
 					'name' => 'edit'
 				)
 			))
-			->add('descriptiveName', null, array( 'template'=>'AppBundle') );
+			;
 		
 		$listMapper->add('brands');
 		//

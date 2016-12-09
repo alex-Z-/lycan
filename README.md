@@ -28,6 +28,9 @@ First Setup for Developer
 
 `php app/console sonata:admin:setup-acl`
 
+Note: If the PHP container does not start. Make sure that you do not have supervisor autostarting. It will fail if the database does not already exist and created causing the container to instantly exit because of error code 0.
+
+
 All together:
 -------------
 

@@ -35,6 +35,20 @@ class ProviderAuthBase
 	private $brandChannels;
 	
 	
+	/**
+	 * @var \DateTime $contentChanged
+	 *
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $lastValidatedCredentialsAt;
+	
+	
+	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $isValidCredentials;
+	
+	
 	
 	/**
 	 * @var \DateTime $created
@@ -167,9 +181,10 @@ class ProviderAuthBase
 	
 	public function setAutoMappedToBrands($brands)
 	{
-	
-		foreach ($brands as $brand) {
-			$this->addAutoMappedToBrand($brand);
+		if(is_array($brands)) {
+			foreach ($brands as $brand) {
+				$this->addAutoMappedToBrand($brand);
+			}
 		}
 		
 		return $this;
@@ -508,6 +523,38 @@ class ProviderAuthBase
 	public function setLastActiveBatch($lastActiveBatch)
 	{
 		$this->lastActiveBatch = $lastActiveBatch;
+	}
+	
+	/**
+	 * @return \DateTime
+	 */
+	public function getLastValidatedCredentialsAt()
+	{
+		return $this->lastValidatedCredentialsAt;
+	}
+	
+	/**
+	 * @param \DateTime $lastValidatedCredentialsAt
+	 */
+	public function setLastValidatedCredentialsAt($lastValidatedCredentialsAt)
+	{
+		$this->lastValidatedCredentialsAt = $lastValidatedCredentialsAt;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getIsValidCredentials()
+	{
+		return $this->isValidCredentials;
+	}
+	
+	/**
+	 * @param mixed $isValidCredentials
+	 */
+	public function setIsValidCredentials($isValidCredentials)
+	{
+		$this->isValidCredentials = $isValidCredentials;
 	}
 	
 	

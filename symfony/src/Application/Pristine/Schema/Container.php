@@ -4,6 +4,42 @@ namespace Pristine\Schema;
 use Pristine\Collections\ArrayCollection;
 use Pristine\Utils\ArrayUtils;
 class Container extends ArrayCollection {
+	protected $_options = [
+		"allowNull" => true,
+		"autoCascadeOptions" => true
+	];
+	protected $_optionKeys = [];
+	public function configure($options){
+		
+		$this->_options = array_merge($this->_options, $options);
+		
+		$options = array_change_key_case($options, CASE_LOWER);
+		$this->_optionKeys = array_merge($this->_optionKeys, array_keys($options));
+	}
+	
+	public function getOptions(){
+		return $this->_options;
+	}
+	
+	public function getOption($key)
+	{
+		
+		if ($this->hasOption($key)) {
+			$options = $this->getOptions();
+			$options = array_change_key_case($options, CASE_LOWER);
+			
+			return $options[ strtolower($key) ];
+		}
+		
+		return null;
+	}
+	
+	public function hasOption($key)
+	{
+		return in_array(strtolower($key), $this->_optionKeys);
+	}
+	
+	
 	
 	public function fromArray(array $array, $clear = false)
 	{
@@ -48,6 +84,10 @@ class Container extends ArrayCollection {
 	
 	public function set($key, $value)
 	{
+		if(is_null($value) && !$this->getOption('allowNull')){
+			// Do not allow null to be set.
+			return;
+		}
 		// Check if has dot notation
 		if( strpos( $key, '.') !== false){
 			$values = $this->toArray();
@@ -76,6 +116,7 @@ class Container extends ArrayCollection {
 			$f = ArrayUtils::getNestedArrayValue( $name, $s);
 			if(is_array($f)){
 				$container = new self();
+				$container->configure($this->getOptions());
 				$container->fromArray($f);
 				return $container;
 			}

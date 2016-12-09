@@ -80,9 +80,13 @@ class Client implements ClientInterface {
 	
 	public function fetchAllListings(){
 		$deferred = new Deferred();
-		$response = $this->_fetchAllListings();
-		$data = \GuzzleHttp\json_decode(  $response->getBody(), true );
-		$deferred->resolve($data);
+		try {
+			$response = $this->_fetchAllListings();
+			$data     = \GuzzleHttp\json_decode($response->getBody(), true);
+			$deferred->resolve($data);
+		} catch (Exception $e) {
+			$deferred->reject($e);
+		}
 		return $deferred->promise();
 	}
 	

@@ -19,83 +19,100 @@ old_sound_rabbit_mq:
             #requires php_sockets.dll
             use_socket: false # default false
     producers:
+        #dead letter
+        wait_pull_listing:
+            connection: default
+            service_alias: lycan.rabbit.producer.wait_pull_listing
+            exchange_options: { name: 'lycan.e.wait_pull_listing', type: 'topic' }
+
         pull_provider:
             connection: default
-            exchange_options: { name: 'pull_provider', type: 'topic' }
+            exchange_options: { name: 'lycan.e.pull_provider', type: 'topic' }
             service_alias: lycan.rabbit.producer.pull_provider
             # 2 DAY TTL 60000 * 60 * 24 * 2
             queue_options:
-                name: 'pull_provider'
+                name: 'lycan.q.pull_provider'
                 arguments: {'x-message-ttl': ['I', 172800000]}
 
         pull_listing:
             connection: default
-            exchange_options: { name: 'pull_listing', type: 'topic' }
+            exchange_options: { name: 'lycan.e.pull_listing', type: 'topic' }
             service_alias: lycan.rabbit.producer.pull_listing
             # 3 hour TTL
             queue_options:
-                name: 'pull_listing'
+                name: 'lycan.q.pull_listing'
                 arguments: {'x-message-ttl': ['I', 172800000]}
 
         push_brand:
             connection: default
-            exchange_options: { name: 'push_brand', type: 'topic' }
+            exchange_options: { name: 'lycan.e.push_brand', type: 'topic' }
             service_alias: lycan.rabbit.producer.push_brand
             # 2 DAY TTL 60000 * 60 * 24 * 2
             queue_options:
-                name: 'push_brand'
+                name: 'lycan.q.push_brand'
                 arguments: {'x-message-ttl': ['I', 172800000]}
 
         push_listing:
             connection: default
-            exchange_options: { name: 'push_listing', type: 'topic' }
+            exchange_options: { name: 'lycan.e.push_listing', type: 'topic' }
             service_alias: lycan.rabbit.producer.push_listing
             # 3 hour TTL
             queue_options:
-                name: 'push_listing'
+                name: 'lycan.q.push_listing'
                 arguments: {'x-message-ttl': ['I', 172800000]}
 
     consumers:
+        wait_pull_listing:
+            connection:       default
+            exchange_options: {name: 'lycan.e.wait_pull_listing', type: 'topic'}
+            queue_options:
+                name: 'lycan.q.wait_pull_listing'
+                arguments: {'x-message-ttl': ['I', 15000], 'x-dead-letter-exchange': ['S', 'lycan.e.pull_listing']} #10 seconds
+                routing_keys:
+                   - lycan.provider.pull.listing.#
+            callback:   lycan.rabbit.consumer.devnull
+            enable_logger: true
+
         pull_provider:
             connection:       default
-            exchange_options: {name: 'pull_provider', type: topic}
+            exchange_options: {name: 'lycan.e.pull_provider', type: topic}
             queue_options:
-                name: 'pull_provider'
+                name: 'lycan.q.pull_provider'
                 arguments: {'x-message-ttl': ['I', 172800000]}
                 routing_keys:
-                    - lycan.provider.#
+                    - lycan.provider.pull.provider.#
             callback:   lycan.rabbit.consumer.pull_provider
             enable_logger: true
 
         pull_listing:
             connection:       default
-            exchange_options: {name: 'pull_listing',  type: topic}
+            exchange_options: {name: 'lycan.e.pull_listing',  type: topic}
             queue_options:
-                name: 'pull_listing'
+                name: 'lycan.q.pull_listing'
                 arguments: {'x-message-ttl': ['I', 172800000]}
                 routing_keys:
-                    - lycan.provider.#
+                    - lycan.provider.pull.listing.#
             callback:   lycan.rabbit.consumer.pull_listing
             enable_logger: true
 
         push_brand:
             connection:       default
-            exchange_options: {name: 'push_brand',  type: topic}
+            exchange_options: {name: 'lycan.e.push_brand',  type: topic}
             queue_options:
-                name: 'push_brand'
+                name: 'lycan.q.push_brand'
                 arguments: {'x-message-ttl': ['I', 172800000]}
                 routing_keys:
-                    - lycan.provider.#
+                    - lycan.provider.push.brand.#
             callback:   lycan.rabbit.consumer.push_brand
             enable_logger: true
 
         push_listing:
             connection:       default
-            exchange_options: {name: 'push_listing', type: topic}
+            exchange_options: {name: 'lycan.e.push_listing', type: topic}
             queue_options:
-                name: 'push_listing'
+                name: 'lycan.q.push_listing'
                 arguments: {'x-message-ttl': ['I', 172800000]}
                 routing_keys:
-                    - lycan.provider.#
+                    - lycan.provider.push.listing.#
             callback:   lycan.rabbit.consumer.push_listing
             enable_logger: true

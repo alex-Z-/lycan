@@ -23,6 +23,12 @@ monolog:
             path: "%kernel.logs_dir%/%kernel.environment%_lycan.log"
             level: debug
             channels: [ user_actions ]
+        missing:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%_missing_amenities.log"
+            level: debug
+            formatter: app.log.formatter.blank
+            channels: [ missing ]
         console:
             type:   console
             verbosity_levels:

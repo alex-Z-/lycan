@@ -35,7 +35,7 @@ class Importer {
 	
 	
 	
-	public function import(Container $schema, $provider){
+	public function import(Container $schema, $provider, $autoFlush = false){
 		
 		//$schemaDefinition = json_decode(file_get_contents(__DIR__.'/test.json'));
 		$schemaDefinition = json_decode( Load::getInstance()->load() );
@@ -59,14 +59,16 @@ class Importer {
 		$validator->check(  json_decode(json_encode( $schema->toArray() ) ),  $schemaDefinition );
 	
 		if($validator->isValid()){
-		
+			
 			$batchLogger->info("Importing Schema - Valid", [ "input" => $schema->toArray() ] );
 			$this->logger->debug("Schema was valid." );
 			$this->logger->info( "Schema will be imported or upserted to user account", $provider->getOwner()->getLogValues() );
 			$property = $this->_upsert($schema, $provider);
+		
 			$property->setIsSchemaValid(true);
+		
 			$this->em->persist($property);
-			$this->em->flush();
+			
 		} else {
 			
 			$this->logger->warning("Schema was not found to be valid.", $validator->getErrors() );
@@ -75,9 +77,11 @@ class Importer {
 			$property->setIsSchemaValid(false);
 			$property->setSchemaErrors($validator->getErrors());
 			$this->em->persist($property);
+			
+		}
+		
+		if($autoFlush){
 			$this->em->flush();
-			
-			
 		}
 		
 		return $property;
@@ -95,6 +99,11 @@ class Importer {
 			$property = new Property();
 		}
 		
+		foreach($schema->get("media")->getIterator() as $media){
+			if($media->get("type") === "URI" && $media->get("category") === "LINK" && $media->get("isListingPage", null)){
+				$property->setProviderPublicURL($media->get("uri"));
+			}
+		}
 	
 		$property->setProvider($provider);
 		$property->setProviderListingId($schema->get('$id'));

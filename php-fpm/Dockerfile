@@ -24,7 +24,8 @@ RUN apk add --update \
     php5-dom \
     php5-zlib \
     php5-bcmath \
-    php5-sockets
+    php5-sockets \
+    supervisor
 
 RUN apk add wget curl git && rm /var/cache/apk/*
 
@@ -34,6 +35,11 @@ RUN addgroup -g 1000 -S www-data \
  && adduser -u 1000 -D -S -G www-data www-data
 
 RUN rm -rf /var/cache/apk/* && rm -rf /tmp/*
+RUN mkdir /var/log/supervisord
+
+COPY supervisord.conf /etc/supervisord.conf
+
+
 
 ADD symfony.ini /etc/php5/fpm.d/
 ADD symfony.ini /etc/php5/cli.d/

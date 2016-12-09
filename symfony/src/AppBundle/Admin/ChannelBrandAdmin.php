@@ -199,7 +199,7 @@ class ChannelBrandAdmin extends BaseAdmin
 	protected function configureListFields(ListMapper $listMapper)
 	{
 		
-		$listMapper->addIdentifier('id')
+		$listMapper
 			->add('brand')
 			->add('provider.providerName', null, [ 'label' => 'Channel'])
 			->add('provider', null, [ 'label' => 'Credentials Used',  'associated_property' => 'typeAndName' ])

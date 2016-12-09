@@ -80,9 +80,14 @@ class Client {
 	
 	public function fetchAllListings(){
 		$deferred = new Deferred();
-		$response = $this->_fetchAllListings();
-		$data = \GuzzleHttp\json_decode(  $response->getBody(), true );
-		$deferred->resolve($data);
+		
+		try {
+			$response = $this->_fetchAllListings();
+			$data     = \GuzzleHttp\json_decode($response->getBody(), true);
+			$deferred->resolve($data);
+		} catch (\Exception $e) {
+			$deferred->reject($e);
+		}
 		return $deferred->promise();
 	}
 	
@@ -96,6 +101,17 @@ class Client {
 		
 		$response = $this->getClient()->get('/property', [ 'query' => $params ]);
 		return $response;
+	}
+	
+	public function ping(){
+		// They don't have a ping. So just use this.
+		try {
+			$response = $this->getClient()
+				->get('/api/setting', []);
+			return $response;
+		} catch(\Exception $e){
+			throw $e;
+		}
 	}
 	
 	public function getListingFull($id){

@@ -35,12 +35,15 @@ class PropertyListener
 			if($uow) {
 				$uow->computeChangeSets(); // do not compute changes if inside a listener
 				$changeset = $uow->getEntityChangeSet($entity);
+				
 				if ( (isset($changeset['syncedAt']) && !isset($changeset['brands'])) && $entity->getProvider() && $entity->getProvider()->getAutoMappedToBrands()) {
 					// Need to add the property to the auto mapped brands if it is NOT already.
 					foreach ($entity->getProvider()->getAutoMappedToBrands() as $brand) {
-						$entity->addBrand($em->getReference("AppBundle:Brand", $brand));
-						$em->persist($entity);
-						$this->_queuedToFlush[] = $entity;
+						if(!$entity->getBrands()->contains($em->getReference("AppBundle:Brand", $brand))) {
+							$entity->addBrand($em->getReference("AppBundle:Brand", $brand));
+							$em->persist($entity);
+							$this->_queuedToFlush[] = $entity;
+						}
 					}
 				}
 			}

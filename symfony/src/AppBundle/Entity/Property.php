@@ -108,6 +108,28 @@ class Property
 	
 	
 	/**
+	 * @ORM\Column(type="string", nullable=true)
+	 */
+	private $providerPublicURL;
+	
+	/**
+	 * @return mixed
+	 */
+	public function getProviderPublicURL()
+	{
+		return $this->providerPublicURL;
+	}
+	
+	/**
+	 * @param mixed $providerPublicURL
+	 */
+	public function setProviderPublicURL($providerPublicURL)
+	{
+		$this->providerPublicURL = $providerPublicURL;
+	}
+	
+	
+	/**
      * Constructor
      */
     public function __construct()

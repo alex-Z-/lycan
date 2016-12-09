@@ -1,9 +1,20 @@
 
 services:
     # ...
+    lycan.provider.api.supercontrol:
+        class: Lycan\Providers\SupercontrolBundle\API\Client
+        factory: [ Lycan\Providers\SupercontrolBundle\API\Client, getInstance ]
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
+    lycan.provider.manager.supercontrol:
+        class: Lycan\Providers\SupercontrolBundle\API\Manager
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
     admin.lycan.provider.supercontrol:
         class: Lycan\Providers\SupercontrolBundle\Admin\ProviderSupercontrolAdmin
-        arguments: [~, Lycan\Providers\SupercontrolBundle\Entity\ProviderSupercontrolAuth, ~]
+        arguments: [~, Lycan\Providers\SupercontrolBundle\Entity\ProviderSupercontrolAuth, CoreBundle:CRUD]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Providers, label: Supercontrol }
 

@@ -134,6 +134,7 @@ class EventsAdmin extends BaseAdmin
 		$datagridMapper->add('eventGroup')
 			->add('batch')
 			->add('property')
+			->add('provider')
 			;
 	}
 	

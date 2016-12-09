@@ -38,14 +38,13 @@ class PushListingConsumer implements ConsumerInterface
 		$batchLogger->setEventGroup( $eventGroup = Uuid::uuid4() );
 		$batchLogger->info("Processing Push Listing", $message);
 		
-		
 		$providerId = $message['provider'];
 		$provider = $this->em->getRepository('\Lycan\Providers\CoreBundle\Entity\ProviderAuthBase')->find($providerId);
 		
 		$providerKey = strtolower( $provider->getProviderName() );
 		$client  = $this->container->get('lycan.provider.api.factory')->create($providerKey, $provider);
 		$manager = $this->container->get('lycan.provider.manager.factory')->create($providerKey);
-		
+	
 		// Get Listing
 		// Get the Mapping Definitions
 		// Import
