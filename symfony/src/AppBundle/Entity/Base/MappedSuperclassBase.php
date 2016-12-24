@@ -11,7 +11,7 @@ class MappedSuperclassBase
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User",  cascade={"persist"})
-	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	private $owner;
 	

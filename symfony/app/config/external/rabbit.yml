@@ -20,6 +20,15 @@ old_sound_rabbit_mq:
             use_socket: false # default false
     producers:
         #dead letter
+        logger:
+            connection: default
+            connection: default
+            exchange_options: { name: 'lycan.e.logger', type: 'direct' }
+            service_alias: lycan.rabbit.producer.logger
+            # 3 hour TTL
+            queue_options:
+                name: 'lycan.q.logger'
+                arguments: {'x-message-ttl': ['I', 172800000]}
         wait_pull_listing:
             connection: default
             service_alias: lycan.rabbit.producer.wait_pull_listing
@@ -62,6 +71,15 @@ old_sound_rabbit_mq:
                 arguments: {'x-message-ttl': ['I', 172800000]}
 
     consumers:
+        logger:
+            connection:       default
+            exchange_options: {name: 'lycan.e.logger',  type: 'direct'}
+            queue_options:
+                name: 'lycan.q.logger'
+                arguments: {'x-message-ttl': ['I', 172800000]}
+            callback:   lycan.rabbit.consumer.logger
+            qos_options:      { prefetch_size: 0, prefetch_count: 20, global: false}
+            enable_logger: true
         wait_pull_listing:
             connection:       default
             exchange_options: {name: 'lycan.e.wait_pull_listing', type: 'topic'}
@@ -82,6 +100,7 @@ old_sound_rabbit_mq:
                 routing_keys:
                     - lycan.provider.pull.provider.#
             callback:   lycan.rabbit.consumer.pull_provider
+            qos_options:      {prefetch_size: 0, prefetch_count: 10, global: false}
             enable_logger: true
 
         pull_listing:
@@ -93,6 +112,7 @@ old_sound_rabbit_mq:
                 routing_keys:
                     - lycan.provider.pull.listing.#
             callback:   lycan.rabbit.consumer.pull_listing
+            qos_options:      {prefetch_size: 0, prefetch_count: 20, global: false}
             enable_logger: true
 
         push_brand:
@@ -104,6 +124,7 @@ old_sound_rabbit_mq:
                 routing_keys:
                     - lycan.provider.push.brand.#
             callback:   lycan.rabbit.consumer.push_brand
+            qos_options:      {prefetch_size: 0, prefetch_count: 10, global: false}
             enable_logger: true
 
         push_listing:
@@ -115,4 +136,5 @@ old_sound_rabbit_mq:
                 routing_keys:
                     - lycan.provider.push.listing.#
             callback:   lycan.rabbit.consumer.push_listing
+            qos_options:      {prefetch_size: 0, prefetch_count: 10, global: false}
             enable_logger: true

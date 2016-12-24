@@ -50,7 +50,11 @@ class JobLogger
 	}
 	
 	public function __call(  $name , array $arguments){
+		try {
 			return call_user_func_array([$this->logger, $name], $arguments);
+		} catch(\Exception $e){
+			return null;
+		}
 		
 	}
 }

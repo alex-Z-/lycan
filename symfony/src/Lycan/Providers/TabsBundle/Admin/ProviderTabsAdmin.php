@@ -16,30 +16,7 @@ class ProviderTabsAdmin extends ProviderAdmin
 {
 	
 	const  ACCESS_ROLE_FOR_USERFIELD ="ROLE_SUPERADMIN";
-
 	
-	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-	{
-		
-		if (!$childAdmin && !in_array($action, array('edit'))) {
-			return;
-		}
-		
-		$admin = $this->isChild() ? $this->getParent() : $this;
-		
-		// $id = $admin->getRequest()->get('id');
-		$router = $this->getConfigurationPool()->getContainer()->get('router');
-		
-		if($admin->getSubject()->getOwner()) {
-			
-			$menu->addChild(
-				$this->trans('Edit Owner', array(), 'SonataUserBundle'),
-				array('uri' => $router->generate('admin_sonata_user_user_edit', array('id' => $admin->getSubject()->getOwner()->getId() )))
-			);
-		}
-		
-		
-	}
 	
 	public function generateObjectUrl($name, $object, array $parameters = array(), $absolute = false)
 	{
@@ -162,6 +139,9 @@ class ProviderTabsAdmin extends ProviderAdmin
 			->add('baseUrl')
 			->add('client', null, array('label' => 'Public Key'))
 			->add('owner')
+			->add('propertiesCount')
+			->add('lastPullCompletedAt')
+			// ->add('pulledPropertiesCount', null, ['label' => 'Pulled'])
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(),

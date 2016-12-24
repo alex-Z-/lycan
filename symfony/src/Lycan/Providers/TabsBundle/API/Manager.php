@@ -1,12 +1,17 @@
 <?php
 
 namespace Lycan\Providers\TabsBundle\API;
+use AppBundle\Entity\Property;
 use Incoming\Processor;
+use Lycan\Providers\CoreBundle\Admin\ProviderAdmin;
+use Lycan\Providers\CoreBundle\API\SourceMappingResult;
+use Lycan\Providers\CoreBundle\Entity\ProviderAuthBase;
 use Pristine\Schema\Container as SchemaContainer;
 use Lycan\Providers\CoreBundle\API\ManagerInterface;
 use Lycan\Providers\TabsBundle\Incoming\Hydrator\SchemaHydrator as Hydrator;
 use Lycan\Providers\TabsBundle\Incoming\Transformer\TabsTransformer;
 use Lycan\Providers\CoreBundle\Entity\BatchExecutions;
+use RandomLibtest\Mocks\Random\Source;
 
 
 class Manager  implements ManagerInterface {
@@ -15,6 +20,8 @@ class Manager  implements ManagerInterface {
 	private $container;
 	private $message;
 	private $provider;
+
+	
 	public function setContainer($container){
 		$this->container = $container;
 	}
@@ -31,9 +38,10 @@ class Manager  implements ManagerInterface {
 	
 	public function getQueuePullProviderClosure(){
 		
-		return function($object) {
+		return function(ProviderAuthBase $object, Property $property = null) {
 			$em = $this->container->get('doctrine')
 				->getEntityManager();
+			
 			
 			
 			$object->setPullInProgress(true);
@@ -53,6 +61,11 @@ class Manager  implements ManagerInterface {
 			
 			// Add
 			$msg      = ["id" => $object->getId(), "batch" => $batch->getId()];
+			
+			if($property){
+				$msg['property'] = (string) $property->getId();
+			}
+			
 			$code     = strtolower($object->getProviderName());
 			$routingKey = sprintf("lycan.provider.pull.provider.%s", $code);
 			$this->container->get('lycan.rabbit.producer.pull_provider')->publish(serialize($msg), $routingKey);
@@ -78,17 +91,21 @@ class Manager  implements ManagerInterface {
 	}
 	
 	public function getProcessIncomingMappingClosure(){
+		$container = $this->container;
 		
-		return function($data) {
+		return function($data)  use($container)  {
 			
-			$incoming = new Processor(new TabsTransformer());
+			$incoming = $this->container->get("lycan.provider.tabs.processor");
 			
 			$schema = $incoming->process(
 				$data,
 				new SchemaContainer(),
-				new Hydrator()
+				new Hydrator($container)
 			);
-			return $schema;
+				
+			// Set the data and the schema.
+			return new SourceMappingResult($data, $schema);
+			
 		};
 		
 	}
@@ -124,6 +141,7 @@ class Manager  implements ManagerInterface {
 	{
 		$this->provider = $provider;
 	}
+	
 	
 	
 	

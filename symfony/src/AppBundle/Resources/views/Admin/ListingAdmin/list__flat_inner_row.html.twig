@@ -1,0 +1,12 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_flat_inner_row.html.twig' %}
+
+{% block row %}
+    {# you can use fields defined in the the Admin class #}
+
+    {% for key,field_description in admin.list.elements %}
+        {%  if key != "_action" and key != "batch" %}
+            {{ object|render_list_element( field_description ) }}
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

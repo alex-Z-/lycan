@@ -24,6 +24,44 @@ abstract class ChannelBridge extends Base
 	 */
 	protected $id;
 	
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	private $descriptiveName;
+	
+	/**
+	 * @return \Ramsey\Uuid\Uuid
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
+	
+	/**
+	 * @param \Ramsey\Uuid\Uuid $id
+	 */
+	public function setId($id)
+	{
+		$this->id = $id;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getDescriptiveName()
+	{
+		return $this->descriptiveName;
+	}
+	
+	/**
+	 * @param mixed $descriptiveName
+	 */
+	public function setDescriptiveName($descriptiveName)
+	{
+		$this->descriptiveName = $descriptiveName;
+	}
+	
+	
 	
 	
 	

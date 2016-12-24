@@ -13,7 +13,7 @@ class Event extends Log
 	
 	// I haven't specified an external reference because... I think I might make this possible to be used on others???
 	/**
-	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\BatchExecutions", inversedBy="events")
+	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\BatchExecutions", inversedBy="events", fetch="EXTRA_LAZY")
 	 * @ORM\JoinColumn(name="batch_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 *
 	 */
@@ -27,14 +27,14 @@ class Event extends Log
 	protected $eventGroup;
 		
 	/**
-	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase")
+	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase", fetch="EXTRA_LAZY")
 	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 *
 	 */
 	private $provider;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property")
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", fetch="EXTRA_LAZY")
 	 * @ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 *
 	 */
@@ -137,9 +137,6 @@ class Event extends Log
 	 */
 	public function setInput($input)
 	{
-		
-		
-		
 		$this->input = serialize($input);
 		return $this;
 	}

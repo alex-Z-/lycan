@@ -26,12 +26,13 @@ class Property
 	protected $id;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Listing", mappedBy="master", cascade={"all"}, orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Listing", mappedBy="master", cascade={"all"}, orphanRemoval=true, fetch="EXTRA_LAZY")
 	 */
 	private $listings;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="listings")
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="listings", fetch="EXTRA_LAZY")
+	 * @ORM\JoinColumn(name="master_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	private $master;
 	
@@ -46,8 +47,8 @@ class Property
 	private $syncedAt;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User",  cascade={"persist"})
-	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User",  cascade={"persist"}, inversedBy="properties", fetch="EXTRA_LAZY")
+	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id" , onDelete="CASCADE")
 	 */
 	private $owner;
 	
@@ -73,19 +74,24 @@ class Property
 	private $schemaObject;
 	
 	/**
+	 * @ORM\Column(type="array", nullable=true)
+	 */
+	private $sourceDataMapping;
+	
+	/**
 	 * @ORM\Column(type="string")
 	 */
 	private $descriptiveName;
 
 	/**
-	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Brand", cascade={"persist","remove"}, inversedBy="properties")
+	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Brand", cascade={"persist","remove"}, inversedBy="properties", fetch="EXTRA_LAZY")
 	 * @ORM\JoinTable(name="property_brand_registry")
 	 */
 	private $brands;
 	
 	
 	/**
-	 * @ORM\Column(type="boolean")
+	 * @ORM\Column(type="boolean", nullable=true)
 	 */
 	private $isSchemaValid;
 	
@@ -95,7 +101,7 @@ class Property
 	private $schemaErrors;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase")
+	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase", inversedBy="properties", fetch="EXTRA_LAZY")
 	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 *
 	 */
@@ -111,6 +117,7 @@ class Property
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	private $providerPublicURL;
+
 	
 	/**
 	 * @return mixed
@@ -136,6 +143,7 @@ class Property
     {
         $this->brands = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->brand = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->isSchemaValid = false;
     }
 	
 	
@@ -423,9 +431,58 @@ class Property
 		$this->master = $master;
 	}
 	
+	/**
+	 * @return mixed
+	 */
+	public function getSourceDataMapping()
+	{
+		return $this->sourceDataMapping;
+	}
 	
+	public function setSourceDataMappingJson($json){
+		$this->setSourceDataMapping(json_decode($json));
+	}
 	
+	public function getSourceDataMappingJson() {
+		return json_encode($this->sourceDataMapping);
+	}
 	
+	/**
+	 * @param mixed $sourceDataMapping
+	 */
+	public function setSourceDataMapping($sourceDataMapping)
+	{
+		
+		// We only want to store upto a max length of 5 and we don't want any attribute greater than a depth of ZERO to
+		// have any more than 40 elements.
+		$this->sourceDataMapping = [];
+		
+		$sourceDataMapping = json_decode(json_encode($sourceDataMapping, 2), 2);
+		
+		$this->sourceDataMapping = $sourceDataMapping;
+	}
+	
+	private function _fix(&$arr, $n = 0) {
+		foreach ($arr as &$item) {
+			dump($item);die();
+			if (is_array($item) && $n <= 5 ) {
+				$item = $this->_fix(array_slice($item, 0,  10 ), $n + 1);
+				die();
+			}
+		}
+		return $arr;
+	}
+
+	// used for exporting
+	public function ownerUsername(){
+		dump($this->getOwner());die();
+		return $this->getOwner()->getUsername();
+	}
+	public function getOwnerEmail(){
+		return $this->getOwner()->getEmail();
+	}
+	
+
 	
 	
 }

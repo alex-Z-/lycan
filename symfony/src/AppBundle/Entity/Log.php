@@ -49,13 +49,13 @@ class Log
 	
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Log", inversedBy="children")
+	 * @ORM\ManyToOne(targetEntity="Log", inversedBy="children", fetch="EXTRA_LAZY")
 	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
 	 */
 	private $parent;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="Log", mappedBy="parent")
+	 * @ORM\OneToMany(targetEntity="Log", mappedBy="parent", fetch="LAZY")
 	 */
 	private $children;
 	

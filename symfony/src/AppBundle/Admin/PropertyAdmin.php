@@ -8,6 +8,7 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\CoreBundle\Validator\ErrorElement as ErrorElement;
 use ListingSchema\Load;
 use JsonSchema\Constraints\Factory;
@@ -34,8 +35,7 @@ class PropertyAdmin extends BaseAdmin
 		// This is the current logged in.. but I think we actually want the
 		$user = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
 		$accessToUserFields = ( $this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) && $this->getSubject()->getId() === null);
-		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
-		
+		$em =  $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
 		if($this->getSubject()->getId() && $this->getSubject()->getOwner() ){
 			$user =   $this->getSubject()->getOwner();
 		}
@@ -94,7 +94,7 @@ class PropertyAdmin extends BaseAdmin
 			->tab('Property')
 				->with('Provider', array('class' => 'col-md-5 pull-right'))
 					->add('providerPublicUrl',  UriType::class, ["disabled"=> true])
-					->add('provider', null ,["disabled"=> true])
+					->add('provider', null ,["disabled"=> true, 'property' => 'detailedDescriptor'])
 					->add('providerListingId', null ,["disabled"=> true])
 				->end();
 		
@@ -113,7 +113,7 @@ class PropertyAdmin extends BaseAdmin
 		$formMapper->tab('Schema')
 				->with('Property Schema')
 					->add('schemaObject', 'textarea', array(
-						'attr' => array( 'rows' => '10'),
+						'attr' => array( 'rows' => '12'),
 					))
 				->end()
 			->end();
@@ -144,14 +144,27 @@ class PropertyAdmin extends BaseAdmin
 			->end();
 		
 		
+		
+		// Add data source
+		if ($this->isGranted( SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
+			$formMapper->tab('Data Source')
+				->with('Original Source')
+				->add('sourceDataMappingJson', 'textarea', [ 'attr' => ['rows' => 20]]);
+			
+		}
+		
+		
 	}
 	
 	protected function configureDatagridFilters(DatagridMapper $datagridMapper)
 	{
 		$datagridMapper->add('descriptiveName')
 			->add('owner')
+			->add('isSchemaValid')
 			->add('brands')
-			->add('provider')
+			->add('provider', null, [], null,  [
+				'property' => 'detailedDescriptor'
+			])
 			->add('providerListingId');
 	}
 	
@@ -204,6 +217,11 @@ class PropertyAdmin extends BaseAdmin
 		);
 	}
 	
+	protected function configureRoutes(RouteCollection $collection)
+	{
+		$collection->add('pull', $this->getRouterIdParameter().'/pull');
+	}
+	
 	
 	protected function configureListFields(ListMapper $listMapper)
 	{
@@ -227,11 +245,15 @@ class PropertyAdmin extends BaseAdmin
 		
 		$listMapper->add('isSchemaValid');
 		$listMapper->add('updatedAt');
-		$listMapper->add('_action', 'actions', array(
-		'actions' => array(
-			'edit' => array(),
-			'delete' => array(),
-		)));
+		$listMapper	->add('_action', 'actions', array(
+			'actions' => array(
+				'edit' => array(),
+				'delete' => array(),
+				'pull' => array(
+					'template' => 'AppBundle:Admin/PropertyAdmin:list__action_pull.html.twig'
+				)
+			)
+		));
 		
 	}
 	

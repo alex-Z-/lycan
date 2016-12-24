@@ -22,6 +22,68 @@ class ProviderAdmin extends BaseAdmin
 	}
 	
 	
+	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
+	{
+		
+		if (!$childAdmin && !in_array($action, array('edit'))) {
+			return;
+		}
+		
+		$admin = $this->isChild() ? $this->getParent() : $this;
+		
+		// $id = $admin->getRequest()->get('id');
+		$router = $this->getConfigurationPool()->getContainer()->get('router');
+		
+		if($admin->getSubject()->getOwner()) {
+			
+			$menu->addChild(
+				$this->trans('Edit Owner', array(), 'SonataUserBundle'),
+				array('uri' => $router->generate('admin_sonata_user_user_edit', array('id' => $admin->getSubject()->getOwner()->getId() )))
+			);
+		}
+		
+		if ( $this->isGranted("ROLE_SUPERADMIN")  ){
+			$menu->addChild(
+				'Show Event Log',
+				
+				array('uri' => $router->generate('admin_providers_core_event_list',
+					array(
+						'provider_id' => $admin->getSubject()->getId(),
+						'filter[provider][value]' => (string)  $admin->getSubject()->getId()
+					)
+				)));
+		}
+		
+		
+		// TODO - THIS COUNTS PROPERTIES AND LISTINGS... Which can easily be wrong!
+		
+		
+		if($admin->getSubject()->getShouldPull()){
+			$route = 'admin_app_property_list';
+			$anchor = sprintf("View Properties (%d)", $admin->getSubject()
+				->getProperties()
+				->count());
+		} else if($admin->getSubjecT()->getAllowPush()){
+			$route = 'admin_app_listing_list';
+			$anchor = sprintf("View Mapped Listings (%d)", $admin->getSubject()
+				->getProperties()
+				->count());
+		}
+		if(isset($route)) {
+			$menu->addChild(
+				$anchor,
+				
+				['uri' => $router->generate($route,
+					[
+						'id'                      => (string)$admin->getSubject()
+							->getId(),
+						'filter[provider][value]' => (string)$admin->getSubject()
+							->getId()
+					]
+				)]);
+		}
+		
+	}
 	
 	public function getBatchActions()
 	{
@@ -75,31 +137,6 @@ class ProviderAdmin extends BaseAdmin
 		
 	}
 	
-	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-	{
-		
-		if (!$childAdmin && !in_array($action, array('edit', 'show'))) {
-			return;
-		}
-		
-		
-		$admin = $this->isChild() ? $this->getParent() : $this;
-		
-		$router = $this->getConfigurationPool()->getContainer()->get('router');
-		
-		if($childAdmin && $childAdmin->getBaseCodeRoute() === "admin.lycan.providers|admin.lycan.batch_executions" && $childAdmin->getSubject()){
-			$menu->addChild(
-				$this->trans('View Events in Job', array(), 'SonataUserBundle'),
-				array('uri' => $router->generate('admin_providers_core_batchexecutions_event_list',
-					array(
-						'id' => (string) $childAdmin->getSubject()->getId(),
-						// 'filter[brands][value]' => (string)  $admin->getSubject()->getId()
-					)
-				))
-			);
-		}
-		
-	}
 	
 	
 	public function getPersistentParameters()
@@ -112,7 +149,6 @@ class ProviderAdmin extends BaseAdmin
 		);
 		
 	}
-	
 
 	protected function configureFormFields(FormMapper $formMapper)
 	{
@@ -157,13 +193,18 @@ class ProviderAdmin extends BaseAdmin
 		$this->container = $this->getConfigurationPool()->getContainer();
 		$client = $this->container->get('lycan.provider.api.factory')->create($providerKey, $object);
 		try {
-			$ponged = $client->ping();
-			
-			if($ponged->getStatusCode() === 200){
-				$object->setIsValidCredentials(true);
-			} else {
-				$this->getRequest()->getSession()->getFlashBag()->add("error", "The current credentials are invalid.");
-				$object->setIsValidCredentials(false);
+			if(method_exists($client, 'ping')) {
+				$ponged = $client->ping();
+				
+				if ($ponged->getStatusCode() === 200) {
+					$object->setIsValidCredentials(true);
+				} else {
+					$this->getRequest()
+						->getSession()
+						->getFlashBag()
+						->add("error", "The current credentials are invalid.");
+					$object->setIsValidCredentials(false);
+				}
 			}
 		} catch(\Exception $e){
 			$object->setIsValidCredentials(false);

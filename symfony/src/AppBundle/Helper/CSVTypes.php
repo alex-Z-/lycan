@@ -4,9 +4,11 @@ namespace  AppBundle\Helper;
 
 class CSVTypes {
 	const PROVIDER_SUPERCONTROL             = 1;
+	const PROVIDER_TABS             = 2;
 	
 	public static function getTypes() {
 		return array(
+			self::PROVIDER_TABS            => 'Provider Credentials - Tabs',
 			self::PROVIDER_SUPERCONTROL            => 'Provider Credentials - Supercontrol',
 		);
 	}
@@ -30,6 +32,7 @@ class CSVTypes {
 		
 		switch ($type) {
 			case self::PROVIDER_SUPERCONTROL:         return 'Lycan\Providers\SupercontrolBundle\Entity\ProviderSupercontrolAuth';
+			case self::PROVIDER_TABS:         return 'Lycan\Providers\TabsBundle\Entity\ProviderTabsAuth';
 			default: return false;
 		}
 	}

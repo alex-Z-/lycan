@@ -43,6 +43,9 @@ class BrandAdmin extends BaseAdmin
 		
 			$menu->addChild('View Brand Channels', array('uri' => $router->generate('admin_app_brand_channelbrand_list', array( 'id' => (string) $admin->getSubject()->getId() 	))) );
 		}
+	
+		
+		
 		
 	}
 	
@@ -51,7 +54,7 @@ class BrandAdmin extends BaseAdmin
 	{
 		
 		
-		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
+		$em =  $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
 		$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
 		// Set up Queries
 		$query = $em->createQueryBuilder("b")
@@ -227,6 +230,7 @@ class BrandAdmin extends BaseAdmin
 			->add('descriptiveName')
 			->add('owner')
 			->add('members')
+			->add('propertiesCount')
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(),

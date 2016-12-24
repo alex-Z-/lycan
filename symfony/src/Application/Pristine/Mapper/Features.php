@@ -282,6 +282,7 @@ class Features {
 			"Parasailing"                   => [Enum::LOCAL_PARASAILING, Enum::SPORTS_PARASAILING],
 			"Parasailing - Onsite"          => [Enum::ONSITE_PARASAILING, Enum::SPORTS_PARASAILING],
 			
+			"Parking"					      => Enum::OUTDOOR_PRIVATE_PARKING,
 			"Park"                            => Enum::LOCAL_PARK,
 			"Parking Space"                   => Enum::GENERAL_PARKING_SPACE,
 			"Patio"                           => Enum::OUTDOOR_PATIO,
@@ -299,6 +300,7 @@ class Features {
 			"Pool Table - Onsite"             => Enum::ONSITE_POOL_TABLE,
 			"Pool Unheated"                   => Enum::SPA_POOL_POOL_UNHEATED,
 			"Portable Fan"                    => Enum::GENERAL_PORTABLE_FAN,
+			
 			"Private Parking"                 => Enum::LOCALITY_PRIVATE_PARKING,
 			"Private Parking - Onsite"        => Enum::OUTDOOR_PRIVATE_PARKING,
 			"Promotional"                     => Enum::THEMES_PROMOTIONAL,

@@ -18,42 +18,6 @@ class ProviderRentivoAdmin extends ProviderAdmin
 	
 
 	
-	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-	{
-		
-		if (!$childAdmin && !in_array($action, array('edit'))) {
-			return;
-		}
-		
-		$admin = $this->isChild() ? $this->getParent() : $this;
-		
-		// $id = $admin->getRequest()->get('id');
-		$router = $this->getConfigurationPool()->getContainer()->get('router');
-		
-		if($admin->getSubject()->getOwner()) {
-			
-			$menu->addChild(
-				$this->trans('Edit Owner', array(), 'SonataUserBundle'),
-				array('uri' => $router->generate('admin_sonata_user_user_edit', array('id' => $admin->getSubject()->getOwner()->getId() )))
-			);
-		}
-		
-		if($admin->getSubject()->getId()) {
-			
-			$menu->addChild(
-				$this->trans('View Batch Jobs', array(), 'SonataUserBundle'),
-				array('uri' => $router->generate('admin_providers_core_providerauthbase_batchexecutions_list',
-					array(
-						'id' => (string) $admin->getSubject()->getId(),
-						// 'filter[brands][value]' => (string)  $admin->getSubject()->getId()
-					)
-				))
-			);
-			
-		}
-		
-		
-	}
 	
 	public function generateObjectUrl($name, $object, array $parameters = array(), $absolute = false)
 	{
@@ -102,6 +66,9 @@ class ProviderRentivoAdmin extends ProviderAdmin
 			->tab('Credentials')
 				->with('Credentials', array('class' => 'col-md-7'))->end()
 				->with('Channel Configuration', array('class' => 'col-md-5'))->end()
+			->end()
+			->tab('Channel Data Requirements')
+				->with('Data Requirements Policy', array('class' => 'col-md-7'))->end()
 			->end();
 		
 		$formMapper
@@ -117,7 +84,36 @@ class ProviderRentivoAdmin extends ProviderAdmin
 					->add('shouldPull', 'checkbox', ['required' => false, 'label' => 'Shall we pull rentals from this provider?'])
 					->add('passOnCredentials', 'checkbox', ['required' => false, 'label' => 'Can Lycan share API credentials to downstream channels.'])
 					->add('allowPush', 'checkbox', [ 'required' => false, 'label' => 'Allow this provider to be used as a downstream push channel'])
+					->add('autoCascadeUpdateFromMaster', 'checkbox', ['required' => false, 'label' => 'Automatically syncronize Listings with master Property'])
 				->end()
+			->end();
+		
+		$formMapper->tab('Channel Data Requirements')
+			->with('Data Requirements Policy')
+			->add('policies', 'sonata_type_collection',
+					array(
+						'help' => 'Add Data Policy',
+						'required' => false,
+						'by_reference' => false,
+						'btn_add' => 'Add Policy to Channel',
+						'type_options' => array(
+							// Prevents the "Delete" option from being displayed
+							'delete' => true
+						),
+					
+						// 'label' => false,
+						// 'sonata_help' => "Add Users to this brand",
+						// 'sonata_field_description' => "Add Users to this brand",
+						// 'query' => $query,
+						// 'btn_add' => false, 'by_reference' => false, 'expanded' => false, 'multiple' => true, 'label' => 'Users'
+					),
+					array(
+						'admin_code' => 'admin.lycan.provider_policy',
+						'edit' => 'inline',
+						'inline' => 'table'
+					)
+				)
+			->end()
 			->end();
 		
 		

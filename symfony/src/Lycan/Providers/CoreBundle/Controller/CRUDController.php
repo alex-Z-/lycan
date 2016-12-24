@@ -60,13 +60,12 @@ class CRUDController extends Controller
 		$logger = $this->container->get('app.logger.jobs');
 		$logger->setBatch($batch->getId());
 		$logger->debug("Creating a new batch execution job");
-		
-		
+	
 		$logger = $this->container->get('app.logger.user_actions')->logger;
-		$logger->info(  'Manual initiation of push syncronization', ['channel' => $object->getId(), "nickname" => $object->getProvider()->getNickname()] );
+		$logger->info(  'Manual initiation of push syncronization', ['channel' => (string)  $object->getId(), "nickname" => $object->getProvider()->getNickname()] );
 		
 		// Add
-		$msg = [ "id" => $object->getId(), "batch" => $batch->getId() ];
+		$msg = [ "id" => (string) $object->getId(), "batch" => (string) $batch->getId() ];
 		$provider = strtolower($object->getProvider()->getProviderName());
 		$routingKey = sprintf("lycan.provider.push.brand.%s", $provider);
 		$this->container->get('lycan.rabbit.producer.push_brand')->publish(serialize($msg), $routingKey);
@@ -97,8 +96,6 @@ class CRUDController extends Controller
 		
 		
 	}
-	
-	
 	
 	
 	public function pullAction(){
@@ -248,10 +245,14 @@ class CRUDController extends Controller
 				
 				$providerKey = strtolower( $object->getProviderName() );
 				$client = $this->container->get('lycan.provider.api.factory')->create($providerKey, $object);
-				$ponged = $client->ping();
-				if($ponged){
-					$object->setIsValidCredentials(true);
-				} else {
+				try {
+					$ponged = $client->ping();
+					if ($ponged) {
+						$object->setIsValidCredentials(true);
+					} else {
+						$object->setIsValidCredentials(false);
+					}
+				} catch(\Exception $e){
 					$object->setIsValidCredentials(false);
 				}
 				$em->persist($object);
@@ -261,7 +262,7 @@ class CRUDController extends Controller
 		} catch (\Exception $e) {
 			$this->addFlash('sonata_flash_error', 'There was an error while attempting to validate the credentials.');
 			$this->addFlash('sonata_flash_error', $e->getMessage());
-			
+			$em->flush();
 			return new RedirectResponse(
 				$this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters()))
 			);

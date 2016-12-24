@@ -1,5 +1,6 @@
 <?php
 namespace Lycan\Providers\RentivoBundle\Outgoing\Hydrator;
+use AppBundle\Entity\Listing;
 use Incoming;
 use Lycan\Providers\CoreBundle\Entity\ProviderAuthBase;
 use Pristine\ISO\CountryNames;
@@ -12,10 +13,13 @@ use Pristine\Utils\LocaleUtils;
 class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 {
 	protected $provider;
-	public function __construct(ProviderAuthBase $provider)
+	protected $listing;
+	public function __construct(ProviderAuthBase $provider, Listing $listing)
 	{
+		$this->setListing($listing);
 		$this->setProvider($provider);
 	}
+		
 	
 	
 	public function hydrate( $input, $model)
@@ -38,7 +42,10 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 		$model->set('attributes.maxGuests', $input->get("listing.maxOccupancy"));
 		$model->set('attributes.sleeps', $input->get("listing.sleeps"));
 		$model->set('attributes.externalId', $input->get('$id'));
-		
+		// No idea why this would ever NOT be true though.
+		if($this->getListing()->getMaster()){
+			$model->set('attributes.externalBrandKey', $this->getListing()->getMaster()->getProvider()->getProviderName() );
+		}
 		
 		// Location
 		/*
@@ -58,8 +65,12 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 			"zipPostCode" => "OX7 6YD"
 		  ]
 		}*/
-		$model->set("location.lat", $input->get("location.latitude"));
-		$model->set("location.lng", $input->get("location.longitude"));
+		// Don't send to Rentivo if ZERO.
+		if($input->has("location.latitude") && (string) $input->get("location.latitude") !== "0") {
+			$model->set("location.lat", $input->get("location.latitude"));
+			$model->set("location.lng", $input->get("location.longitude"));
+		}
+		
 		$model->set("location.city", $input->get("address.city"));
 		// $model->set("location.region", $input->get("address.city"));
 		$model->set("location.stateProvince", $input->get("address.stateProvince"));
@@ -235,5 +246,25 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 	{
 		$this->provider = $provider;
 	}
+	
+	
+	
+	/**
+	 * @return mixed
+	 */
+	public function getListing()
+	{
+		return $this->listing;
+	}
+	
+	/**
+	 * @param mixed $listing
+	 */
+	public function setListing($listing)
+	{
+		$this->listing = $listing;
+	}
+	
+	
 	
 }

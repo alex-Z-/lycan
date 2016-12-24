@@ -12,18 +12,25 @@ class ChannelBrand extends ChannelBridge
 {
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Brand", inversedBy="channels")
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Brand", inversedBy="channels", fetch="EXTRA_LAZY")
 	 * @ORM\JoinColumn(name="brand_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 *
 	 */
 	private $brand;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase", inversedBy="brandChannels")
+	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase", inversedBy="brandChannels", fetch="EXTRA_LAZY")
 	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
 	 *
 	 */
 	private $provider;
+	
+	/**
+	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
+	 *
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Listing", cascade={"all"},  mappedBy="channel",  orphanRemoval=true, fetch="EXTRA_LAZY")
+	 */
+	private $listings;
 	
 	/**
 	 * @ORM\Column(type="boolean", nullable=true)
@@ -161,10 +168,26 @@ class ChannelBrand extends ChannelBridge
 		$this->lastPushStartedAt = $lastPushStartedAt;
 	}
 	
+	/**
+	 * @return mixed
+	 */
+	public function getListings()
+	{
+		return $this->listings;
+	}
 	
-
-
+	/**
+	 * @param mixed $listings
+	 */
+	public function setListings($listings)
+	{
+		$this->listings = $listings;
+	}
 	
-
-
+	public function __toString()
+	{
+		return (string) $this->getDescriptiveName();
+	}
+	
+	
 }

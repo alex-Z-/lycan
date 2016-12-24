@@ -10,6 +10,13 @@ use HTMLPurifier_Config as Config;
 use HTMLPurifier;
 class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 {
+	
+	protected $container;
+	public function __construct($container)
+	{
+		$this->container = $container;
+	}
+	
 	public function hydrate( $input, $model)
 	{
 		
@@ -81,6 +88,23 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 			}
 		}
 		
+		if($input->has("pets") && $input->get("pets")){
+			
+			$a = [
+				"category"    => "Amenities",
+				"type"        => Enums\Features::GENERAL_PET_FRIENDLY,
+			];
+			$model->set("features.[]", $a);
+		}
+		
+		if($input->has("wifi") && $input->get("wifi")){
+			$a = [
+				"category"    => "Amenities",
+				"type"        => Enums\Features::COMMUNICATION_INTERNET_WIFI,
+			];
+			$model->set("features.[]", $a);
+		}
+		
 		
 		// features.[]
 		if($input->has("attributes")){
@@ -88,7 +112,7 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 			$mapper->setTolerance(0.9);
 			foreach($input->get("attributes")->getIterator() as $amenity => $value){
 				// Only continue if true..
-				if($value!== true){
+				if($value === false){
 					continue;
 				}
 				
@@ -122,14 +146,17 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 					}
 					
 				} else {
+					// For example PEts.
+					if(is_numeric($value)){
+						$amenity = $amenity . ": " . $value;
+					}
 					$model->set("_debug.unmapped.features.[]", $amenity );
+					$this->container->get("app.logger.missing")->debug($amenity, ["Tabs"], 1);
 				}
-				
 				
 			}
 		}
 		
-	
 		// $input->get("calendar")->ksort();
 		$input->get("calendar")->first();
 	
@@ -150,7 +177,7 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 		
 		$input->get( sprintf("brands.%s.pricing.ranges", $brandCode) )->forAll(function($key, $item) use (&$weeklyLow, &$weeklyHigh){
 			$weeklyLow = ($item->get("low") < $weeklyLow) || is_null($weeklyLow) ? $item->get("low") : $weeklyLow;
-			$weeklyHigh = ($item->get("high") < $weeklyHigh) || is_null($weeklyHigh) ? $item->get("high") : $weeklyHigh;
+			$weeklyHigh = ($item->get("high") > $weeklyHigh) || is_null($weeklyHigh) ? $item->get("high") : $weeklyHigh;
 			return true;
 		});
 		

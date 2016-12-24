@@ -1,4 +1,4 @@
-{% if object.pullInProgress %}
+{% if object.pullInProgress and object.lastActiveBatch %}
     <a class="btn btn-sm btn btn-sm btn-default"  href="{{ url('admin_providers_core_batchexecutions_event_list', { 'id' : object.lastActiveBatch.id }) }}"><i class="fa fa-book fa-fw"></i> View Job</a>
     <a style='white-space: nowrap;' data-container='body' data-toggle="tooltip" data-placement="right" title="Sync Currently Running" class="btn btn-sm btn btn-sm btn-danger pull_link"  href="{{ admin.generateObjectUrl('pullStop', object) }}"><i class="fa fa-refresh fa-spin fa-fw"></i> Stop Pull</a>
 

@@ -24,15 +24,22 @@ class ProviderAuthBase
 	private $id;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User")
+	 * @ORM\ManyToOne(targetEntity="Application\Sonata\UserBundle\Entity\User", cascade={"persist"})
+	 * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 */
 	private $owner;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\ChannelBrand", mappedBy="provider")
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\ChannelBrand", mappedBy="provider", fetch="EXTRA_LAZY")
 	 
 	 */
 	private $brandChannels;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="provider", fetch="EXTRA_LAZY")
+	 
+	 */
+	private $properties;
 	
 	
 	/**
@@ -130,6 +137,18 @@ class ProviderAuthBase
 	 * @ORM\Column(type="boolean", nullable=true)
 	 */
 	private $supportsRealTimePricing;
+	
+	/**
+	 * @ORM\Column(type="boolean", nullable=true)
+	 */
+	private $autoCascadeUpdateFromMaster = true;
+	
+	/**
+	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
+	 *
+	 * @ORM\OneToMany(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderPolicyRegistry", mappedBy="provider",cascade={"persist"} )
+	 */
+	private $policies;
 	
 	/**
 	 * @return mixed
@@ -318,7 +337,9 @@ class ProviderAuthBase
 		return trim(implode($parts, self::TO_STRING_SEPARATOR));
 	}
 	
-	public function getDetailedConnections(){
+	
+	
+	public function getDetailedDescriptor(){
 		if(!$this->getId()){
 			return "Create a Provider";
 		}
@@ -335,7 +356,7 @@ class ProviderAuthBase
 			$parts[] = sprintf("%s Unattached(BASE)%s", self::TO_STRING_PREFIX_SPACER, self::TO_STRING_SUFFIX_SPACER);
 		}
 		
-		// $parts[] =  sprintf("%s" . $this->getNickName(), self::TO_STRING_PREFIX_SPACER);
+		$parts[] =  sprintf("%s" . $this->getNickName(), self::TO_STRING_PREFIX_SPACER);
 		
 		if(!$this->getAllowPush()){
 			// $parts[] = "(not active)";
@@ -557,8 +578,74 @@ class ProviderAuthBase
 		$this->isValidCredentials = $isValidCredentials;
 	}
 	
+	/**
+	 * @return mixed
+	 */
+	public function getProperties()
+	{
+		return $this->properties;
+	}
 	
+	public function getPropertiesCount(){
+		return $this->getProperties()->count();
+	}
 	
+	/**
+	 * @param mixed $properties
+	 */
+	public function setProperties($properties)
+	{
+		$this->properties = $properties;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getPolicies()
+	{
+		return $this->policies;
+	}
+	
+	/**
+	 * @param mixed $policies
+	 */
+	public function setPolicies($policies)
+	{
+		$this->policies = $policies;
+	}
 	
 
+	public function addPolicy(ProviderPolicyRegistry $policy)
+	{
+		$this->policies[] = $policy;
+		
+		return $this;
+	}
+	
+
+	public function removePolicy(ProviderPolicyRegistry $policies)
+	{
+		$this->policies->removeElement($policies);
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getAutoCascadeUpdateFromMaster()
+	{
+		return $this->autoCascadeUpdateFromMaster;
+	}
+	
+	/**
+	 * @param mixed $autoCascadeUpdateFromMaster
+	 */
+	public function setAutoCascadeUpdateFromMaster($autoCascadeUpdateFromMaster)
+	{
+		$this->autoCascadeUpdateFromMaster = $autoCascadeUpdateFromMaster;
+	}
+	
+	
+	
+	
+	
 }

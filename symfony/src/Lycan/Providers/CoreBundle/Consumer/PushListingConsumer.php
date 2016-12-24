@@ -8,7 +8,15 @@ use Pristine\Schema\Container;
 use \Ramsey\Uuid\Uuid;
 use React\Promise\Deferred;
 use AppBundle\Entity\Listing;
-
+use JsonSchema\Constraints\Factory;
+use JsonSchema\Constraints\Constraint;
+use JsonSchema\SchemaStorage;
+use JsonSchema\Validator;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Lycan\Providers\CoreBundle\Exception\PolicyException;
+use Pristine\Schema\Container as SchemaContainer;
+use React\Promise\reject as reject;
+use React\Promise\resolve as resolve;
 class PushListingConsumer implements ConsumerInterface
 {
 	
@@ -29,7 +37,7 @@ class PushListingConsumer implements ConsumerInterface
 			
 	public function execute(AMQPMessage $msg)
 	{
-	
+		
 		$message = unserialize($msg->body);
 		$this->logger->info("Processing Push Listing", $message);
 		
@@ -40,39 +48,43 @@ class PushListingConsumer implements ConsumerInterface
 		
 		$providerId = $message['provider'];
 		$provider = $this->em->getRepository('\Lycan\Providers\CoreBundle\Entity\ProviderAuthBase')->find($providerId);
-		
 		$providerKey = strtolower( $provider->getProviderName() );
-		$client  = $this->container->get('lycan.provider.api.factory')->create($providerKey, $provider);
-		$manager = $this->container->get('lycan.provider.manager.factory')->create($providerKey);
-	
-		// Get Listing
-		// Get the Mapping Definitions
-		// Import
-		
-	
-		
-		
-		$providerId = $message['provider'];
-		$provider = $this->em->getRepository('\Lycan\Providers\CoreBundle\Entity\ProviderAuthBase')->find($providerId);
-		$providerKey = strtolower( $provider->getProviderName() );
-		
-		
 		$client  = $this->container->get('lycan.provider.api.factory')->create($providerKey, $provider);
 		$manager = $this->container->get('lycan.provider.manager.factory')->create($providerKey);
 		$manager->setClient($client);
+		$manager->setBatch( $this->em->getReference("CoreBundle:BatchExecutions", $message['batch']));
+		$manager->setProvider($provider);
+		
+		// Get Listing
+		// Get the Mapping Definitions
+		// Import
+	
+		// Get Provider..
+		$channel = $this->em->getRepository('AppBundle:ChannelBrand')->find($message['channel']);
+		if(!$channel){
+			// The Channel Push has been deleted.
+			$batchLogger->crit("The Channel no longer exists", $message);
+			return true;
+		}
+	
 		// Get Listing from Lycan
-		
-		$listing = $this->em->getRepository("AppBundle:Property")->find($message['id']);
-		
+		$listing = $this->em->getRepository("AppBundle:Listing")->find($message['id']);
+		// Rental no longer exists
+		if(!$listing){
+			$batchLogger->crit("Rental no longer exists", $message);
+			return true;
+		}
 		if(!$listing->getIsSchemaValid()){
-			$batchLogger->warning("Schema is not valid. Cannot export and syncronization to external channel.", $message);
+			$batchLogger->warning("Schema is not valid for Listing. Cannot upsert to external channel.", $message);
 			return true;
 		}
 		$schema = $listing->getSchemaObject();
-		
-		// $schemaContainer = new Container(json_decode( $schema, true));
-		// $schemaContainer->fromArray();
-		
+		if($listing->getProvider()->getPassOnCredentials()){
+			// If passthrough provider is set. We can receive this in the process outgoing.
+			$manager->setPassThroughProvider($listing->getProvider());
+		}
+	
+	
 		$deferred = new Deferred();
 		$deferred->resolve($schema);
 		
@@ -81,60 +93,118 @@ class PushListingConsumer implements ConsumerInterface
 		// Although this is unlikely. We may need to create an abstract "TRANSPORT" object which envelops a batch job process.
 		// Something like "create" property. Get ID. Push images. Push descriptions. etc.
 		// We'll refactor when we know how other systems do it.
-		$deferred->promise()
-			->then(function($schema) use ($manager, $listing){
-				// If we can pass on credentials. Do a mixin before passing on.
-				if($listing->getProvider()->getPassOnCredentials()){
-					// If passthrough provider is set. We can receive this in the process outgoing.
-					$manager->setPassThroughProvider($listing->getProvider());
-				}
-				return $schema;
-			})
-			->then($manager->getProcessOutgoingMappingClosure())
-			->then(function($model) use ($manager, $listing, $provider){
-				// This will insert/update the lycan model
-				$listings = $this->em->getRepository("AppBundle:Property")->findListingsByProvider($provider, $listing);
-				// We're assuming we only have a single channel listing for now, but this might change. This will need refactoring.
-				$channelListing =  ($listings && $listings->count() >= 1) ? $listings->current() : null;
-				// If we know what the CHANNEL LISTING is, we pass that to the upsert. Because then we can UPDATE. Rather than insert.
-				
-				$id = $manager->upsert($model, $channelListing);
-				// If NOT NULL
-				// TEST WHAT HAPPENS
-				if($id){
-					// Now we create a child listing.
-					$channelListing = $channelListing?: new Listing();
-					$channelListing->setProvider($provider);
-					$channelListing->setProviderListingId($id);
-					$channelListing->setSchemaObject($model->toJson());
-					$channelListing->setMaster($listing);
-					$channelListing->setDescriptiveName($model->get("name"));
-					$channelListing->setIsSchemaValid($listing->getIsSchemaValid());
-					$this->em->persist($channelListing);
-					$this->em->persist($listing);
-					$this->em->flush();
-					return $channelListing;
-				} else {
-					throw new \Exception("Could not insert, missing ID from upsert.");
-				}
-				
-			})->then( function($property) use ($eventGroup) {
-				// We should now attempt to claim all logs with the current eventGroup...
-				// And assign them to this property..
+		$cleanup = function($property) use ($message, $provider, $channel, $eventGroup){
+			// THIS DOESNT WORK ANYMORE? Because you are forking logging to RabbitMQ...
+			// You also need to send this update information.
+			if($property){
 				$tableName = $this->em->getClassMetadata('CoreBundle:Event')->getTableName();
 				$sql = "update " . $tableName . " set property_id = :propertyId where " . $tableName . ".event_group = :eventGroup";
 				$params = array('propertyId'=> (string) $property->getId(), 'eventGroup'=>$eventGroup);
 				$stmt = $this->em->getConnection()->prepare($sql);
 				$stmt->execute($params);
-			})->then( function() use ($message, $provider){
-				if($message['jobsInBatch'] === $message['jobIndex']){
-					// We can close as it's finished..
-					$provider->setPushInProgress(false);
-					$this->em->persist($provider);
-					$this->em->flush();
-				}
-			});
+			}
 		
+			if($message['jobsInBatch'] === $message['jobIndex']){
+				// We can close as it's finished..
+				$provider->setPushInProgress(false);
+				$channel->setPushInProgress(false);
+				$this->em->persist($provider);
+				$this->em->persist($channel);
+				$this->em->flush();
+			}
+			
+		};
+		
+		// TODO - Use this instaed: https://github.com/thephpleague/pipeline
+	 	$deferred->promise()
+			// Needs to return the MODEL <---> AND we also need to get access to the schema somehow...
+			->then(function($json) use($provider, $batchLogger){
+				$validated = true;
+				
+				// TODO - This ONLY validates the master listing. Not the SUB LISTING.
+				// I NEED TO DO BOTH. REFACTOR THIS WHEN POSSIBEL.
+				$errors = [];
+			
+				foreach($provider->getPolicies() as $policy){
+					$schemaDefinition = json_decode( $policy->getPolicy()->getPolicySchema() );
+					// Provide $schemaStorage to the Validator so that references can be resolved during validation
+					$schemaStorage = new SchemaStorage();
+					$schemaStorage->addSchema('file://list-schema', $schemaDefinition);
+					$validator = new Validator(new Factory(
+						$schemaStorage,
+						null,
+						Constraint::CHECK_MODE_TYPE_CAST | Constraint::CHECK_MODE_COERCE
+					));
+					$validator->check(   json_decode( $json ) ,  $schemaDefinition );
+					
+					if(!$validator->isValid()){
+						$validated = false;
+						$errors[] =  $validator->getErrors();
+						$batchLogger->warning("Schema does not validate against custom policies attached to provider.", [ "schema" =>  json_decode( $schema, true ),  "input" => json_decode( $policy->getPolicy()->getPolicySchema(), true ),  "output" => $validator->getErrors() ]);
+					}
+				}
+			
+				if($validated){
+					return $json;
+				} else {
+					throw new PolicyException("Schema does not validate against custom policies attached to provider.", null, null, $schema, $errors);
+				}
+				
+			})
+			->then(function($json) use ($manager, $listing, $provider, $channel){
+				// This will insert/update the lycan model
+				$model = $manager->doOutgoingMapping($json, $listing);
+				
+				try {
+					$id = $manager->upsert($model, $listing);
+					if($id){
+						// Now we create a child listing.
+						$listing->setProviderListingId($id);
+						$this->em->persist($listing);
+						$this->em->flush();
+						return $listing;
+					} else {
+						throw new \Exception("Could not insert, missing ID from upsert.");
+					}
+					
+				} catch(\Exception $e){
+					throw $e;
+				}
+				
+			}, function($e) use ($manager, $listing, $provider, $channel){
+				
+				if($e instanceof PolicyException) {
+				
+					$listings = $this->em->getRepository("AppBundle:Property")
+						->findListingsByProvider($provider, $listing);
+					
+					// We're assuming we only have a single channel listing for now, but this might change. This will need refactoring.
+					$channelListing = ($listings && $listings->count() >= 1) ? $listings->current() : null;
+					// Now we create a child listing.
+					$channelListing = $channelListing ?: new Listing();
+					$channelListing->setProvider($provider);
+					$channelListing->setChannel( $channel );
+					// The Exception sets the Schema, so this _)IS_) correct.
+					$channelListing->setSchemaObject($listing->getSchemaObject());
+					$channelListing->setMaster($listing);
+					$channelListing->setDescriptiveName($listing->getDescriptiveName());
+					$channelListing->setIsSchemaValid($listing->getIsSchemaValid());
+					$channelListing->setArePoliciesValid(false);
+					$channelListing->setPoliciesErrors($e->getErrors());
+					$this->em->persist($channelListing);
+					$this->em->persist($listing);
+					$this->em->flush();
+					
+					return \react\promise\resolve(
+						$channelListing
+					);
+					
+				}
+				
+			})
+			->then( $cleanup )
+			->always( $cleanup );
+	
 		return true;
 		// $this->em->clear();
 		

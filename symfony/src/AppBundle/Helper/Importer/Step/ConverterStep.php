@@ -42,7 +42,9 @@ class ConverterStep implements Step
 	 */
 	public function process(&$item)
 	{
-	
+		if(!is_array($this->converters) || empty($this->converters)){
+			return true;
+		}
 		foreach ($this->converters as $converter) {
 			$item = call_user_func($converter, $item);
 		}

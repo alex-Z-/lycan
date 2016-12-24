@@ -9,6 +9,8 @@ services:
             MYSQL_DATABASE: symfony
             MYSQL_USER: symfony
             MYSQL_PASSWORD: symfony
+        volumes:
+             - ./mysql:/var/lib/mysql
     rabbit:
         image: rabbitmq:3-management
         environment:

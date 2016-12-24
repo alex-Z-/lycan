@@ -36,6 +36,28 @@
                     <td>
 
                         <div class="form-group">
+                            <label style="cursor:pointer;margin-right:20px;" for="createNewUser">Automatically create a new user for each credential?</label>
+                            <input type="checkbox" name="createNewUser" id="createNewUser" value="1" >
+
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>&nbsp;</label></td>
+                    <td>
+                        <label class='' style="cursor:pointer;margin-left:00px; " for="s2id_form_brands">Automatically Map Providers to Brand</label>
+                        <div class="form-group">
+                            {{ form_widget(form.brands) }}
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>&nbsp;</label></td>
+                    <td>
+
+                        <div class="form-group">
 
 
                             <input class="form-control-file" id="file-upload"  type="file" name="csvFile" />
@@ -48,6 +70,7 @@
 
                     </td>
                 </tr>
+
 
                 </tbody>
             </table>

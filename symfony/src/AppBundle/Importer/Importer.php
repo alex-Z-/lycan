@@ -75,7 +75,7 @@ class Importer {
 			$batchLogger->warning("Importing Schema - Schema was found to be invalid", [ "input" => $schema->toArray(), "output" => $validator->getErrors() ] );
 			$property = $this->_upsert($schema, $provider);
 			$property->setIsSchemaValid(false);
-			$property->setSchemaErrors($validator->getErrors());
+			$property->setSchemaErrors( json_encode( $validator->getErrors() ) );
 			$this->em->persist($property);
 			
 		}
@@ -98,10 +98,11 @@ class Importer {
 		if(!$property) {
 			$property = new Property();
 		}
-		
-		foreach($schema->get("media")->getIterator() as $media){
-			if($media->get("type") === "URI" && $media->get("category") === "LINK" && $media->get("isListingPage", null)){
-				$property->setProviderPublicURL($media->get("uri"));
+		if($schema->has("media") && !$schema->get("media")->isEmpty()){
+			foreach($schema->get("media")->getIterator() as $media){
+				if($media->get("type") === "URI" && $media->get("category") === "LINK" && $media->get("isListingPage", null)){
+					$property->setProviderPublicURL($media->get("uri"));
+				}
 			}
 		}
 	

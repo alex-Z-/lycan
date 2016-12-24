@@ -15,6 +15,9 @@ class BaseAdmin extends AbstractAdmin
 		$this->container = $container;
 	}
 	
+	
+	
+	
 	public function addBundledSubClasses($configuration = null){
 		
 		
@@ -30,8 +33,9 @@ class BaseAdmin extends AbstractAdmin
 	
 	public function configure(){
 		
-		$em =  $this->getConfigurationPool()->getContainer()->get('doctrine')->getEntityManager();
+		$em =  $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
 		$em->getFilters()->enable('softdeleteable');
+	
 		$this->setTemplate('button_create', 'AppBundle:Admin/Button:create_button.html.twig');
 	}
 	

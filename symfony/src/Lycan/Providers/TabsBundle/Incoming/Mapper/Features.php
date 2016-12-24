@@ -26,6 +26,7 @@ class Features extends  BaseFeatures {
 			"Bed Linen Cost Incl" => Enum::GENERAL_BED_LINEN_INCLUDED,
 			"Internet" => Enum::COMMUNICATION_INTERNET,
 			"Luxury Cottage" => Enum::THEMES_LUXURY,
+			"Net access" => Enum::COMMUNICATION_INTERNET
 			];
 	
 	public function getMap()

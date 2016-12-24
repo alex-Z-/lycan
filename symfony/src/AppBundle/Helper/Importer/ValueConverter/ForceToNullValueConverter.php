@@ -20,7 +20,7 @@ class ForceToNullValueConverter
 	 */
 	public function __construct()
 	{
-		
+		$this->mapping = [];
 	}
 	
 	public function __invoke($input)

@@ -35,7 +35,6 @@ class Brand extends Base
 	 */
 	private $brandName;
 	
-	
 	/**
 	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
 	 *
@@ -51,7 +50,7 @@ class Brand extends Base
 	private $members;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist"},  mappedBy="brands")
+	 * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist"},  mappedBy="brands", fetch="EXTRA_LAZY")
 	 */
 	private $properties;
 	
@@ -87,7 +86,7 @@ class Brand extends Base
 	
 	function __toString()
 	{
-		return $this->getBrandName();
+		return (string) $this->getBrandName();
 	}
 	
 	/**
@@ -98,7 +97,7 @@ class Brand extends Base
 		return $this->id;
 	}
 	
-	/**
+	/**gi
 	 * @param \Ramsey\Uuid\Uuid $id
 	 */
 	public function setId($id)
@@ -292,6 +291,10 @@ class Brand extends Base
     {
         return $this->properties;
     }
+    
+    public function getPropertiesCount(){
+		return $this->getProperties()->count();
+	}
 	
 	/**
 	 * @return \Doctrine\Common\Collections\ArrayCollection

@@ -52,6 +52,7 @@ class AppKernel extends Kernel
             new Lycan\Providers\RentivoBundle\RentivoBundle(),
 			new Lycan\Providers\TabsBundle\TabsBundle(),
 			new Lycan\Providers\SupercontrolBundle\SupercontrolBundle(),
+			new Lycan\Providers\LoveLegacyBundle\LoveLegacyBundle(),
 			
 
 			new Lycan\Providers\CoreBundle\CoreBundle(),
@@ -66,8 +67,7 @@ class AppKernel extends Kernel
 	
 			new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
 			new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
-			new Ddeboer\DataImportBundle\DdeboerDataImportBundle()
-           
+			new Ddeboer\DataImportBundle\DdeboerDataImportBundle(),
         );
 		
 		

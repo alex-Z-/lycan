@@ -46,6 +46,7 @@ class PullProviderConsumer implements ConsumerInterface
 		if(!$provider->getPullInProgress() ){
 			$batchLogger->warning("Provider is not recognised as in progress. Terminating Pull Request.", $message );
 			// Discard the message.
+			$this->em->clear();
 			return true;
 		}
 			
@@ -61,6 +62,7 @@ class PullProviderConsumer implements ConsumerInterface
 		$manager = $this->container->get('lycan.provider.manager.factory')->create($providerKey);
 		if(is_null($manager)){
 			$batchLogger->crit("Manager API Factory did not return a Valid Provider Manager.", $message );
+			$this->em->clear();
 			throw new \Exception("Manager API Factory did not return a Valid Provider Manager.");
 		}
 		
@@ -71,9 +73,10 @@ class PullProviderConsumer implements ConsumerInterface
 		$client->fetchAllListings()
 				->then($manager->getQueuePullListingsClosure(), function($msg) use($batchLogger, $provider, $em){
 					if(is_string($msg)){
-						$batchLogger->warn($msg, $provider->getLogValues() );
+						$batchLogger->warning($msg, $provider->getLogValues() );
 					}
 					if($msg instanceof \Exception){
+						$this->em->clear();
 						$batchLogger->crit($msg->getMessage(), $provider->getLogValues() );
 					}
 					
@@ -90,11 +93,9 @@ class PullProviderConsumer implements ConsumerInterface
 					
 					$stmt = $this->em->getConnection()->prepare($sql);
 					$stmt->execute($params);
+					$this->em->clear();
 					
 			});
 				
-		$this->em->clear();
-		// dump($message);
-		
 	}
 }

@@ -2,9 +2,11 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\UserBrandRegistry;
 use AppBundle\Helper\Importer\ValueConverter\ArrayValueConverterMap;
 use AppBundle\Helper\Importer\ValueConverter\MappingValueConverter;
 use AppBundle\Helper\Importer\ValueConverter\ForceToNullValueConverter;
+use Application\Sonata\UserBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Helper\Importer\Step\ConverterStep;
@@ -59,9 +61,9 @@ class UpsertCSVController extends Controller
 		$fields = array_map(function (&$item) {
 			return str_replace( "?", "", mb_convert_encoding($item, "ASCII", mb_detect_encoding($item)));
 		},  $csvReader->getFields());
-	
+		
 		// FIX ME. UTF8 char. "id" !=== "id".
-		if( in_array( mb_convert_encoding("id", 'UTF-8'),  $fields) ){
+		if( false && in_array( mb_convert_encoding("id", 'UTF-8'),  $fields) ){
 			$this->addFlash('sonata_flash_error', "Upserting is currently disabled.");
 			return $this->redirect($this->generateUrl('sonata_admin_dashboard'));
 		}
@@ -97,9 +99,55 @@ class UpsertCSVController extends Controller
 		
 		// Remove ID
 		$itemConverterStep = new ConverterStep();
-		$itemConverterStep->add(function ($item) {
+		
+		$itemConverterStep->add(function ($item) use($em, $entityMetadata, $param)  {
+			// Only create a user if it does not already exist...
+			if($param->get("createNewUser")) {
+				$createUser = true;
+				if (isset($item['id'])) {
+					$createUser = !(bool)$em->find('CoreBundle:ProviderAuthBase', $item['id']);
+				}
+				
+				if ($createUser) {
+					// Create a new User and attach to each.
+					$owner = new User();
+					
+					$prefix = $entityMetadata->newInstance()
+						->getProviderName();
+					if (isset($item['nickname'])) {
+						$prefix = $item['nickname'] . "_" . $prefix;
+					}
+					$uniq = uniqid($prefix . "_");
+					
+					$owner->setEmail($prefix . "@example.com");
+					$owner->setUsername($prefix);
+					$owner->setPlainPassword($uniq);
+					
+					
+					if ($param->get("form")['brands']) {
+						$addToBrands   = $param->get("form")['brands'];
+						$brandRegistry = new UserBrandRegistry();
+						$brandRegistry->setMember($owner);
+						// Single
+						$brandRegistry->setBrand($em->find("AppBundle:Brand", $addToBrands));
+						$em->persist($brandRegistry);
+					}
+					
+					
+					$item['owner'] = $owner;
+				}
+				
+				
+			}
+			
+			if ($param->get("form")['brands']) {
+				$addToBrands   = $param->get("form")['brands'];
+				$item['autoMappedToBrands'] = [$addToBrands];
+			}
 			return $item;
 		});
+		
+		
 		$stepper->addStep($itemConverterStep);
 		
 		
@@ -112,6 +160,9 @@ class UpsertCSVController extends Controller
 		$at->add('[lastPullStartedAt]', $dateTimeConverter);
 		$at->add('[lastPushCompletedAt]', $dateTimeConverter);
 		$at->add('[lastPushStartedAt]', $dateTimeConverter);
+		$at->add('[lastValidatedCredentialsAt]', $dateTimeConverter);
+		
+
 		$stepper->addStep( $at );
 		
 		// Cast Values
@@ -120,12 +171,12 @@ class UpsertCSVController extends Controller
 			''	=> null
 		]);
 		$forceNulls = new ForceToNullValueConverter();
-		// $at->add('[id]', $forceNulls);
 		
 		$valueConvertStep = new Step\ValueConverterStep();
 		$valueConvertStep->add('[pushInProgress]', $forceNulls);
 		$valueConvertStep->add('[pullInProgress]', $forceNulls);
 		$valueConvertStep->add('[allowPush]', $valueConverter);
+		$valueConvertStep->add('[isValidCredentials]', $valueConverter);
 		$valueConvertStep->add('[supportsRealTimePricing]', $valueConverter);
 		$stepper->addStep( $valueConvertStep );
 		

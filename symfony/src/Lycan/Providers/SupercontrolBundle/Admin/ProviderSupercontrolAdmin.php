@@ -26,44 +26,6 @@ class ProviderSupercontrolAdmin extends ProviderAdmin
 		return $instance;
 	}
 	
-	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-	{
-		
-		if (!$childAdmin && !in_array($action, array('edit'))) {
-			return;
-		}
-		
-		$admin = $this->isChild() ? $this->getParent() : $this;
-		
-		// $id = $admin->getRequest()->get('id');
-		$router = $this->getConfigurationPool()->getContainer()->get('router');
-		
-		if($admin->getSubject()->getOwner()) {
-			
-			$menu->addChild(
-				$this->trans('Edit Owner', array(), 'SonataUserBundle'),
-				array('uri' => $router->generate('admin_sonata_user_user_edit', array('id' => $admin->getSubject()->getOwner()->getId() )))
-			);
-		}
-		
-		if ( $this->isGranted("ROLE_SUPERADMIN")  ){
-		
-				  
-			$menu->addChild(
-				'Show Event Log',
-			
-				array('uri' => $router->generate('admin_providers_core_event_list',
-					array(
-						'provider_id' => $admin->getSubject()->getId(),
-						'filter[provider][value]' => (string)  $admin->getSubject()->getId()
-					)
-				)));
-			
-			
-		}
-		
-		
-	}
 	
 	public function generateObjectUrl($name, $object, array $parameters = array(), $absolute = false)
 	{
@@ -136,16 +98,17 @@ class ProviderSupercontrolAdmin extends ProviderAdmin
 		
 		// We don't want to let properties be transfered until we understand more of the implications.
 		if ($this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) ) {
-			$formMapper->tab('Credentials')
+			$formMapper
+				->tab('Credentials')
 				->with('Owner', array('class' => 'col-md-5'))
 				->add('owner', 'sonata_type_model', array(
 					'required' => false,
 					'expanded' => false,
-					'btn_add' => false,
+					'btn_add' => 'Create new user',
 					'multiple' => false,
 				))
-				->end()->end();
-			
+				->end()
+				->end();
 		}
 		
 		$formMapper
@@ -178,7 +141,9 @@ class ProviderSupercontrolAdmin extends ProviderAdmin
 	
 	protected function configureListFields(ListMapper $listMapper)
 	{
-		$listMapper->addIdentifier('nickname', null, array(
+		$listMapper
+			->add('isValidCredentials', null, ['label' => 'Valid'])
+			->addIdentifier('nickname', null, array(
 				'route' => array(
 					'name' => 'edit'
 				)
@@ -186,6 +151,8 @@ class ProviderSupercontrolAdmin extends ProviderAdmin
 			->add('baseUrl')
 			->add('client', null, array('label' => 'Site ID'))
 			->add('owner')
+			->add('propertiesCount')
+			->add('lastPullCompletedAt')
 			->add('_action', 'actions', array(
 				'actions' => array(
 					'edit' => array(),

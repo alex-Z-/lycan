@@ -2,9 +2,11 @@
 
 namespace Lycan\Providers\CoreBundle\Consumer;
 
+use Lycan\Providers\CoreBundle\API\SourceMappingResult;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use \Ramsey\Uuid\Uuid;
+use RandomLib\Source;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 
@@ -39,14 +41,13 @@ class PullListingConsumer implements ConsumerInterface
 		if($batch) {
 			$batchLogger->setBatch( $batch);
 		}
-		
-		
+	
 		$providerId = $message['provider'];
 		$provider = $this->em->getRepository('\Lycan\Providers\CoreBundle\Entity\ProviderAuthBase')->find($providerId);
 		if(!$provider) {
 			$batchLogger->warning("Unknown Provider. Not found,", $message);
 			return true;
-		} else if(!$provider->getPullInProgress() && php_sapi_name() === "cli" ){
+		} else if( !isset($message['skipInProgressCheck']) && !$provider->getPullInProgress() && php_sapi_name() === "cli" ){
 			// If not CLI
 			if(php_sapi_name() !== "cli") {
 				throw new Exception("Provider is not currently in progress");
@@ -67,27 +68,41 @@ class PullListingConsumer implements ConsumerInterface
 		// Get the Mapping Definitions
 		// Import
 		$em = $this->em;
-		$client ->getListingFull($message['id'])
+		$listingIdentifier = $message['id'];
+		
+		if(isset($message['_full'])){
+			// We can PASS the FULL.....
+			$listingIdentifier = $message['_full'];
+		}
+		$client ->getListingFull( $listingIdentifier )
 				->then($manager->getProcessIncomingMappingClosure())
-				->then(function($schema) use ($provider) {
+				->then(function(SourceMappingResult $result) use ($manager, $provider, $em) {
+					
+					
+					$schema = $result->getSchema();
+				
 					// Get Lycan Importer
 					$lycan = $this->container->get("app.importer");
 					// We want the import function to do the checks.
 					// This avoids duplication around lots of code.
+			
+					$property = $lycan->import($schema, $provider, true);
+					$property->setSourceDataMapping($result->getSource());
 					
-					$property = $lycan->import( $schema, $provider, true );
+					$em->persist($property);
+					$em->flush($property);
+				
 					
 					return $property;
 				}, function($msg)  use($batchLogger, $provider, $em){
+					
 					if(is_string($msg)){
-						$batchLogger->warn($msg, $provider->getLogValues() );
+						$batchLogger->warning($msg, $provider->getLogValues() );
 					}
 					
 					if($msg instanceof \Exception){
-						$batchLogger->warn($msg->getMessage());
+						$batchLogger->warning($msg->getMessage());
 					}
-					
-					
 					
 					// $provider->setPullInProgress(false);
 					// $em->persist($provider);
@@ -113,6 +128,7 @@ class PullListingConsumer implements ConsumerInterface
 					if($message['jobsInBatch'] === $message['jobIndex']){
 						// We can close as it's finished..
 						$provider->setPullInProgress(false);
+						$provider->setLastPullCompletedAt( new \DateTime() );
 						$this->em->persist($provider);
 						$this->em->flush();
 					}

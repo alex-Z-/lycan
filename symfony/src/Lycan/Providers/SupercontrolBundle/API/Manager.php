@@ -2,6 +2,8 @@
 
 namespace Lycan\Providers\SupercontrolBundle\API;
 use Incoming\Processor;
+use Lycan\Providers\CoreBundle\API\SourceMappingResult;
+use Lycan\Providers\CoreBundle\Entity\BatchExecutions;
 use Pristine\Schema\Container as SchemaContainer;
 use Lycan\Providers\CoreBundle\API\ManagerInterface;
 use Lycan\Providers\SupercontrolBundle\Incoming\Hydrator\SchemaHydrator as Hydrator;
@@ -13,6 +15,7 @@ class Manager  implements ManagerInterface {
 	private $container;
 	private $message;
 	private $provider;
+	
 	public function setContainer($container){
 		$this->container = $container;
 	}
@@ -30,12 +33,13 @@ class Manager  implements ManagerInterface {
 	
 	public function getQueuePullProviderClosure(){
 		
-		return function($object) {
+		return function(ProviderAuthBase $object, Property $property = null) {
 			$em = $this->container->get('doctrine')
 				->getEntityManager();
 			
 			
 			$object->setPullInProgress(true);
+			
 			$batch = new BatchExecutions();
 			$batch->setProvider($object);
 			$object->setLastActiveBatch($batch);
@@ -52,6 +56,11 @@ class Manager  implements ManagerInterface {
 			
 			// Add
 			$msg      = ["id" => $object->getId(), "batch" => $batch->getId()];
+			
+			if($property){
+				$msg['property'] = (string) $property->getId();
+			}
+			
 			$code     = strtolower($object->getProviderName());
 			$routingKey = sprintf("lycan.provider.pull.provider.%s", $code);
 			$this->container->get('lycan.rabbit.producer.pull_provider')->publish(serialize($msg), $routingKey);
@@ -79,7 +88,7 @@ class Manager  implements ManagerInterface {
 					$this->container->get('lycan.rabbit.producer.pull_listing')
 						->publish(serialize($msg), $routingKey);
 				}catch(\Exception $e){
-					dump($e);die();
+					// TODO need to show a log?
 				}
 				
 				
@@ -100,7 +109,8 @@ class Manager  implements ManagerInterface {
 				new SchemaContainer(),
 				new Hydrator($container)
 			);
-			return $schema;
+			// Set the data and the schema.
+			return new SourceMappingResult($data, $schema);
 		};
 		
 	}

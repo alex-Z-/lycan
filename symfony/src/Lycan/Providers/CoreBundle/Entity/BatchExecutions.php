@@ -22,12 +22,12 @@ class BatchExecutions
 	protected $id;
 	
 	/**
-	 *@ORM\OneToMany(targetEntity="Lycan\Providers\CoreBundle\Entity\Event", mappedBy="batch")
+	 *@ORM\OneToMany(targetEntity="Lycan\Providers\CoreBundle\Entity\Event", mappedBy="batch", fetch="EXTRA_LAZY")
 	 */
 	private $events;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase")
+	 * @ORM\ManyToOne(targetEntity="Lycan\Providers\CoreBundle\Entity\ProviderAuthBase", fetch="EXTRA_LAZY")
 	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
 	 *
 	 */

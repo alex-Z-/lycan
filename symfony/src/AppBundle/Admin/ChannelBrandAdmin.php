@@ -34,6 +34,48 @@ class ChannelBrandAdmin extends BaseAdmin
 		return $instance;
 	}
 	
+	protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
+	{
+		
+		if (!$childAdmin && !in_array($action, array('edit'))) {
+			return;
+		}
+		
+		$admin = $this->isChild() ? $this->getParent() : $this;
+		$router = $this->getConfigurationPool()->getContainer()->get('router');
+		if($admin->getSubject()->getId()) {
+			
+			$menu->addChild(
+				$this->trans('View Brand Properties', array(), 'SonataUserBundle'),
+				array('uri' => $router->generate('admin_app_brand_property_list',
+					array(
+						'id' => (string) $admin->getSubject()->getBrand()->getId(),
+						// 'filter[brands][value]' => (string)  $admin->getSubject()->getId()
+					)
+				))
+			);
+			
+		}
+		
+		
+		
+		$menu->addChild(
+			sprintf("View Mapped Listings (%d)", $admin->getSubject()
+				->getListings()
+				->count()),
+			['uri' => $router->generate( 'admin_app_listing_list',
+				[
+					'id'                      => (string)$admin->getSubject()
+						->getId(),
+					'filter[channel][value]' => (string)$admin->getSubject()
+						->getId()
+				]
+			)]);
+		
+		
+		
+	}
+	
 	protected function configureRoutes(RouteCollection $collection)
 	{
 		
@@ -49,8 +91,7 @@ class ChannelBrandAdmin extends BaseAdmin
 	{
 		
 		$owner = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
-		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
-		
+		$em =  $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
 		// We only want to be able to create IF you own the brand....
 		$brandQuery = $query = $em->createQueryBuilder("b")
 			->select("b")
@@ -61,7 +102,7 @@ class ChannelBrandAdmin extends BaseAdmin
 		// Only get your Providers...
 		$providerQuery = $query = $em->createQueryBuilder("b")
 			->select("b")
-			->from("Lycan\Providers\CoreBundle\Entity\ProviderAuthBase", "b")
+			->from("CoreBundle:ProviderAuthBase", "b")
 			->where('b.allowPush = 1');
 		
 		$brandOpts = [
@@ -74,6 +115,8 @@ class ChannelBrandAdmin extends BaseAdmin
 			'required' => true,
 			'label' => "Channel Connection",
 			'query' =>  $providerQuery,
+			
+			'property' => 'detailedDescriptor',
 			'help' => 'Not seeing all of your channels? Make sure you have enabled the channel to be used as a downstream push channel.',
 			'group_by' => function($val, $key, $index) {
 				if( preg_match( "/(not active)/", $key )){
@@ -101,8 +144,17 @@ class ChannelBrandAdmin extends BaseAdmin
 		// define group zoning
 		$formMapper
 			->tab('Your Channel Bridge')
+				->with('Channel', array('class' => 'col-md-12'))->end()
 				->with('Brand', array('class' => 'col-md-6'))->end()
 				->with('Push to Channel', array('class' => 'col-md-6'))->end()
+				// ->with('Minimum Data Requirements', array('class' => 'col-md-6 pull-right'))->end()
+			->end();
+		
+		
+		$formMapper->tab('Your Channel Bridge')
+			->with('Channel')
+				->add('descriptiveName')
+			->end()
 			->end();
 		
 		// This means that we are a SUB FORM! That means we don't want to let them changethe brand...

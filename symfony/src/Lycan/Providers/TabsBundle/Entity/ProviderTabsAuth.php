@@ -101,4 +101,11 @@ class ProviderTabsAuth extends ProviderAuthBase
 		return get_object_vars ($this);
 	}
 	
+	public function getPulledPropertiesCount(){
+		
+		// THIS QUERY IS REALLY INTENSIVE...
+		// return count($this->getProperties());
+		return "DEBUG";
+	}
+	
 }

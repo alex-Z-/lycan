@@ -91,10 +91,16 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 		}
 		
 		if($input->has("propertyurl")){
+			if (preg_match("#https?://#", $input->get("propertyurl")) === 0) {
+				$uri = 'http://'. $input->get("propertyurl");
+			} else {
+				$uri = $input->get("propertyurl");
+			}
+			
 			$model->set("media.[]", [
 				"type" => "URI",
 				"category" => "LINK",
-				"uri" => $input->get("propertyurl"),
+				"uri" => $uri,
 				"isListingPage" => true
 			]);
 		}
@@ -222,7 +228,6 @@ class SchemaHydrator implements Incoming\Hydrator\HydratorInterface
 				"sequence" => null
 			];
 		}
-		
 		
 		// Second Pass
 		foreach ($ranges as $event) {

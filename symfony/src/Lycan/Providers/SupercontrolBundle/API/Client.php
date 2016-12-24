@@ -115,6 +115,31 @@ class Client {
 		return $response;
 	}
 	
+	public function ping(){
+		// They don't have a ping. So just use this.
+		try {
+			
+			$sc =  "/api/endpoint/v1/GetSites";
+			// $rb = "https://requestb.in/18gc5r01";
+			$response = $this->getClient()->post( $sc, ['body' =>  'EMPTY']);
+			$body     = simplexml_load_string((string) $response->getBody());
+			$data     = Util::xmlToArray($body);
+			if(isset($data['scAPI']['GetSites'])){
+				return $response;
+			} else {
+				
+				if(isset($data['scAPI']['error']['msg'])) {
+					throw new \Exception("Supercontrol returned an error: " . $data['scAPI']['error']['msg']);
+				} else {
+					throw new \Exception("Supercontrol did not respond to ping request with a recognised response. Check API Credentials.");
+				}
+			}
+			
+		} catch(\Exception $e){
+			throw $e;
+		}
+	}
+	
 	public function getListingFull($id){
 		$deferred = new Deferred();
 		

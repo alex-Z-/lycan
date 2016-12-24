@@ -66,6 +66,8 @@ class AclAdminExtension extends AdminExtension
      */
     public function configureQuery(AdminInterface $admin, ProxyQueryInterface $query, $context = 'list')
     {
+	
+		
         // Don't filter for admins and for not ACL enabled classes and for command cli
         if (
             !$admin->isAclEnabled()
@@ -74,7 +76,8 @@ class AclAdminExtension extends AdminExtension
         ) {
             return;
         }
-
+	
+		
         // Retrieve current logged user SecurityIdentity
         $user = $this->securityContext->getToken()->getUser();
         $userSecurityIdentity = UserSecurityIdentity::fromAccount($user);

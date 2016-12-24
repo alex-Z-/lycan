@@ -17,7 +17,6 @@ class EventsAdmin extends BaseAdmin
 	protected $parentAssociationMapping = 'batch';
 	protected $baseRoutePattern = 'events';
 	
-	
 	protected $datagridValues = array(
 		'_page' => 1,
 		'_sort_order' => 'DESC',
@@ -124,18 +123,21 @@ class EventsAdmin extends BaseAdmin
 	{
 		$proxyQuery = parent::createQuery('list');
 		// Default Alias is "o"
-	
+		
 		return $proxyQuery;
 	}
 	
 	
 	protected function configureDatagridFilters(DatagridMapper $datagridMapper)
 	{
+		// Filtering by TYPES adds a SHIT LOAD OF QUERIES...
 		$datagridMapper->add('eventGroup')
 			->add('batch')
-			->add('property')
-			->add('provider')
-			;
+			->add('property', 'doctrine_orm_model_autocomplete', array(), null, array(
+				// in related CategoryAdmin there must be datagrid filter on `title` field to make the autocompletion work
+				'property'=>'descriptiveName',
+			))
+			->add('provider');
 	}
 	
 	
@@ -166,11 +168,11 @@ class EventsAdmin extends BaseAdmin
 		$listMapper->add('log');
 		$listMapper->add('createdAt', 'datetime' ,  array('date_format' => 'yyyy-MM-dd HH:mm:ss') );
 		$listMapper->add('_action', 'actions', array(
-		'actions' => array(
-			// 'CoreBundle:CRUD:list__action_pull.html.twig'
-			'show' =>  array(),
-		)
-	));
+			'actions' => array(
+				// 'CoreBundle:CRUD:list__action_pull.html.twig'
+				'show' =>  array(),
+			)
+		));
 		
 		
 		

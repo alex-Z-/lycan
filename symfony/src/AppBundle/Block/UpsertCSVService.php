@@ -1,6 +1,8 @@
 <?php
 namespace AppBundle\Block;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use SymfonyComponentHttpFoundationResponse;
 
 use Sonata\AdminBundle\Form\FormMapper;
@@ -32,14 +34,9 @@ class UpsertCSVService extends AbstractBlockService
         return array();
     }
 
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
-    {
-    }
+   
 
-    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
-    {
-    }
-
+   
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
         // merge settings
@@ -49,9 +46,32 @@ class UpsertCSVService extends AbstractBlockService
         if (!$this->container->get('security.context')->isGranted("ROLE_SUPER_ADMIN")) {
             $curBlock='AppBundle:Block:block_import_empty.html.twig';
         }
-
-        return $this->renderResponse($curBlock, array(
+		$user = $this->container->get('security.context')->getToken()->getUser();
+		$em = $this->container->get('doctrine')->getManager();
+		
+		
+		// Just show all Brands.
+		$brandsQuery =  $query = $em->createQueryBuilder("b")
+			->select("b")
+			->from("AppBundle:Brand", "b")
+			->leftjoin("b.members", "m");
+			
+		$choices = [  false => "None - Do not automap"];
+		foreach($brandsQuery->getQuery()->getResult() as $brand){
+			$choices[(string) $brand->getId()] = (string) $brand;
+		}
+	
+		$defaultData = array('message' => 'Type your message here');
+		$options = [
+			'choices'  => $choices
+		];
+		$form = $this->container->get('form.factory')->createBuilder('form')
+			->add('brands', ChoiceType::class, $options)
+			->getForm();
+	
+		return $this->renderResponse($curBlock, array(
             'block'     => $blockContext->getBlock(),
+			'form' => $form->createView(),
             'allTypes'  => CSVTypes::getTypesAndIds(),
             'settings'  => $settings
             ), $response);

@@ -35,14 +35,41 @@ class User extends BaseUser implements ParticipantInterface
 	/**
 	 * Bidirectional - Many general features are owned by many properties (INVERSE SIDE)
 	 *
-	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserBrandRegistry", mappedBy="member" )
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserBrandRegistry", mappedBy="member" , fetch="EXTRA_LAZY")
 	 */
 	private $brands;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="owner", cascade={"all"}, orphanRemoval=true, fetch="EXTRA_LAZY")
+	 */
+	private $properties;
+	
+	/**
+	 * @return mixed
+	 */
+	public function getProperties()
+	{
+		return $this->properties;
+	}
+	
+	/**
+	 * @param mixed $properties
+	 */
+	public function setProperties($properties)
+	{
+		$this->properties = $properties;
+	}
+	
+	
 	
 	/**
 	 * @ORM\Column(type="text", nullable=true)
 	 */
 	private $notes;
+	
+	public function getPropertiesCount(){
+		return count($this->getProperties());
+	}
 	
 	public function addd($what){
 		// dump($what);die();

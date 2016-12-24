@@ -2,12 +2,14 @@
 
 namespace AppBundle\Admin;
 
+use AppBundle\Form\Type\DataType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\CoreBundle\Validator\ErrorElement as ErrorElement;
 use ListingSchema\Load;
 use JsonSchema\Constraints\Factory;
@@ -24,14 +26,31 @@ class ListingAdmin extends BaseAdmin
 		'_sort_by' => 'createdAt'
 	);
 	const  ACCESS_ROLE_FOR_USERFIELD ="MASTER";
-
+	public function getBatchActions()
+	{
+		// retrieve the default batch actions (currently only delete)
+		$actions = parent::getBatchActions();
+		
+		if (
+			$this->hasRoute('edit') && $this->isGranted('EDIT') &&
+			$this->hasRoute('delete') && $this->isGranted('DELETE')
+		) {
+			$actions['push'] = array(
+				'label' => 'Push Listings',
+				'ask_confirmation' => false
+			);
+			
+		}
+		
+		return $actions;
+	}
+	
 	protected function configureFormFields(FormMapper $formMapper)
 	{
 		// This is the current logged in.. but I think we actually want the
 		$user = $this->getConfigurationPool()->getContainer()->get('security.context')->getToken()->getUser();
 		$accessToUserFields = ( $this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD ) && $this->getSubject()->getId() === null);
-		$em = $this->modelManager->getEntityManager('AppBundle:Brand');
-		
+		$em =  $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
 		if($this->getSubject()->getId() && $this->getSubject()->getOwner() ){
 			$user =   $this->getSubject()->getOwner();
 		}
@@ -59,6 +78,26 @@ class ListingAdmin extends BaseAdmin
 				->with('Property Schema', array('class' => 'col-md-12'))->end()
 			->end();
 		
+		
+		if( $this->isGranted(  SELF::ACCESS_ROLE_FOR_USERFIELD )){
+			$formMapper->tab('Listing')
+				->with('Admin Meta / Policies', ['class' => 'col-md-5'])
+					->add('arePoliciesValid','choice', array(
+						'label' => 'Are Policies Valid',
+						'attr' => array(
+							
+						),
+						'choices' => array(array(1 => 'Yes'), array(null => 'No')),
+						'expanded' => true,
+						'multiple' => false,
+						'required' => false,
+						'disabled' => true
+					))
+				->add('policiesErrorsJson', DataType::class, [ "attr" => ['rows' => 5], 'disabled' => true])
+				->end()->end();
+			
+		}
+		
 		$formMapper
 			->tab('Listing')
 				->with('Property Name',	array(
@@ -85,10 +124,21 @@ class ListingAdmin extends BaseAdmin
 		
 	}
 	
+	
+	protected function configureRoutes(RouteCollection $collection)
+	{
+		$collection->add('push', $this->getRouterIdParameter().'/push');
+	}
+	
+	
 	protected function configureDatagridFilters(DatagridMapper $datagridMapper)
 	{
-		$datagridMapper->add('descriptiveName')
-			;
+		$datagridMapper->add('descriptiveName');
+		$datagridMapper->add('channel');
+		$datagridMapper->add('provider', null, [], null, [ 'property' => 'DetailedDescriptor' ]);
+		
+		$datagridMapper->add('isSchemaValid');
+		$datagridMapper->add('arePoliciesValid');
 	}
 	
 	
@@ -127,7 +177,7 @@ class ListingAdmin extends BaseAdmin
 			
 		}
 		
-		
+	
 		
 		
 		
@@ -135,21 +185,15 @@ class ListingAdmin extends BaseAdmin
 	
 	public function preRemove($property)
 	{
-		dump($property);die();
 		
 	}
 	
 	
 	protected function configureListFields(ListMapper $listMapper)
 	{
-		$listMapper->addIdentifier('descriptiveName', null, array(
-				'route' => array(
-					'name' => 'edit'
-				)
-			));
-			
 		
-		$listMapper->add('master');
+		$listMapper->add('descriptiveName');
+		$listMapper->add('channel.descriptiveName');
 		//
 		// , 'stemplate' => 'AppBundle:Admin/PropertyAdmin:list_provider.html.twig'
 		$listMapper->add('provider', null, [ 'associated_property' => 'typeAndName' ]);
@@ -158,12 +202,35 @@ class ListingAdmin extends BaseAdmin
 		
 		
 		$listMapper->add('isSchemaValid');
+		$listMapper->add('arePoliciesValid');
 		$listMapper->add('updatedAt');
-		$listMapper->add('_action', 'actions', array(
-		'actions' => array(
-			'edit' => array(),
-			'delete' => array(),
-		)));
+		$listMapper	->add('_action', 'actions', array(
+			'actions' => array(
+				'edit' => array(),
+				'delete' => array(),
+				'pull' => array(
+					'template' => 'AppBundle:Admin/ListingAdmin:list__action_push.html.twig'
+				)
+			)
+		));
+		
+	}
+	
+	public function getExportFields() {
+		$fields = parent::getExportFields();
+		
+		$fields = [
+			"id" => "id",
+			"Owner" => "master.owner.username",
+			"Owner Email" => "master.owner.email",
+			"Listing Name" => "descriptiveName",
+			"Schema Object" => "schemaObject",
+			"Created At" => "createdAt",
+			"Master Listing ID" => "master.providerListingId",
+			"Master Provider" => "master.provider"
+		];
+
+		return $fields;
 		
 	}
 	

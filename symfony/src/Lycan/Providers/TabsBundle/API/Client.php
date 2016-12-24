@@ -125,24 +125,28 @@ class Client {
 			"_" => $this->getClient()->getAsync("/property/$id", [ 'query' => $params ]),
 			"description" => $this->getClient()->getAsync("/property/$id/description", [ 'query' => $params ]),
 			"availablebreaks" => $this->getClient()->getAsync("/property/$id/availablebreaks", [ 'query' => $params ]),
-			"calendar" => $this->getClient()->getAsync("/property/$id/calendar", [ 'query' => $params ]),
-			
-			
+			"calendar" => $this->getClient()->getAsync("/property/$id/calendar", [ 'query' => $params ])
 		];
-		Promise\all($promises)->then( function( array $responses)  use ($deferred)  {
-		
-			foreach( $responses as $index => $response){
-				
-				$data = json_decode((string)$response->getBody(), true);
-				if(!isset($results)) {
-					$results = $data;
-				} else {
-					$results[$index] = $data;
-				}
-			}
-		
-			$deferred->resolve($results);
-		})->wait();
+		try {
+			Promise\all($promises)
+				->then(function (array $responses) use ($deferred) {
+					
+					foreach ($responses as $index => $response) {
+						
+						$data = json_decode((string)$response->getBody(), true);
+						if (!isset($results)) {
+							$results = $data;
+						} else {
+							$results[$index] = $data;
+						}
+					}
+					
+					$deferred->resolve($results);
+				})
+				->wait();
+		} catch(\Exception $e){
+			$deferred->reject($e);
+		}
 		
 		return $deferred->promise();
 	}

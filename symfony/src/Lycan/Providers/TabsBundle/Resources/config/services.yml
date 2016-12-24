@@ -18,3 +18,12 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, group: Providers, label: Tabs }
 
+    lycan.provider.tabs.processor:
+        class: Incoming\Processor
+        arguments: [@lycan.provider.tabs.transformer]
+
+    lycan.provider.tabs.transformer:
+         class: Lycan\Providers\TabsBundle\Incoming\Transformer\TabsTransformer
+         calls:
+              - [ setContainer,[ @service_container ] ]
+
