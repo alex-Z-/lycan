@@ -1,0 +1,32 @@
+﻿id,lastValidatedCredentialsAt,isValidCredentials,createdAt,lastPullCompletedAt,lastPullStartedAt,lastPushCompletedAt,lastPushStartedAt,updatedAt,pullInProgress,pushInProgress,shouldPull,allowPush,passOnCredentials,supportsRealTimePricing,nickname,autoMappedToBrands,baseUrl,client,secret
+190,,1,"Fri, 09 Dec 2016 11:38:33 +0000",,,,,"Mon, 12 Dec 2016 10:05:59 +0000",,,1,1,1,1,Dream,,http://dr.api.carltonsoftware.co.uk/,hydrant,eeec9bd88c5cc158
+191,,1,"Fri, 09 Dec 2016 11:39:11 +0000","Mon, 12 Dec 2016 10:21:18 +0000",,,,"Mon, 12 Dec 2016 10:21:18 +0000",,,1,1,1,1,"Coast and Country (Devon)",,http://cd.api.carltonsoftware.co.uk/,hydrant,872d7edfada0e7a8
+192,,1,"Fri, 09 Dec 2016 11:39:44 +0000","Mon, 12 Dec 2016 10:26:47 +0000",,,,"Mon, 12 Dec 2016 10:26:47 +0000",,,1,1,1,1,"Cornish Horizons",,http://co.api.carltonsoftware.co.uk/,hydrant,7c75e8a686a6c226
+193,,1,"Fri, 09 Dec 2016 11:40:18 +0000","Mon, 12 Dec 2016 10:29:56 +0000",,,,"Mon, 12 Dec 2016 10:29:56 +0000",,,1,1,1,1,"Cornish Traditional Cottages",,http://ct.api.carltonsoftware.co.uk/,hydrant,d0fb1ad5d0fc921f
+194,,1,"Fri, 09 Dec 2016 11:41:37 +0000",,,,,"Wed, 14 Dec 2016 15:35:31 +0000",1,,1,1,1,1,"Cottage in the Country",,http://cc.api.carltonsoftware.co.uk/,hydrant,7b64a5a265eba559
+195,,1,"Fri, 09 Dec 2016 11:41:57 +0000","Mon, 12 Dec 2016 10:35:01 +0000",,,,"Wed, 14 Dec 2016 15:35:31 +0000",1,,1,1,1,1,"Discover Scotland",,http://di.api.carltonsoftware.co.uk,hydrant,1385e505b7258d2d
+196,,1,"Fri, 09 Dec 2016 11:42:33 +0000","Mon, 12 Dec 2016 10:37:34 +0000",,,,"Mon, 12 Dec 2016 10:37:34 +0000",,,1,1,1,1,"Beach Retreats",,http://be.api.carltonsoftware.co.uk,hydrant,6f00c95bc887ff5a
+197,,1,"Fri, 09 Dec 2016 11:43:16 +0000","Mon, 12 Dec 2016 10:40:33 +0000",,,,"Mon, 12 Dec 2016 10:40:33 +0000",,,1,1,1,1,"TB Tabs",,http://fb.api.carltonsoftware.co.uk/,hydrant,a121c9f703614a2f
+198,,1,"Fri, 09 Dec 2016 11:43:38 +0000","Wed, 14 Dec 2016 14:46:10 +0000",,,,"Wed, 14 Dec 2016 14:46:10 +0000",,,1,1,1,1,"Home from Home",,http://hh.api.carltonsoftware.co.uk/,hydrant,ef37303aff9e550d
+199,,1,"Fri, 09 Dec 2016 11:44:07 +0000","Wed, 14 Dec 2016 14:56:12 +0000",,,,"Wed, 14 Dec 2016 14:56:12 +0000",,,1,1,1,1,"Kent and Sussex",,http://fr.api.carltonsoftware.co.uk/,hydrant,9830151ec28b308b
+200,,1,"Fri, 09 Dec 2016 11:44:27 +0000","Mon, 12 Dec 2016 10:52:39 +0000",,,,"Mon, 12 Dec 2016 10:52:39 +0000",,,1,1,1,1,Lakelovers,,http://ll.api.carltonsoftware.co.uk/,hydrant,f7719d0373b9ee21
+201,,1,"Fri, 09 Dec 2016 11:44:52 +0000","Mon, 12 Dec 2016 10:58:42 +0000",,,,"Wed, 14 Dec 2016 15:35:31 +0000",1,,1,1,1,1,"Manor Cottages",,http://mc.api.carltonsoftware.co.uk,hydrant,7b0dcff05ef12cd3
+202,,1,"Fri, 09 Dec 2016 11:45:17 +0000","Mon, 12 Dec 2016 11:13:26 +0000",,,,"Wed, 14 Dec 2016 15:35:31 +0000",1,,1,1,1,1,"Norfolk Country Cottages",,http://no.api.carltonsoftware.co.uk/,hydrant,2dab823f440694c4
+204,,1,"Fri, 09 Dec 2016 11:45:56 +0000","Mon, 12 Dec 2016 11:26:24 +0000",,,,"Wed, 14 Dec 2016 15:35:31 +0000",1,,1,1,1,1,"Suffolk Secrets",,http://ss.api.carltonsoftware.co.uk,hydrant,d720628a529df333
+205,,1,"Fri, 09 Dec 2016 11:46:13 +0000","Mon, 12 Dec 2016 11:27:04 +0000",,,,"Mon, 12 Dec 2016 11:27:04 +0000",,,1,1,1,1,"Good Life Cottage Company",,http://gl.api.carltonsoftware.co.uk,hydrant,dbf356dfa5ebf20e
+206,,1,"Fri, 09 Dec 2016 11:47:01 +0000","Mon, 12 Dec 2016 11:29:28 +0000",,,,"Mon, 12 Dec 2016 11:29:28 +0000",,,1,1,1,1,"Best of Brighton",,http://bb.api.carltonsoftware.co.uk,hydrant,2d4787c42150af40
+207,,1,"Fri, 09 Dec 2016 11:47:20 +0000","Mon, 12 Dec 2016 11:30:10 +0000",,,,"Mon, 12 Dec 2016 11:30:10 +0000",,,1,1,1,1,"Wyke Cottages",,http://wy.api.carltonsoftware.co.uk/,hydrant,1814048285eaf7d0
+208,,1,"Fri, 09 Dec 2016 11:47:41 +0000","Mon, 12 Dec 2016 11:32:47 +0000",,,,"Mon, 12 Dec 2016 11:32:47 +0000",,,1,1,1,1,"Wight Locations",,http://wl.api.carltonsoftware.co.uk,hydrant,012a93dc374edbad
+209,,1,"Fri, 09 Dec 2016 11:48:02 +0000","Mon, 12 Dec 2016 11:46:26 +0000",,,,"Mon, 12 Dec 2016 11:46:26 +0000",,,1,1,1,1,"Wales Cottage Holidays",,http://wa.api.carltonsoftware.co.uk/,hydrant,d5034a255cda2302
+210,,1,"Fri, 09 Dec 2016 11:48:49 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Brecon Cottages",,http://br.api.carltonsoftware.co.uk,hydrant,8fd94c79a6d4c03c
+211,,1,"Fri, 09 Dec 2016 11:49:11 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Coast and Country (Wales)",,http://cw.api.carltonsoftware.co.uk,hydrant,116445ea3362b5a6
+212,,1,"Fri, 09 Dec 2016 11:50:01 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Dorset Coastal Cottages",,http://do.api.carltonsoftware.co.uk,hydrant,0af475b946998601
+213,,1,"Fri, 09 Dec 2016 11:50:20 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Lyme Bay Holidays",,http://lb.api.carltonsoftware.co.uk,hydrant,57545c2701ae7844
+214,,1,"Fri, 09 Dec 2016 11:50:41 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"North Wales Holiday Cottages",,http://nw.api.carltonsoftware.co.uk/,hydrant,60d53b8dccf3758f
+215,,1,"Fri, 09 Dec 2016 11:51:02 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Snowdonia Tourist Services",,http://st.api.carltonsoftware.co.uk,hydrant,cf307cbce5c180da
+216,,1,"Fri, 09 Dec 2016 11:51:16 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"St Ives Holidays",,http://iv.api.carltonsoftware.co.uk,hydrant,e01526b3dfdd0bc0
+217,,1,"Fri, 09 Dec 2016 11:51:31 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Ingrid Flute",,http://in.api.carltonsoftware.co.uk,hydrant,77b1bd039f732098
+218,,1,"Fri, 09 Dec 2016 11:51:59 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Gower Getaways",,http://gg.api.carltonsoftware.co.uk/,hydrant,eb046637c8569578
+219,,1,"Fri, 09 Dec 2016 11:52:16 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Rumsey Holiday Homes",,http://ru.api.carltonsoftware.co.uk/,hydrant,2c937270cedce151
+220,,1,"Fri, 09 Dec 2016 11:52:47 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"New Forest Cottages",,http://nf.api.carltonsoftware.co.uk/,Hydrant,2124ae83ff520b98
+221,,1,"Fri, 09 Dec 2016 11:53:13 +0000",,,,,"Mon, 12 Dec 2016 09:58:56 +0000",,,1,1,1,1,"Jean Bartlett",,http://jb.api.carltonsoftware.co.uk/,Hydrant,34a3dcf8be756362
