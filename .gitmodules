@@ -1,0 +1,6 @@
+[submodule "lycan-symfony"]
+	path = lycan-symfony
+	url = git@github.com:aptenex/lycan-symfony.git
+[submodule "symfony"]
+	path = symfony
+	url = git@github.com:aptenex/lycan-symfony.git

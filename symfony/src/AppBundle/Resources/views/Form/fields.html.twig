@@ -1,5 +1,0 @@
-{% block uri_widget %}
-    {%- set type = type|default('url') -%}
-    {{ block('form_widget_simple') }}
-    <span class="pull-right">{% if value is not empty %}<a target="_blank" href="{{ value }}" >Visit Page</a>{% endif %}</span>
-{% endblock %}
