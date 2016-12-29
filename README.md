@@ -84,7 +84,4 @@ This consumer takes big batch jobs and executions individual mini-jobs. For exam
 
 `php app/console  rabbitmq:consumer pull_listing`
 
-
-
-
 Switch out `pull_provider.rentivo` with the actual consumer that you wish to run. 
